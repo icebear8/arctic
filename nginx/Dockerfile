@@ -17,6 +17,7 @@ RUN mkdir -p ${app_dir}
 RUN chown -R ${user}:${user} ${app_dir}
 
 VOLUME /etc/nginx/sites-enabled/
+VOLUME ${app_dir}
 
 EXPOSE 8080
   
