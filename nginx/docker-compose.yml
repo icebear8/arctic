@@ -7,6 +7,6 @@ services:
     ports:
     - "8080:8080"
     volumes:
-    - ./config:/etc/nginx/sites-enabled
-    - ./www:/www
+    - ./config:/etc/nginx/sites-enabled/:ro
+    - ./www:/var/www/:ro
     restart: always
