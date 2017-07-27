@@ -1,0 +1,16 @@
+server {
+  listen                  8080;
+  server_name             *.arctic default_server;
+
+  location / {
+      root                    /var/www;
+      index                   index.html;
+      
+      client_max_body_size    32m;
+      error_page              500 502 503 504  /50x.html;
+      
+      location = /50x.html {
+      root                    /var/lib/nginx/html;
+    }
+  }
+}
