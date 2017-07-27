@@ -9,18 +9,20 @@ RUN apk add --no-cache \
   logrotate \
   nginx
 
+
 RUN adduser -D -u 1000 -g '${user}' ${user}
 RUN mkdir -p ${app_dir} && \
     chown -R ${user}:${user} ${app_dir}
 
+COPY /nginx.conf /etc/nginx/nginx.conf
+RUN mkdir -p /etc/nginx/sites-enabled/
+
 RUN chown -R ${user}:${user} /var/lib/nginx
 RUN chown -R ${user}:${user} /var/log/nginx
 RUN chown -R ${user}:${user} /var/run
-
-COPY /nginx.conf /etc/nginx/nginx.conf
 RUN chown -R ${user}:${user} /etc/nginx
     
-USER ${user}
+#USER ${user}
     
 EXPOSE 8080
 
