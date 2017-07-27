@@ -18,6 +18,7 @@ RUN chown -R ${user}:${user} /var/log/nginx
 RUN chown -R ${user}:${user} /var/run
 
 COPY /nginx.conf /etc/nginx/nginx.conf
+RUN chown -R ${user}:${user} /etc/nginx
     
 USER ${user}
     
