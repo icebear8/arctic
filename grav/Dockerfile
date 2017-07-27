@@ -4,6 +4,7 @@ MAINTAINER Dominik Ebert <doe@zuehlke.com>
 
 ARG user=www
 ARG app_dir=/var/www/
+ARG grav_repo=grav-admin-v1.2.4.zip
 
 RUN apk add --no-cache \
   git \
@@ -36,8 +37,11 @@ RUN chown -R ${user}:${user} /var/run
 
 COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /resources/nginx/config/* /etc/nginx/sites-enabled/
-COPY /resources/www/ ${app_dir}/
 COPY /resources/run.sh ${app_dir}/
+
+COPY /resources/${grav_repo} ${app_dir}/
+RUN unzip ${app_dir}/${grav_repo} -d ${app_dir}&&\
+    rm ${app_dir}/${grav_repo}
 
 RUN chown -R ${user}:${user} ${app_dir}
 
