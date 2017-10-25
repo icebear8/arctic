@@ -15,10 +15,10 @@ node {
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
   
     stage('Clone Repository') {
-      echo "${MY_BUILD_TAG}"
+      sh echo "${MY_BUILD_TAG}"
       
       if ("${MY_BUILD_TAG}" == "${TAG_LATEST}") {
-        echo 'clone master'
+        sh echo 'clone master'
         git branch: 'master', url: "${REPOSITORY}"
       }
       else {
