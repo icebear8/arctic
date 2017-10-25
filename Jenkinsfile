@@ -7,7 +7,11 @@ node {
   def TAG_LATEST = 'latest'
   def TAG_STABLE = 'stable'
   
-  def MY_BUILD_TAG=env.REPO_BUILD_TAG != null ? env.REPO_BUILD_TAG : "${TAG_LATEST}"
+  def MY_BUILD_TAG = "${TAG_LATEST}"
+  if (env.REPO_BUILD_TAG) {
+    MY_BUILD_TAG = env.REPO_BUILD_TAG
+  }
+  
   def MY_IMAGE_USER=env.DOCKER_USER != null ? env.DOCKER_USER : "icebear8"
   def MY_IMAGE_TAG=env.RELEASE_TAG != null ? env.RELEASE_TAG : "${TAG_LATEST}"
   def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
