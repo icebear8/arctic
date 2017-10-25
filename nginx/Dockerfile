@@ -11,7 +11,6 @@ RUN apk add --no-cache \
 
 
 RUN adduser -D -u 1000 -g '${user}' ${user}
-RUN mkdir -p ${app_dir}
 
 COPY ./resources/nginx.conf /etc/nginx/nginx.conf
 
@@ -20,6 +19,7 @@ COPY ./resources/config/* /etc/nginx/sites-enabled/
 
 COPY ./resources/www/* /var/www/
 
+RUN mkdir -p ${app_dir}
 RUN chown -R ${user}:${user} ${app_dir}
 RUN chown -R ${user}:${user} /var/lib/nginx
 RUN chown -R ${user}:${user} /var/log/nginx
