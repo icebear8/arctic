@@ -26,8 +26,6 @@ RUN chown -R ${user}:${user} /var/log/nginx
 RUN chown -R ${user}:${user} /var/run
 RUN chown -R ${user}:${user} /etc/nginx
     
-#USER ${user}
-    
 EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
