@@ -3,38 +3,42 @@ node {
   def imgJenkins
   
   def REPOSITORY='https://github.com/icebear8/arctic.git'
+  
   def TAG_LATEST='latest'
   def TAG_STABLE='stable'
   
-  def MY_IMAGE_NAME = env.IMAGE_NAME != null ? env.IMAGE_NAME : "icebear8/nginx"
-  def MY_RELEASE_VERSION = env.RELEASE_VERSION != null ? env.RELEASE_VERSION : "${TAG_LATEST}"
-  def MY_RELEASE_AS_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
+  def MY_BUILD_TAG = env.BUILD_TAG != null ? env.BUILD_TAG : "${TAG_LATEST}"
+  def MY_IMAGE_USER= env.DOCKER_USER != null ? env.DOCKER_USER : "icebear8"
+  def MY_IMAGE_TAG = env.RELEASE_TAG != null ? env.RELEASE_TAG : "${TAG_LATEST}"
+  def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
 
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
   
     stage('Clone Repository') {
-      if ("${MY_RELEASE_VERSION}" == "${TAG_LATEST}") {
+      if ("${MY_BUILD_TAG}" == "${TAG_LATEST}") {
         git branch: 'master', url: "${REPOSITORY}"
       }
       else {
         checkout scm: [$class: 'GitSCM', 
           userRemoteConfigs: [[url: "${REPOSITORY}"]], 
-          branches: [[name: "refs/tags/${MY_RELEASE_VERSION}"]]], changelog: false, poll: false
+          branches: [[name: "refs/tags/${MY_BUILD_TAG}"]]], changelog: false, poll: false
       }
     }
     
     stage ('Build Images') {
-      imgJenkins = docker.build("${MY_IMAGE_NAME}:${TAG_LATEST}", "./nginx")
+      def MY_IMAGE_NAME='nginx'
+      
+      imgJenkins = docker.build("${MY_IMAGE_USER}/${MY_IMAGE_NAME}:${TAG_LATEST}", "./${MY_IMAGE_NAME}")
     }
     
     stage ('Push Images') {  
-      imgJenkins.push()
+      imgJenkins.push("${TAG_LATEST}")
       
-      if ("${MY_RELEASE_VERSION}" != "${TAG_LATEST}") {
-          imgJenkins.push("${MY_RELEASE_VERSION}")
+      if ("${MY_IMAGE_TAG}" != "${TAG_LATEST}") {
+          imgJenkins.push("${MY_IMAGE_TAG}")
       }
       
-      if ("${MY_RELEASE_AS_STABLE}" == "true") {
+      if ("${MY_IS_IMAGE_STABLE}" == "true") {
           imgJenkins.push("${TAG_STABLE}")
       }
     }
