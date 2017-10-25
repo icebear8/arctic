@@ -15,18 +15,10 @@ node {
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
   
     stage('Clone Repository') {
-      echo "build tag: ${MY_BUILD_TAG}"
-      echo "build user: ${MY_IMAGE_USER}"
-      echo "build latest: ${TAG_LATEST}"
-      echo "image tag: ${MY_IMAGE_TAG}"
-      
       if ("${MY_BUILD_TAG}" == "${TAG_LATEST}") {
-        echo 'clone master'
         git branch: 'master', url: "${REPOSITORY}"
       }
       else {
-        echo 'checkout tag'
-      
         checkout scm: [$class: 'GitSCM', 
           userRemoteConfigs: [[url: "${REPOSITORY}"]], 
           branches: [[name: "refs/tags/${MY_BUILD_TAG}"]]], changelog: false, poll: false
