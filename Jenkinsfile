@@ -30,12 +30,11 @@ node {
 
   for (i = 0; i < imageJobs.size(); ++i) {
     def itJob = imageJobs[i]
-    def imagePath = "${imagePaths[i]}"
     
       buildTasks[itJob.imageName] = {
    
         stage ('Build image ${itJob.imageName}') {
-          images[itJob.imageName] = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${imagePath}")
+          images[itJob.imageName] = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${itJob.dockerfilePath}")
         }
       }
       
