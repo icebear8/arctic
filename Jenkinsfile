@@ -10,7 +10,7 @@ node {
   def images = [:]
   
   def theClasses = [
-    new TestClass('myName', 'myPath')
+    new TestClass(name: 'myName', path: 'myPath')
   ]
     
   def buildTasks = [:]
