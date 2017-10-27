@@ -24,13 +24,13 @@ node {
     
       buildTasks[imageName] = {
    
-        stage ('Build Images') {
+        stage ('Build image ${imageName}') {
           images[imageName] = docker.build("${MY_IMAGE_USER}/${imageName}:${TAG_LATEST}", "${imagePath}")
         }
       }
       
       pushTasks[imageName] = {
-        stage ('Push Images') {
+        stage ('Push image ${imageName}') {
           images[imageName].push("${TAG_LATEST}")
       
           if ("${MY_IMAGE_TAG}" != "${TAG_LATEST}") {
@@ -56,7 +56,11 @@ node {
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
-    parallel buildTasks
-    parallel pushTasks
+    stage("Build") {
+      parallel buildTasks
+    }
+    stage("Push") {
+      parallel pushTasks
+    }
   }
 }
