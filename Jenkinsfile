@@ -6,10 +6,6 @@ class ImageJob {
 
 node {
  
-  def imageNames = ["nginx", "denonservice"]
-  def imagePaths = ["./nginx", "./denonRemoteControl/service"]
-  def images = [:]
-  
   def imageJobs = [
     new ImageJob(imageName: 'nginx', dockerfilePath: './nginx'),
     new ImageJob(imageName: 'denonservice', dockerfilePath: './denonRemoteControl/service')
