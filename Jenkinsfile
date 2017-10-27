@@ -1,5 +1,6 @@
 class TestClass {
-  def justAProperty
+  def name
+  def path
 }
 
 node {
@@ -7,6 +8,10 @@ node {
   def imageNames = ["nginx", "denonservice"]
   def imagePaths = ["./nginx", "./denonRemoteControl/service"]
   def images = [:]
+  
+  def theClasses = [
+    new TestClass('myName', 'myPath')
+  ]
     
   def buildTasks = [:]
   def pushTasks = [:]
