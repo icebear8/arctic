@@ -28,8 +28,8 @@ node {
   def MY_IMAGE_TAG = env.RELEASE_TAG != null ? env.RELEASE_TAG : "${TAG_LATEST}"
   def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
 
-  for (i = 0; i < imageJobs.size(); ++i) {
-    def itJob = imageJobs[i]
+  for(job in imageJobs) {
+    def itJob = job
     
       buildTasks[itJob.imageName] = {
    
