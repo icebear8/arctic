@@ -1,6 +1,12 @@
 node {
+ 
+  def imageNames = ["nginx", "denonservice"]
+  def imagePaths = ["./nginx", "./denonRemoteControl/service"]
+  def images = [:]
+  def imageAmount = 2
     
-  def imgJenkins
+  def buildTasks = [:]
+  def pushTasks = [:]
   
   def REPOSITORY='https://github.com/icebear8/arctic.git'
   
@@ -12,35 +18,45 @@ node {
   def MY_IMAGE_TAG = env.RELEASE_TAG != null ? env.RELEASE_TAG : "${TAG_LATEST}"
   def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
 
-  docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
+  for (i = 0; i < imageAmount; ++i) {
+    def imageName = "${imageNames[i]}"
+    def imagePath = "${imagePaths[i]}"
+    
+      buildTasks[imageName] = {
+   
+        stage ('Build Images') {
+          images[imageName] = docker.build("${MY_IMAGE_USER}/${imageName}:${TAG_LATEST}", "${imagePath}")
+        }
+      }
+      
+      pushTasks[imageName] = {
+        stage ('Push Images') {
+          images[imageName].push("${TAG_LATEST}")
+      
+          if ("${MY_IMAGE_TAG}" != "${TAG_LATEST}") {
+              images[imageName].push("${MY_IMAGE_TAG}")
+          }
+          
+          if ("${MY_IS_IMAGE_STABLE}" == "true") {
+              images[imageName].push("${TAG_STABLE}")
+          }
+        }
+      }
+    }
   
-    stage('Clone Repository') {
-      if ("${MY_BUILD_TAG}" == "${TAG_LATEST}") {
-        git branch: 'master', url: "${REPOSITORY}"
-      }
-      else {
-        checkout scm: [$class: 'GitSCM', 
-          userRemoteConfigs: [[url: "${REPOSITORY}"]], 
-          branches: [[name: "refs/tags/${MY_BUILD_TAG}"]]], changelog: false, poll: false
-      }
+  stage('Clone Repository') {
+    if ("${MY_BUILD_TAG}" == "${TAG_LATEST}") {
+      git branch: 'master', url: "${REPOSITORY}"
     }
+    else {
+      checkout scm: [$class: 'GitSCM', 
+        userRemoteConfigs: [[url: "${REPOSITORY}"]], 
+        branches: [[name: "refs/tags/${MY_BUILD_TAG}"]]], changelog: false, poll: false
+    }
+  }
     
-    stage ('Build Images') {
-      def MY_IMAGE_NAME='nginx'
-      
-      imgJenkins = docker.build("${MY_IMAGE_USER}/${MY_IMAGE_NAME}:${TAG_LATEST}", "./${MY_IMAGE_NAME}")
-    }
-    
-    stage ('Push Images') {  
-      imgJenkins.push("${TAG_LATEST}")
-      
-      if ("${MY_IMAGE_TAG}" != "${TAG_LATEST}") {
-          imgJenkins.push("${MY_IMAGE_TAG}")
-      }
-      
-      if ("${MY_IS_IMAGE_STABLE}" == "true") {
-          imgJenkins.push("${TAG_STABLE}")
-      }
-    }
+  docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
+    parallel buildTasks
+    parallel pushTasks
   }
 }
