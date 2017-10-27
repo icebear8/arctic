@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="/static/main.css">
+  <meta name="viewport" content="width=device-width, user-scalable=no" />
+</head>
+<body onload="onLoadInitialization()">
+    <h1>Denon Control: Maintenance</h1>
+    <p>
+      Version:
+      <output id="versionOutput" name="Version"></output>
+    </p>  
+  
+    <button class="button" onclick="executePutRequest('/connection/disconnect')">Reconnect</button>
+
+    <script>
+      function onLoadInitialization() {
+        document.getElementById("versionOutput").value = "0.0";
+        executeGetRequest("/version", function (data) {
+          document.getElementById("versionOutput").value = data;
+        });
+      }
+
+      function executeCommand(command) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', "/command?cmd=" + command, true);
+        xhr.send();
+      }
+      function executePutRequest(request) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', request, true);
+        xhr.send();
+      }
+      function executeGetRequest(request, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4 && xhr.status == 200)
+            callback(xhr.responseText);
+        }
+        xhr.open('GET', request, true);
+        xhr.send();
+      }
+    </script>
+  </body>
+</html>

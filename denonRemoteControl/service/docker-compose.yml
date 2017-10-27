@@ -1,0 +1,9 @@
+version: '2'
+services:
+  nginx:
+    build: .
+    image: icebear8/denonservice
+    container_name: denonservice
+    ports:
+    - "5050:5000"
+    restart: always
