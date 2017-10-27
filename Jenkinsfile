@@ -1,9 +1,12 @@
+class TestClass {
+  def justAProperty
+}
+
 node {
  
   def imageNames = ["nginx", "denonservice"]
   def imagePaths = ["./nginx", "./denonRemoteControl/service"]
   def images = [:]
-  def imageAmount = 2
     
   def buildTasks = [:]
   def pushTasks = [:]
