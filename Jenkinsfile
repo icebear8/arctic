@@ -28,27 +28,27 @@ node {
   def MY_IMAGE_TAG = env.RELEASE_TAG != null ? env.RELEASE_TAG : "${TAG_LATEST}"
   def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
 
-  for (i = 0; i < imageNames.size(); ++i) {
-    def imageName = "${imageNames[i]}"
+  for (i = 0; i < imageJobs.size(); ++i) {
+    def itJob = imageJobs[i]
     def imagePath = "${imagePaths[i]}"
     
-      buildTasks[imageName] = {
+      buildTasks[itJob.imageName] = {
    
-        stage ('Build image ${imageName}') {
-          images[imageName] = docker.build("${MY_IMAGE_USER}/${imageName}:${TAG_LATEST}", "${imagePath}")
+        stage ('Build image ${itJob.imageName}') {
+          images[itJob.imageName] = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${imagePath}")
         }
       }
       
-      pushTasks[imageName] = {
-        stage ('Push image ${imageName}') {
-          images[imageName].push("${TAG_LATEST}")
+      pushTasks[itJob.imageName] = {
+        stage ('Push image ${itJob.imageName}') {
+          images[itJob.imageName].push("${TAG_LATEST}")
       
           if ("${MY_IMAGE_TAG}" != "${TAG_LATEST}") {
-              images[imageName].push("${MY_IMAGE_TAG}")
+              images[itJob.imageName].push("${MY_IMAGE_TAG}")
           }
           
           if ("${MY_IS_IMAGE_STABLE}" == "true") {
-              images[imageName].push("${TAG_STABLE}")
+              images[itJob.imageName].push("${TAG_STABLE}")
           }
         }
       }
