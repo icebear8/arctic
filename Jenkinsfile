@@ -28,30 +28,28 @@ node {
   def MY_IMAGE_TAG = env.RELEASE_TAG != null ? env.RELEASE_TAG : "${TAG_LATEST}"
   def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
 
-  for(job in imageJobs) {
-    def itJob = job
-    
-      buildTasks[itJob.imageName] = {
-   
-        stage ('Build image ${itJob.imageName}') {
-          images[itJob.imageName] = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${itJob.dockerfilePath}")
-        }
+  for(itJob in imageJobs) {
+
+    buildTasks[itJob.imageName] = {
+      stage ('Build image ${itJob.imageName}') {
+        images[itJob.imageName] = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${itJob.dockerfilePath}")
       }
+    }
       
-      pushTasks[itJob.imageName] = {
-        stage ('Push image ${itJob.imageName}') {
-          images[itJob.imageName].push("${TAG_LATEST}")
+    pushTasks[itJob.imageName] = {
+      stage ('Push image ${itJob.imageName}') {
+        images[itJob.imageName].push("${TAG_LATEST}")
       
-          if ("${MY_IMAGE_TAG}" != "${TAG_LATEST}") {
-              images[itJob.imageName].push("${MY_IMAGE_TAG}")
-          }
+        if ("${MY_IMAGE_TAG}" != "${TAG_LATEST}") {
+            images[itJob.imageName].push("${MY_IMAGE_TAG}")
+        }
           
-          if ("${MY_IS_IMAGE_STABLE}" == "true") {
-              images[itJob.imageName].push("${TAG_STABLE}")
-          }
+        if ("${MY_IS_IMAGE_STABLE}" == "true") {
+            images[itJob.imageName].push("${TAG_STABLE}")
         }
       }
     }
+  }
   
   stage('Clone Repository') {
     if ("${MY_BUILD_TAG}" == "${TAG_LATEST}") {
