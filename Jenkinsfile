@@ -32,20 +32,20 @@ node {
 
     buildTasks[itJob.imageName] = {
       stage ('Build image ${itJob.imageName}') {
-        images[itJob.imageName] = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${itJob.dockerfilePath}")
+        itJob.image[itJob.imageName] = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${itJob.dockerfilePath}")
       }
     }
       
     pushTasks[itJob.imageName] = {
       stage ('Push image ${itJob.imageName}') {
-        images[itJob.imageName].push("${TAG_LATEST}")
+        itJob.image[itJob.imageName].push("${TAG_LATEST}")
       
         if ("${MY_IMAGE_TAG}" != "${TAG_LATEST}") {
-            images[itJob.imageName].push("${MY_IMAGE_TAG}")
+            itJob.image[itJob.imageName].push("${MY_IMAGE_TAG}")
         }
           
         if ("${MY_IS_IMAGE_STABLE}" == "true") {
-            images[itJob.imageName].push("${TAG_STABLE}")
+            itJob.image[itJob.imageName].push("${TAG_STABLE}")
         }
       }
     }
