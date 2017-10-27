@@ -1,6 +1,7 @@
-class TestClass {
-  def name
-  def path
+class ImageJob {
+  def imageName
+  def dockerfilePath
+  def image
 }
 
 node {
@@ -9,8 +10,9 @@ node {
   def imagePaths = ["./nginx", "./denonRemoteControl/service"]
   def images = [:]
   
-  def theClasses = [
-    new TestClass(name: 'myName', path: 'myPath')
+  def imageJobs = [
+    new ImageJob(imageName: 'nginx', dockerfilePath: './nginx'),
+    new ImageJob(imageName: 'denonservice', dockerfilePath: './denonRemoteControl/service')
   ]
     
   def buildTasks = [:]
