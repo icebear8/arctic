@@ -18,7 +18,7 @@ node {
   def MY_IMAGE_TAG = env.RELEASE_TAG != null ? env.RELEASE_TAG : "${TAG_LATEST}"
   def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
 
-  for (i = 0; i < imageAmount; ++i) {
+  for (i = 0; i < imageNames.size(); ++i) {
     def imageName = "${imageNames[i]}"
     def imagePath = "${imagePaths[i]}"
     
