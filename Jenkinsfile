@@ -27,9 +27,6 @@ node {
 
   for(itJob in imageJobs) {
   
-    if ((not "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")) or
-        ("${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}"))) {
-
       buildTasks[itJob.imageName] = {
         stage ('Build image ${itJob.imageName}') {
           itJob.image = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${itJob.dockerfilePath}")
@@ -49,7 +46,6 @@ node {
           }
         }
       }
-    }
   }
   
   stage('Clone Repository') {
@@ -57,20 +53,8 @@ node {
   }
   
   stage('Debug') {
-    echo build branch: "${MY_BUILD_BRANCH}"
-    echo release branch tag: "${RELEASE_BRANCH_TAG}"
-    
-    if (not "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")) {
-      echo condition true: \'not "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}"\'
-    } else {
-      echo condition false: \'not "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}"\'
-    }
-    
-    if ("${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}")) {
-      echo condition true: \'"${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}"\'
-    } else {
-      echo condition false: \'"${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}"\'
-    }
+    echo "build branch: ${MY_BUILD_BRANCH}"
+    echo "release branch tag: ${RELEASE_BRANCH_TAG}"
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
