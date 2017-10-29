@@ -55,6 +55,13 @@ node {
   stage('Debug') {
     echo "build branch: ${MY_BUILD_BRANCH}"
     echo "release branch tag: ${RELEASE_BRANCH_TAG}"
+    
+    if (!"${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")) {
+      echo 'condition true: not "${MY_BUILD_BRANCH}".contains(${RELEASE_BRANCH_TAG}"'
+    } else {
+      echo 'condition false: not "${MY_BUILD_BRANCH}".contains(${RELEASE_BRANCH_TAG}"'
+    }
+    
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
