@@ -7,7 +7,7 @@ class ImageJob {
 node {
  
   def imageJobs = [
-    new ImageJob(imageName: 'nginx', dockerfilePath: './nginx'),
+    new ImageJob(imageName: 'nginx',        dockerfilePath: './nginx'),
     new ImageJob(imageName: 'denonservice', dockerfilePath: './denonRemoteControl/service')
   ]
     
@@ -19,7 +19,7 @@ node {
   def TAG_LATEST = 'latest'
   def TAG_STABLE = 'stable'
   
-  def MY_BUILD_TAG = env.REPO_BUILD_TAG != null ? env.REPO_BUILD_TAG : "${TAG_LATEST}"
+  def MY_BUILD_TAG = env.REPO_BUILD_TAG != null ? env.REPO_BUILD_TAG : "maser"
   def MY_IMAGE_USER = env.DOCKER_USER != null ? env.DOCKER_USER : "icebear8"
   def MY_IMAGE_TAG = env.RELEASE_TAG != null ? env.RELEASE_TAG : "${TAG_LATEST}"
   def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
@@ -48,14 +48,7 @@ node {
   }
   
   stage('Clone Repository') {
-    if ("${MY_BUILD_TAG}" == "${TAG_LATEST}") {
-      git branch: 'master', url: "${REPOSITORY}"
-    }
-    else {
-      checkout scm: [$class: 'GitSCM', 
-        userRemoteConfigs: [[url: "${REPOSITORY}"]], 
-        branches: [[name: "refs/tags/${MY_BUILD_TAG}"]]], changelog: false, poll: false
-    }
+    git branch: "${MY_BUILD_TAG}", url: "${REPOSITORY}"
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
