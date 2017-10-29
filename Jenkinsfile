@@ -63,12 +63,25 @@ node {
     echo "build branch: ${MY_BUILD_BRANCH}"
     echo "release branch tag: ${RELEASE_BRANCH_TAG}"
     
-    if (!"${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")) {
-      echo 'condition true: not "${MY_BUILD_BRANCH}".contains(${RELEASE_BRANCH_TAG}"'
-    } else {
-      echo 'condition false: not "${MY_BUILD_BRANCH}".contains(${RELEASE_BRANCH_TAG}"'
-    }
-    
+    for(itJob in imageJobs) {
+      def isReleaseBranch = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")
+      def isReleaseImage = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}")
+      
+      if (isReleaseBranch) {
+        echo "is relase branch is true"
+      } else {
+        echo "is relase branch is false"
+      }
+      
+      if (isReleaseImage) {
+        echo "is release image is true"
+      } else {
+        echo "is release image is false"
+      }
+      
+      echo "Release image tag: ${RELEASE_BRANCH_TAG}${itJob.imageName}"
+      
+    }    
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
