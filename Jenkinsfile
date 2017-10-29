@@ -18,7 +18,7 @@ node {
   
   def TAG_LATEST = 'latest'
   def TAG_STABLE = 'stable'
-  def RELEASE_BRANCH = 'release/'
+  def RELEASE_BRANCH_TAG = 'release/'
   
   def MY_BUILD_BRANCH = env.REPO_BUILD_BRANCH != null ? env.REPO_BUILD_BRANCH : "master"
   def MY_IMAGE_USER = env.DOCKER_USER != null ? env.DOCKER_USER : "icebear8"
@@ -27,8 +27,8 @@ node {
 
   for(itJob in imageJobs) {
   
-    if ((not "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH}")) or
-        ("${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH}${itJob.imageName}"))) {
+    if ((not "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")) or
+        ("${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}"))) {
 
       buildTasks[itJob.imageName] = {
         stage ('Build image ${itJob.imageName}') {
@@ -54,6 +54,23 @@ node {
   
   stage('Clone Repository') {
     git branch: "${MY_BUILD_BRANCH}", url: "${REPOSITORY}"
+  }
+  
+  stage('Debug') {
+    echo build branch: "${MY_BUILD_BRANCH}"
+    echo release branch tag: "${RELEASE_BRANCH_TAG}"
+    
+    if (not "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")) {
+      echo condition true: \'not "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}"\'
+    } else {
+      echo condition false: \'not "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}"\'
+    }
+    
+    if ("${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}")) {
+      echo condition true: \'"${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}"\'
+    } else {
+      echo condition false: \'"${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}"\'
+    }
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
