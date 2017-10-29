@@ -29,8 +29,8 @@ node {
     def isReleaseBranch = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")
     def isReleaseImage = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}")
     
-    if ((!isReleaseBranch) ||
-         isReleaseImage){
+    if ((isReleaseBranch == false) ||
+         isReleaseImage == true) {
     
       buildTasks[itJob.imageName] = {
         stage ('Build image ${itJob.imageName}') {
@@ -67,13 +67,13 @@ node {
       def isReleaseBranch = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")
       def isReleaseImage = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}")
       
-      if (isReleaseBranch) {
+      if (isReleaseBranch == true) {
         echo "is relase branch is true"
       } else {
         echo "is relase branch is false"
       }
       
-      if (isReleaseImage) {
+      if (isReleaseImage == true) {
         echo "is release image is true"
       } else {
         echo "is release image is false"
