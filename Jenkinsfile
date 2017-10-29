@@ -26,7 +26,7 @@ node {
   def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
 
   for(itJob in imageJobs) {
-  
+    if (!"${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")) {
       buildTasks[itJob.imageName] = {
         stage ('Build image ${itJob.imageName}') {
           itJob.image = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${itJob.dockerfilePath}")
@@ -46,6 +46,7 @@ node {
           }
         }
       }
+    }
   }
   
   stage('Clone Repository') {
