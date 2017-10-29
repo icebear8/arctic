@@ -34,6 +34,7 @@ node {
     
       buildTasks[itJob.imageName] = {
         stage ('Build image ${itJob.imageName}') {
+          echo "Build image: ${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}"
           itJob.image = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${itJob.dockerfilePath}")
         }
       }
