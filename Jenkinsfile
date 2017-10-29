@@ -29,7 +29,7 @@ node {
     def isReleaseBranch = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")
     def isReleaseImage = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}")
     
-    if ((!isReleaseBranch) or
+    if ((!isReleaseBranch) ||
          isReleaseImage){
     
       buildTasks[itJob.imageName] = {
