@@ -26,7 +26,12 @@ node {
   def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
 
   for(itJob in imageJobs) {
-    if (!"${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")) {
+    def isReleaseBranch = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")
+    def isReleaseImage = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}")
+    
+    if ((!isReleaseBranch) or
+         isReleaseImage){
+    
       buildTasks[itJob.imageName] = {
         stage ('Build image ${itJob.imageName}') {
           itJob.image = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${itJob.dockerfilePath}")
@@ -50,6 +55,7 @@ node {
   }
   
   stage('Clone Repository') {
+    echo "Checkout ${MY_BUILD_BRANCH} from ${REPOSITORY}"
     git branch: "${MY_BUILD_BRANCH}", url: "${REPOSITORY}"
   }
   
