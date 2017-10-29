@@ -18,6 +18,7 @@ node {
   
   def TAG_LATEST = 'latest'
   def TAG_STABLE = 'stable'
+  def RELEASE_BRANCH = 'release/'
   
   def MY_BUILD_BRANCH = env.REPO_BUILD_BRANCH != null ? env.REPO_BUILD_BRANCH : "master"
   def MY_IMAGE_USER = env.DOCKER_USER != null ? env.DOCKER_USER : "icebear8"
@@ -25,23 +26,27 @@ node {
   def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
 
   for(itJob in imageJobs) {
+  
+    if ((not "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH}")) or
+        ("${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH}${itJob.imageName}"))) {
 
-    buildTasks[itJob.imageName] = {
-      stage ('Build image ${itJob.imageName}') {
-        itJob.image = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${itJob.dockerfilePath}")
-      }
-    }
-      
-    pushTasks[itJob.imageName] = {
-      stage ('Push image ${itJob.imageName}') {
-        itJob.image.push("${TAG_LATEST}")
-      
-        if ("${MY_IMAGE_TAG}" != "${TAG_LATEST}") {
-            itJob.image.push("${MY_IMAGE_TAG}")
+      buildTasks[itJob.imageName] = {
+        stage ('Build image ${itJob.imageName}') {
+          itJob.image = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${itJob.dockerfilePath}")
         }
-          
-        if ("${MY_IS_IMAGE_STABLE}" == "true") {
-            itJob.image.push("${TAG_STABLE}")
+      }
+        
+      pushTasks[itJob.imageName] = {
+        stage ('Push image ${itJob.imageName}') {
+          itJob.image.push("${TAG_LATEST}")
+        
+          if ("${MY_IMAGE_TAG}" != "${TAG_LATEST}") {
+              itJob.image.push("${MY_IMAGE_TAG}")
+          }
+            
+          if ("${MY_IS_IMAGE_STABLE}" == "true") {
+              itJob.image.push("${TAG_STABLE}")
+          }
         }
       }
     }
