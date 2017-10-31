@@ -4,13 +4,40 @@ class ImageJob {
   def image
 }
 
+def createDockerBuildStep(imageId, dockerFilePath) {
+  return {
+    stage("Build image ${imageId}") {
+      echo "Build image: ${imageId} with dockerfile ${dockerFilePath}"
+      docker.build("${imageId}", "${dockerFilePath}")
+    }
+  }
+}
+
+def createDockerPushStep(imageId, remoteTag, isStable, latestTag, stableTag) {
+  return {
+    stage("Push image ${imageId}") {
+      echo "Push image: ${imageId} with tag ${remoteTag}"
+      def image = docker.image("${imageId}")
+      
+      image.push("${latestTag}")
+      
+      if ("${remoteTag}" != "${latestTag}") {
+        image.push("${remoteTag}")
+      }
+        
+      if ("${isStable}" == 'true') {
+        image.push("${stableTag}")
+      }
+    }
+  }
+}
+
 node {
- 
   def imageJobs = [
     new ImageJob(imageName: 'nginx',        dockerfilePath: './nginx'),
     new ImageJob(imageName: 'denonservice', dockerfilePath: './denonRemoteControl/service')
   ]
-    
+
   def buildTasks = [:]
   def pushTasks = [:]
   
@@ -28,66 +55,14 @@ node {
   for(itJob in imageJobs) {
     def isReleaseBranch = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")
     def isReleaseImage = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}")
+    def imageId = "${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}"
     
     if ((isReleaseBranch == false) ||
          (isReleaseImage == true)) {
     
-      buildTasks[itJob.imageName] = {
-        stage ('Build image ${itJob.imageName}') {
-          echo "Build image: ${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}"
-          itJob.image = docker.build("${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}", "${itJob.dockerfilePath}")
-        }
-      }
-        
-      pushTasks[itJob.imageName] = {
-        stage ('Push image ${itJob.imageName}') {
-          itJob.image.push("${TAG_LATEST}")
-        
-          if ("${MY_IMAGE_TAG}" != "${TAG_LATEST}") {
-              itJob.image.push("${MY_IMAGE_TAG}")
-          }
-            
-          if ("${MY_IS_IMAGE_STABLE}" == "true") {
-              itJob.image.push("${TAG_STABLE}")
-          }
-        }
-      }
+      buildTasks[itJob.imageName] = createDockerBuildStep(imageId, itJob.dockerfilePath)
+      pushTasks[itJob.imageName] = createDockerPushStep(imageId, MY_IMAGE_TAG, MY_IS_IMAGE_STABLE, TAG_LATEST, TAG_STABLE)
     }
-  }
-  
-  stage('Clone Repository') {
-    echo "Checkout ${MY_BUILD_BRANCH} from ${REPOSITORY}"
-    git branch: "${MY_BUILD_BRANCH}", url: "${REPOSITORY}"
-  }
-  
-  stage('Debug') {
-    echo "build branch: ${MY_BUILD_BRANCH}"
-    echo "release branch tag: ${RELEASE_BRANCH_TAG}"
-    
-    for(itJob in imageJobs) {
-      def isReleaseBranch = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")
-      def isReleaseImage = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}")
-      
-      echo "Release image tag: ${RELEASE_BRANCH_TAG}${itJob.imageName}"
-      
-      if (isReleaseBranch == false) {
-        echo "is relase branch is false"
-      } else {
-        echo "is relase branch is true"
-      }
-      
-      if (isReleaseImage == true) {
-        echo "is release image is true"
-      } else {
-        echo "is release image is false"
-      }
-      
-      if ((isReleaseBranch == false) ||
-         (isReleaseImage == true)) {
-         echo "${itJob.imageName} will be built"
-      }
-      
-    }    
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
