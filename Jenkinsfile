@@ -12,9 +12,10 @@ node {
   
   def TAG_LATEST = 'latest'
   def TAG_STABLE = 'stable'
+  def LATEST_BRANCH_TAG = 'master'
   def RELEASE_BRANCH_TAG = 'release/'
   
-  def MY_BUILD_BRANCH = env.REPO_BUILD_BRANCH != null ? env.REPO_BUILD_BRANCH : "master"
+  def MY_BUILD_BRANCH = env.REPO_BUILD_BRANCH != null ? env.REPO_BUILD_BRANCH : LATEST_BRANCH_TAG
   def MY_IMAGE_USER = env.DOCKER_USER != null ? env.DOCKER_USER : "icebear8"
   def MY_IMAGE_TAG = env.RELEASE_TAG != null ? env.RELEASE_TAG : "${TAG_LATEST}"
   def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
@@ -24,14 +25,14 @@ node {
   def pushTasks = [:]
 
   for(itJob in imageJobs) {
-    def isReleaseBranch = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}")
+    def isLatestBranch = "${MY_BUILD_BRANCH}".contains("${LATEST_BRANCH_TAG}")
     def isReleaseImage = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}")
     def imageId = "${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}"
     
-    if ((isReleaseBranch == false) ||
+    buildTasks[itJob.imageName] = createDockerBuildStep(imageId, itJob.dockerfilePath)
+
+    if ((isLatestBranch == true) ||
          (isReleaseImage == true)) {
-    
-      buildTasks[itJob.imageName] = createDockerBuildStep(imageId, itJob.dockerfilePath)
       pushTasks[itJob.imageName] = createDockerPushStep(imageId, MY_IMAGE_TAG, MY_IS_IMAGE_STABLE, TAG_LATEST, TAG_STABLE)
     }
   }
