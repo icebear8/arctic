@@ -43,7 +43,7 @@ node {
     echo "Checkout branch: ${MY_BUILD_BRANCH}"
     checkout([$class: 'GitSCM', branches: [[name: "*/${MY_BUILD_BRANCH}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [],
-      userRemoteConfigs: [[credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981', url: 'https://github.com/icebear8/arctic.git']]])
+      userRemoteConfigs: [[credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981', url: "${REMOTE_REPO_URL}"]]])
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
