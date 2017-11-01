@@ -40,11 +40,6 @@ node {
          (isReleaseImage == true)) {
       pushTasks[itJob.imageName] = createDockerPushStep(imageId, JOB_DOCKER_TAG, JOB_IS_STABLE, DOCKER_TAG_LATEST, DOCKER_TAG_STABLE)
     }
-    else {
-      stage("Idle") {
-        echo "Nothing to push"
-      }
-    }
   }
   
   stage("Checkout") {
