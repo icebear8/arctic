@@ -41,7 +41,7 @@ node {
   stage("Checkout") {
     echo "env.BRANCH_NAME: ${env.BRANCH_NAME}"
     echo "Checkout branch: ${MY_BUILD_BRANCH}"
-    checkout([$class: 'GitSCM', branches: [[name: '*/master']],
+    checkout([$class: 'GitSCM', branches: [[name: '*/${MY_BUILD_BRANCH}']],
       doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [],
       userRemoteConfigs: [[credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981', url: 'https://github.com/icebear8/arctic.git']]])
   }
