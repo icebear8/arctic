@@ -16,7 +16,7 @@ node {
   def LATEST_BRANCH_TAG = 'master'
   def RELEASE_BRANCH_TAG = 'release/'
   
-  def MY_BUILD_BRANCH = env.BRANCH_NAME != null ? env.BRANCH_NAME : LATEST_BRANCH_TAG
+  def MY_BUILD_BRANCH = evaluateBuildBranch()
   def MY_IMAGE_USER = env.DOCKER_USER != null ? env.DOCKER_USER : "icebear8"
   def MY_IMAGE_TAG = env.RELEASE_TAG != null ? env.RELEASE_TAG : "${TAG_LATEST}"
   def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
@@ -54,6 +54,17 @@ node {
       parallel pushTasks
     }
   }
+}
+
+def evaluateBuildBranch() {
+  if (env.REPO_BUILD_BRANCH != null) {
+    return env.REPO_BUILD_BRANCH
+  }
+  else if (env.BRANCH_NAME != null) {
+    return env.BRANCH_NAME
+  }
+  
+  return 'master'
 }
 
 def createDockerBuildStep(imageId, dockerFilePath) {
