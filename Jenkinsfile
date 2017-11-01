@@ -10,40 +10,44 @@ node {
     new ImageJob(imageName: 'denonservice', dockerfilePath: './denonRemoteControl/service')
   ]
   
-  def REMOTE_REPO_URL = 'https://github.com/icebear8/arctic.git'
-  def TAG_LATEST = 'latest'
-  def TAG_STABLE = 'stable'
-  def LATEST_BRANCH_TAG = 'master'
-  def RELEASE_BRANCH_TAG = 'release/'
+  def REPO_URL = 'https://github.com/icebear8/arctic.git'
+  def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
+  def REPO_LATEST_BRANCH = 'master'
+  def REPO_RELEASE_BRANCH = 'release/'
   
-  def MY_BUILD_BRANCH = env.BRANCH_NAME != null ? env.BRANCH_NAME : LATEST_BRANCH_TAG
-  def MY_IMAGE_USER = env.DOCKER_USER != null ? env.DOCKER_USER : "icebear8"
-  def MY_IMAGE_TAG = env.RELEASE_TAG != null ? env.RELEASE_TAG : "${TAG_LATEST}"
-  def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
-
+  def DOCKER_TAG_LATEST = 'latest'
+  def DOCKER_TAG_STABLE = 'stable'
+  def DOCKER_DEFAULT_USER = "icebear8"
+  
+ 
+  def JOB_BRANCH = evaluateBuildBranch(REPO_LATEST_BRANCH)
+  def JOB_IS_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
+  
+  def JOB_DOCKER_USER = env.DOCKER_USER != null ? env.DOCKER_USER : DOCKER_DEFAULT_USER
+  def JOB_DOCKER_TAG = env.RELEASE_TAG != null ? env.RELEASE_TAG : "${DOCKER_TAG_LATEST}"
   
   def buildTasks = [:]
   def pushTasks = [:]
 
   for(itJob in imageJobs) {
-    def isLatestBranch = "${MY_BUILD_BRANCH}".contains("${LATEST_BRANCH_TAG}")
-    def isReleaseImage = "${MY_BUILD_BRANCH}".contains("${RELEASE_BRANCH_TAG}${itJob.imageName}")
-    def imageId = "${MY_IMAGE_USER}/${itJob.imageName}:${TAG_LATEST}"
+    def isLatestBranch = "${JOB_BRANCH}".contains("${REPO_LATEST_BRANCH}")
+    def isReleaseImage = "${JOB_BRANCH}".contains("${REPO_RELEASE_BRANCH}${itJob.imageName}")
+    def imageId = "${JOB_DOCKER_USER}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
     
     buildTasks[itJob.imageName] = createDockerBuildStep(imageId, itJob.dockerfilePath)
 
     if ((isLatestBranch == true) ||
          (isReleaseImage == true)) {
-      pushTasks[itJob.imageName] = createDockerPushStep(imageId, MY_IMAGE_TAG, MY_IS_IMAGE_STABLE, TAG_LATEST, TAG_STABLE)
+      pushTasks[itJob.imageName] = createDockerPushStep(imageId, JOB_DOCKER_TAG, JOB_IS_STABLE, DOCKER_TAG_LATEST, DOCKER_TAG_STABLE)
     }
   }
   
   stage("Checkout") {
-    echo "env.BRANCH_NAME: ${env.BRANCH_NAME}"
-    echo "Checkout branch: ${MY_BUILD_BRANCH}"
-    checkout([$class: 'GitSCM', branches: [[name: "*/${MY_BUILD_BRANCH}"]],
+    echo "Checkout branch: ${JOB_BRANCH}"
+
+    checkout([$class: 'GitSCM', branches: [[name: "*/${JOB_BRANCH}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [],
-      userRemoteConfigs: [[credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981', url: "${REMOTE_REPO_URL}"]]])
+      userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
@@ -54,6 +58,17 @@ node {
       parallel pushTasks
     }
   }
+}
+
+def evaluateBuildBranch(defaultValue) {
+  if (env.REPO_BUILD_BRANCH != null) {
+    return env.REPO_BUILD_BRANCH
+  }
+  else if (env.BRANCH_NAME != null) {
+    return env.BRANCH_NAME
+  }
+  
+  return defaultValue
 }
 
 def createDockerBuildStep(imageId, dockerFilePath) {
