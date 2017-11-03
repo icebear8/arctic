@@ -16,13 +16,11 @@ node {
   def REPO_STABLE_BRANCH = 'stable'
   def REPO_RELEASE_BRANCH_PREFIX = 'release/'
   
+  def DOCKER_DEFAULT_USER = "icebear8"
   def DOCKER_TAG_LATEST = 'latest'
   def DOCKER_TAG_STABLE = 'stable'
-  def DOCKER_DEFAULT_USER = "icebear8"
  
   def JOB_BRANCH = evaluateBuildBranch(REPO_LATEST_BRANCH)
-  def JOB_IS_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
-  
   def JOB_DOCKER_USER = env.DOCKER_USER != null ? env.DOCKER_USER : DOCKER_DEFAULT_USER
   
   def buildTasks = [:]
@@ -83,12 +81,13 @@ def evaluateBuildBranch(defaultValue) {
 
 def evaluateReleaseTag(releaseBranch, imageName) {
   def indexOfImage = releaseBranch.indexOf(imageName)
+  
   if (indexOfImage < 0)
   {
-    return null
+    return null // exit if no valid release tag could be found
   }
   
-  return releaseBranch.substring(indexOfImage + imageName.length() + 1)
+  return releaseBranch.substring(indexOfImage + imageName.length() + 1) // +1 because of additional sign between image id and release tag
 }
 
 def createDockerBuildStep(imageId, dockerFilePath) {
