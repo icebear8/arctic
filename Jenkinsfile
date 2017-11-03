@@ -12,7 +12,7 @@ node {
   
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
-  def REPO_LATEST_BRANCH = 'latest'
+  def REPO_LATEST_BRANCH = 'master'
   def REPO_STABLE_BRANCH = 'stable'
   def REPO_RELEASE_BRANCH_PREFIX = 'release/'
   
@@ -28,12 +28,12 @@ node {
 
   def isLatestBranch = "${JOB_BRANCH}".contains("${REPO_LATEST_BRANCH}")
   def isStableBranch = "${JOB_BRANCH}".contains("${REPO_STABLE_BRANCH}")
+  def remoteImageTag = DOCKER_TAG_LATEST
     
   for(itJob in imageJobs) {
     def isReleaseBranch = "${JOB_BRANCH}".contains("${REPO_RELEASE_BRANCH_PREFIX}${itJob.imageName}")
     
     def localImageId = "${JOB_DOCKER_USER}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
-    def remoteImageTag = DOCKER_TAG_LATEST
     
     if (isStableBranch == true) {
       remoteImageTag = DOCKER_TAG_STABLE
