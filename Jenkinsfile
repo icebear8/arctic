@@ -41,7 +41,7 @@ node {
       remoteImageTag = DOCKER_TAG_STABLE
     }
     else if (isReleaseBranch == true) {
-      def releaseTag = evaluateReleaseTag(JOB_BRANCH, imageName)
+      def releaseTag = evaluateReleaseTag(JOB_BRANCH, itJob.imageName)
       remoteImageTag = releaseTag != null ? releaseTag : REPO_LATEST_BRANCH
     }
     
@@ -82,13 +82,13 @@ def evaluateBuildBranch(defaultValue) {
 }
 
 def evaluateReleaseTag(releaseBranch, imageName) {
-  def indexOfImage = relaseBranch.indexOf(imageName)
+  def indexOfImage = releaseBranch.indexOf(imageName)
   if (indexOfImage < 0)
   {
     return null
   }
   
-  return releaseBranch.substring(indexOfImage + imageName.length())
+  return releaseBranch.substring(indexOfImage + imageName.length() + 1)
 }
 
 def createDockerBuildStep(imageId, dockerFilePath) {
