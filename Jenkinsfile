@@ -88,7 +88,7 @@ def evaluateReleaseTag(releaseBranch, imageName) {
     return null
   }
   
-  return releaseBranch.substring(indexOfImage + imageName.length())
+  return releaseBranch.substring(indexOfImage + imageName.length() + 1)
 }
 
 def createDockerBuildStep(imageId, dockerFilePath) {
