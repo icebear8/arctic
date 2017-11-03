@@ -82,7 +82,7 @@ def evaluateBuildBranch(defaultValue) {
 }
 
 def evaluateReleaseTag(releaseBranch, imageName) {
-  def indexOfImage = relaseBranch.indexOf(imageName)
+  def indexOfImage = releaseBranch.indexOf(imageName)
   if (indexOfImage < 0)
   {
     return null
