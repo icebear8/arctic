@@ -41,7 +41,7 @@ node {
       remoteImageTag = DOCKER_TAG_STABLE
     }
     else if (isReleaseBranch == true) {
-      def releaseTag = evaluateReleaseTag(JOB_BRANCH, imageName)
+      def releaseTag = evaluateReleaseTag(JOB_BRANCH, itJob.imageName)
       remoteImageTag = releaseTag != null ? releaseTag : REPO_LATEST_BRANCH
     }
     
