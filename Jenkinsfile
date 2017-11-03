@@ -7,7 +7,8 @@ class ImageJob {
 node {
   def imageJobs = [
     new ImageJob(imageName: 'nginx',        dockerfilePath: './nginx'),
-    new ImageJob(imageName: 'denonservice', dockerfilePath: './denonRemoteControl/service')
+    new ImageJob(imageName: 'denonservice', dockerfilePath: './denonRemoteControl/service'),
+    new ImageJob(imageName: 'grav',         dockerfilePath: './grav')
   ]
   
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
