@@ -93,9 +93,9 @@ def evaluateReleaseTag(releaseBranch, imageName) {
 
 def createDockerBuildStep(imageId, dockerFilePath) {
   return {
-    stage("Build image ${imageId}:${imageTag}") {
-      echo "Build image: ${imageId}"{$imageTag} with dockerfile ${dockerFilePath}"
-      docker.build("${imageId}:${imageTag}", "${dockerFilePath}")
+    stage("Build image ${imageId}") {
+      echo "Build image: ${imageId} with dockerfile ${dockerFilePath}"
+      docker.build("${imageId}", "${dockerFilePath}")
     }
   }
 }
