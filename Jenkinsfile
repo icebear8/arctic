@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 class ImageJob {
   def imageName
   def dockerfilePath
@@ -57,6 +59,11 @@ node {
     checkout([$class: 'GitSCM', branches: [[name: "*/${JOB_BRANCH}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [],
       userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
+  }
+  
+  stage("Test properties") {
+    echo "Test parameters"
+    
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
