@@ -1,18 +1,4 @@
-import groovy.json.JsonSlurper
-
-class ImageJob {
-  def imageName
-  def dockerfilePath
-  def image
-}
-
 node {
-  def imageJobs = [
-    new ImageJob(imageName: 'nginx',        dockerfilePath: './nginx'),
-    new ImageJob(imageName: 'denonservice', dockerfilePath: './denonRemoteControl/service'),
-    new ImageJob(imageName: 'grav',         dockerfilePath: './grav')
-  ]
-
   def BUILD_PROPERTIES_FILE = "buildProperties.json"
 
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
@@ -80,10 +66,7 @@ node {
 }
 
 def evaluateBuildBranch(defaultValue) {
-  if (env.REPO_BUILD_BRANCH != null) {
-    return env.REPO_BUILD_BRANCH
-  }
-  else if (env.BRANCH_NAME != null) {
+  if (env.BRANCH_NAME != null) {
     return env.BRANCH_NAME
   }
   
