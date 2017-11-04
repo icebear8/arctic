@@ -48,7 +48,7 @@ node {
     echo "Setup build"
     buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
     
-    for(itJob in imageJobs) {
+    for(itJob in buildProperties.dockerJobs) {
       def isReleaseBranch = "${JOB_BRANCH}".contains("${REPO_RELEASE_BRANCH_PREFIX}${itJob.imageName}")
       
       def localImageId = "${JOB_DOCKER_USER}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
