@@ -13,6 +13,8 @@ node {
     new ImageJob(imageName: 'grav',         dockerfilePath: './grav')
   ]
   
+  def buildProperties
+  def BUILD_PROPERTIES_FILE = "buildProperties.json"
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
   def REPO_LATEST_BRANCH = 'master'
@@ -61,12 +63,19 @@ node {
       userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
   }
   
-  stage("Test properties") {
-    echo "Test parameters"
+  stage("Setup build properties") {
+    echo "Setup build properties"
     
-    def json = readFile(file:'./buildProperties.json')
-    def data = new JsonSlurper().parseText(json)
-    echo "${data.jobs[0].imageName}"
+    def json = readFile(file: "${BUILD_PROPERTIES_FILE}")
+    buildProperties = new JsonSlurper().parseText(json)
+    
+    echo "URL: ${buildProperties.sourceRepo.url}"
+    echo "credentials: ${buildProperties.sourceRepo.credentials}"
+    
+    for(itJob in buildProperties.dockerJobs) {
+      echo "Name: ${itJob.imageName}"
+      echo "File: ${itJob.dockerfilePath}"
+    }
     
   }
     
