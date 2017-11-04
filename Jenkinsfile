@@ -65,7 +65,7 @@ node {
     echo "Test parameters"
     
     def json = readFile(file:'./buildProperties.json')
-    def data = new JsonSlurperClassic().parseText(json)
+    def data = new JsonSlurper().parseText(json)
     echo "${data.jobs[0].imageName}"
     
   }
