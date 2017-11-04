@@ -1,8 +1,4 @@
 {
-  "sourceRepo": {
-    "url": "https://github.com/icebear8/arctic.git",
-    "credentialsId": "3bc30eda-c17e-4444-a55b-d81ee0d68981"
-  },
   "dockerHub": {
     "user": "icebear8"
   },

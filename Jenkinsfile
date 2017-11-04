@@ -7,21 +7,15 @@ node {
   def REPO_STABLE_BRANCH = 'stable'
   def REPO_RELEASE_BRANCH_PREFIX = 'release/'
   
-  def DOCKER_DEFAULT_USER = "icebear8"
   def DOCKER_TAG_LATEST = 'latest'
   def DOCKER_TAG_STABLE = 'stable'
  
   def JOB_BRANCH = evaluateBuildBranch(REPO_LATEST_BRANCH)
-  def JOB_DOCKER_USER = env.DOCKER_USER != null ? env.DOCKER_USER : DOCKER_DEFAULT_USER
   
   def buildProperties
   def buildTasks = [:]
   def pushTasks = [:]
 
-  def isLatestBranch = "${JOB_BRANCH}".contains("${REPO_LATEST_BRANCH}")
-  def isStableBranch = "${JOB_BRANCH}".contains("${REPO_STABLE_BRANCH}")
-  def remoteImageTag = DOCKER_TAG_LATEST
-  
   stage("Checkout") {
     echo "Checkout branch: ${JOB_BRANCH}"
 
@@ -32,12 +26,17 @@ node {
   
   stage("Setup build") {
     echo "Setup build"
+    
+    def isLatestBranch = "${JOB_BRANCH}".contains("${REPO_LATEST_BRANCH}")
+    def isStableBranch = "${JOB_BRANCH}".contains("${REPO_STABLE_BRANCH}")
+    def remoteImageTag = DOCKER_TAG_LATEST
+    
     buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
     
     for(itJob in buildProperties.dockerJobs) {
       def isReleaseBranch = "${JOB_BRANCH}".contains("${REPO_RELEASE_BRANCH_PREFIX}${itJob.imageName}")
       
-      def localImageId = "${JOB_DOCKER_USER}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
+      def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
       
       if (isStableBranch == true) {
         remoteImageTag = DOCKER_TAG_STABLE
