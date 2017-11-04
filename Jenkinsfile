@@ -64,6 +64,10 @@ node {
   stage("Test properties") {
     echo "Test parameters"
     
+    def json = readFile(file:'./buildProperties.json')
+    def data = new JsonSlurperClassic().parseText(json)
+    echo "${data.jobs[0].imageName}"
+    
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
