@@ -67,6 +67,7 @@ node {
   stage("Setup build properties") {
     echo "Setup build properties"
     def json = readFile(file: "${BUILD_PROPERTIES_FILE}")
+    buildProperties = new JsonSlurper().parseText(json)
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
