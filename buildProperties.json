@@ -1,0 +1,10 @@
+{
+  "dockerHub": {
+    "user": "icebear8"
+  },
+  "dockerJobs": [
+    {"imageName": "nginx",        "dockerfilePath": "./nginx" },
+    {"imageName": "denonservice", "dockerfilePath": "./denonRemoteControl/service" },
+    {"imageName": "grav",         "dockerfilePath": "./grav" }
+  ]
+}
