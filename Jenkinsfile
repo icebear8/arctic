@@ -12,9 +12,9 @@ node {
     new ImageJob(imageName: 'denonservice', dockerfilePath: './denonRemoteControl/service'),
     new ImageJob(imageName: 'grav',         dockerfilePath: './grav')
   ]
-  
-  def buildProperties
+
   def BUILD_PROPERTIES_FILE = "buildProperties.json"
+
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
   def REPO_LATEST_BRANCH = 'master'
@@ -28,6 +28,7 @@ node {
   def JOB_BRANCH = evaluateBuildBranch(REPO_LATEST_BRANCH)
   def JOB_DOCKER_USER = env.DOCKER_USER != null ? env.DOCKER_USER : DOCKER_DEFAULT_USER
   
+  def buildProperties
   def buildTasks = [:]
   def pushTasks = [:]
 
@@ -70,13 +71,7 @@ node {
     buildProperties = new JsonSlurper().parseText(json)
     
     echo "URL: ${buildProperties.sourceRepo.url}"
-    echo "credentials: ${buildProperties.sourceRepo.credentials}"
-    
-    for(itJob in buildProperties.dockerJobs) {
-      echo "Name: ${itJob.imageName}"
-      echo "File: ${itJob.dockerfilePath}"
-    }
-    
+    echo "credentialsId: ${buildProperties.sourceRepo.credentialsId}"
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
