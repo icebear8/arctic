@@ -35,26 +35,6 @@ node {
   def isLatestBranch = "${JOB_BRANCH}".contains("${REPO_LATEST_BRANCH}")
   def isStableBranch = "${JOB_BRANCH}".contains("${REPO_STABLE_BRANCH}")
   def remoteImageTag = DOCKER_TAG_LATEST
-    
-  for(itJob in imageJobs) {
-    def isReleaseBranch = "${JOB_BRANCH}".contains("${REPO_RELEASE_BRANCH_PREFIX}${itJob.imageName}")
-    
-    def localImageId = "${JOB_DOCKER_USER}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
-    
-    if (isStableBranch == true) {
-      remoteImageTag = DOCKER_TAG_STABLE
-    }
-    else if (isReleaseBranch == true) {
-      def releaseTag = evaluateReleaseTag(JOB_BRANCH, itJob.imageName)
-      remoteImageTag = releaseTag != null ? releaseTag : REPO_LATEST_BRANCH
-    }
-    
-    buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath)
-
-    if ((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true)) {
-      pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
-    }
-  }
   
   stage("Checkout") {
     echo "Checkout branch: ${JOB_BRANCH}"
@@ -64,11 +44,29 @@ node {
       userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
   }
   
-  stage("Setup build properties") {
-    echo "Setup build properties"
-    def props = readJSON file: "${BUILD_PROPERTIES_FILE}"
+  stage("Setup build") {
+    echo "Setup build"
+    buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
+    
+    for(itJob in imageJobs) {
+      def isReleaseBranch = "${JOB_BRANCH}".contains("${REPO_RELEASE_BRANCH_PREFIX}${itJob.imageName}")
+      
+      def localImageId = "${JOB_DOCKER_USER}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
+      
+      if (isStableBranch == true) {
+        remoteImageTag = DOCKER_TAG_STABLE
+      }
+      else if (isReleaseBranch == true) {
+        def releaseTag = evaluateReleaseTag(JOB_BRANCH, itJob.imageName)
+        remoteImageTag = releaseTag != null ? releaseTag : REPO_LATEST_BRANCH
+      }
+      
+      buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath)
 
-    echo "Property: ${props.sourceRepo.url}"
+      if ((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true)) {
+        pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
+      }
+    }
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
