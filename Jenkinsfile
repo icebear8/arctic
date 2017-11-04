@@ -66,6 +66,8 @@ node {
   
   stage("Setup build properties") {
     echo "Setup build properties"
+    def props = readJSON file: "${BUILD_PROPERTIES_FILE}"
+    
     def json = readFile(file: "${BUILD_PROPERTIES_FILE}")
     buildProperties = new JsonSlurper().parseText(json)
   }
