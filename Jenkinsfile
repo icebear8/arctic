@@ -33,6 +33,8 @@ node {
     
     buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
     
+    echo "Properties: ${buildProperties}"
+    
     for(itJob in buildProperties.dockerJobs) {
       def isReleaseBranch = "${JOB_BRANCH}".contains("${REPO_RELEASE_BRANCH_PREFIX}${itJob.imageName}")
       
