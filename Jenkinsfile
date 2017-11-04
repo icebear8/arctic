@@ -69,9 +69,6 @@ node {
     
     def json = readFile(file: "${BUILD_PROPERTIES_FILE}")
     buildProperties = new JsonSlurper().parseText(json)
-    
-    echo "URL: ${buildProperties.sourceRepo.url}"
-    echo "credentialsId: ${buildProperties.sourceRepo.credentialsId}"
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
