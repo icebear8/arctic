@@ -41,7 +41,7 @@ node {
       def isCurrentImageBranch = "${currentBuildBranch}".contains("${itJob.imageName}")
       def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
 
-      if ((isReleaseBranch == false) || (isStableBranch == false)) {
+      if ((isReleaseBranch == false) && (isStableBranch == false)) {
         buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath)
       }
       else if (((isReleaseBranch == true) || (isStableBranch == true)) && (isCurrentImageBranch == true)) {
