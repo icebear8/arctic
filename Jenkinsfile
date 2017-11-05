@@ -1,4 +1,7 @@
 node {
+  def REPO_URL = 'https://github.com/icebear8/arctic.git'
+  def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
+  
   def BUILD_PROPERTIES_FILE = "buildProperties.json"
 
   def REPO_LATEST_BRANCH = 'master'
@@ -8,14 +11,22 @@ node {
   def DOCKER_TAG_LATEST = 'latest'
   def DOCKER_TAG_STABLE = 'stable'
   
+  def currentBuildBranch = evaluateBuildBranch(REPO_LATEST_BRANCH)
+  
   def buildProperties
   def buildTasks = [:]
   def pushTasks = [:]
+  
+  stage("Checkout") {
+    echo "Checkout branch: ${currentBuildBranch}"
+
+    checkout([$class: 'GitSCM', branches: [[name: "*/${currentBuildBranch}"]],
+      doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [],
+      userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
+  }
 
   stage("Setup build") {
     echo "Setup build"
-    
-    def currentBuildBranch = evaluateBuildBranch(REPO_LATEST_BRANCH)
     def isLatestBranch = "${currentBuildBranch}".contains("${REPO_LATEST_BRANCH}")
     def remoteImageTag = DOCKER_TAG_LATEST
     
@@ -42,7 +53,9 @@ node {
         remoteImageTag = releaseTag != null ? releaseTag : REPO_LATEST_BRANCH
       }
       
-      buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath)
+      if ((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true)) {
+        buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath)
+      }
 
       if ((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true)) {
         pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
