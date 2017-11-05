@@ -1,9 +1,6 @@
 node {
   def BUILD_PROPERTIES_FILE = "buildProperties.json"
 
-  def REPO_URL = 'https://github.com/icebear8/arctic.git'
-  def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
-  
   def REPO_LATEST_BRANCH = 'master'
   def REPO_STABLE_BRANCH = 'stable'
   def REPO_RELEASE_BRANCH_PREFIX = 'release/'
