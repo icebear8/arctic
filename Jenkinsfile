@@ -27,37 +27,37 @@ node {
 
   stage("Setup build") {
     echo "Setup build"
+    
     def isLatestBranch = "${currentBuildBranch}".contains("${REPO_LATEST_BRANCH}")
-    def remoteImageTag = DOCKER_TAG_LATEST
+    def isReleaseBranch = "${currentBuildBranch}".contains("${REPO_RELEASE_BRANCH}")
+    def isStableBranch = "${currentBuildBranch}".contains("${REPO_STABLE_BRANCH}")
     
     buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
     
     echo "Properties: ${buildProperties}"
     
     for(itJob in buildProperties.dockerJobs) {
-      def isReleaseBranch =
-        "${currentBuildBranch}".contains("${itJob.imageName}") &&
-        "${currentBuildBranch}".contains("${REPO_RELEASE_BRANCH}")
-
-      def isStableBranch =
-        "${currentBuildBranch}".contains("${itJob.imageName}") &&
-        "${currentBuildBranch}".contains("${REPO_STABLE_BRANCH}")
       
+      def isCurrentImageBranch = "${currentBuildBranch}".contains("${itJob.imageName}")
       def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
       
-      if (isStableBranch == true) {
-        remoteImageTag = DOCKER_TAG_STABLE
+      if (((isReleaseBranch == true) || (isStableBranch == true)) && (isCurrentImageBranch == true)) {
+        buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath)
       }
-      else if (isReleaseBranch == true) {
-        def releaseTag = evaluateReleaseTag(currentBuildBranch, itJob.imageName)
-        remoteImageTag = releaseTag != null ? releaseTag : REPO_LATEST_BRANCH
-      }
-      
-      if ((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true)) {
+      else if ((isReleaseBranch == false) || (isStableBranch == false)) {
         buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath)
       }
 
       if ((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true)) {
+        def remoteImageTag = DOCKER_TAG_LATEST
+        if (isStableBranch == true) {
+          remoteImageTag = DOCKER_TAG_STABLE
+        }
+        else if (isReleaseBranch == true) {
+          def releaseTag = evaluateReleaseTag(currentBuildBranch, itJob.imageName)
+          remoteImageTag = releaseTag != null ? releaseTag : REPO_LATEST_BRANCH
+        }
+      
         pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
       }
     }
