@@ -3,6 +3,7 @@ node {
 
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
+  
   def REPO_LATEST_BRANCH = 'master'
   def REPO_STABLE_BRANCH = 'stable'
   def REPO_RELEASE_BRANCH_PREFIX = 'release/'
@@ -18,6 +19,8 @@ node {
 
   stage("Checkout") {
     echo "Checkout branch: ${JOB_BRANCH}"
+    
+    sh 'printenv'
 
     checkout([$class: 'GitSCM', branches: [[name: "*/${JOB_BRANCH}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [],
