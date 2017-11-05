@@ -21,7 +21,7 @@ node {
     echo "Checkout branch: ${currentBuildBranch}"
 
     checkout([$class: 'GitSCM', branches: [[name: "*/${currentBuildBranch}"]],
-      doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [],
+      doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
       userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
   }
 
