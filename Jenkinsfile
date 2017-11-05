@@ -3,12 +3,10 @@ node {
 
   def REPO_LATEST_BRANCH = 'master'
   def REPO_STABLE_BRANCH = 'stable'
-  def REPO_RELEASE_BRANCH_PREFIX = 'release/'
+  def REPO_RELEASE_BRANCH = 'release'
   
   def DOCKER_TAG_LATEST = 'latest'
   def DOCKER_TAG_STABLE = 'stable'
- 
-  def JOB_BRANCH = evaluateBuildBranch(REPO_LATEST_BRANCH)
   
   def buildProperties
   def buildTasks = [:]
@@ -17,8 +15,8 @@ node {
   stage("Setup build") {
     echo "Setup build"
     
-    def isLatestBranch = "${JOB_BRANCH}".contains("${REPO_LATEST_BRANCH}")
-    def isStableBranch = "${JOB_BRANCH}".contains("${REPO_STABLE_BRANCH}")
+    def currentBuildBranch = evaluateBuildBranch(REPO_LATEST_BRANCH)
+    def isLatestBranch = "${currentBuildBranch}".contains("${REPO_LATEST_BRANCH}")
     def remoteImageTag = DOCKER_TAG_LATEST
     
     buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
@@ -26,7 +24,13 @@ node {
     echo "Properties: ${buildProperties}"
     
     for(itJob in buildProperties.dockerJobs) {
-      def isReleaseBranch = "${JOB_BRANCH}".contains("${REPO_RELEASE_BRANCH_PREFIX}${itJob.imageName}")
+      def isReleaseBranch =
+        "${currentBuildBranch}".contains("${itJob.imageName}") &&
+        "${currentBuildBranch}".contains("${REPO_RELEASE_BRANCH}")
+
+      def isStableBranch =
+        "${currentBuildBranch}".contains("${itJob.imageName}") &&
+        "${currentBuildBranch}".contains("${REPO_STABLE_BRANCH}")
       
       def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
       
@@ -34,7 +38,7 @@ node {
         remoteImageTag = DOCKER_TAG_STABLE
       }
       else if (isReleaseBranch == true) {
-        def releaseTag = evaluateReleaseTag(JOB_BRANCH, itJob.imageName)
+        def releaseTag = evaluateReleaseTag(currentBuildBranch, itJob.imageName)
         remoteImageTag = releaseTag != null ? releaseTag : REPO_LATEST_BRANCH
       }
       
