@@ -17,18 +17,6 @@ node {
   def buildTasks = [:]
   def pushTasks = [:]
 
-  stage("Checkout") {
-    echo "Checkout branch: ${JOB_BRANCH}"
-    
-    sh 'printenv'
-    echo "params: ${params}"
-    echo "currentBuild: ${currentBuild}"
-
-    checkout([$class: 'GitSCM', branches: [[name: "*/${JOB_BRANCH}"]],
-      doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [],
-      userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
-  }
-  
   stage("Setup build") {
     echo "Setup build"
     
