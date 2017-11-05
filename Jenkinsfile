@@ -21,6 +21,8 @@ node {
     echo "Checkout branch: ${JOB_BRANCH}"
     
     sh 'printenv'
+    echo "params: ${params}"
+    echo "currentBuild: ${currentBuild}"
 
     checkout([$class: 'GitSCM', branches: [[name: "*/${JOB_BRANCH}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [],
