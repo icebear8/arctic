@@ -57,7 +57,7 @@ class RemoteConnection:
             logging.exception(ex)
             return
 
-        logging.debug("Connect to: " + self._ip)
+        logging.info("Connect to: " + self._ip)
         
         self._socket.connect((self._ip, self._port))
         self._listenerThread = ListenerThread(self._socket, self.data)
@@ -65,11 +65,13 @@ class RemoteConnection:
         self._listenerThread.start()
 
     def disconnect(self):
-        logging.info("Disconnect")
         if self._isConnected is True:
+            logging.info("Disconnect")
             self._listenerThread.abort()
             self._listenerThread.join()
             self._socket.close()
+
+        logging.info("Disconnected")
         self._isConnected = False
 
     def send(self, message):
