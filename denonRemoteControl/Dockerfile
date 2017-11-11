@@ -15,9 +15,9 @@ RUN mkdir -p ${app_dir}
 RUN chown -R ${user} ${app_dir}
 
 USER ${user}
-  
-RUN git clone https://github.com/icebear8/DenonRemoteControl.git /${app_dir}
+
+COPY ./DenonControlService/DenonControlService/* /${app_dir}/
   
 EXPOSE 5000
   
-CMD ["python3", "/service/DenonControlService/DenonControlService/DenonControlService.py", "SERVICE"]
+CMD ["python3", "/${app_dir}/DenonControlService.py", "SERVICE"]

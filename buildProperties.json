@@ -4,7 +4,7 @@
   },
   "dockerJobs": [
     {"imageName": "nginx",        "dockerfilePath": "./nginx" },
-    {"imageName": "denonservice", "dockerfilePath": "./denonRemoteControl/service" },
+    {"imageName": "denonservice", "dockerfilePath": "./denonRemoteControl" },
     {"imageName": "grav",         "dockerfilePath": "./grav" }
   ]
 }
