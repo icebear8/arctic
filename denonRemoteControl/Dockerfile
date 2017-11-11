@@ -12,11 +12,12 @@ RUN pip3 install flask
 
 RUN adduser -S -D ${user}
 RUN mkdir -p ${app_dir}
+
+COPY ./DenonControlService/DenonControlService/* /${app_dir}/
+
 RUN chown -R ${user} ${app_dir}
 
 USER ${user}
-
-COPY ./DenonControlService/DenonControlService/* /${app_dir}/
   
 EXPOSE 5000
   
