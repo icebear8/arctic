@@ -17,7 +17,6 @@ RUN chown -R ${user} ${app_dir}
 USER ${user}
 
 COPY ./DenonControlService/DenonControlService/* /${app_dir}/
-RUN git clone https://github.com/icebear8/DenonRemoteControl.git /${app_dir}
   
 EXPOSE 5000
   
