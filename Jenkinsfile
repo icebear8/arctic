@@ -121,7 +121,7 @@ def createDockerBuildStep(imageId, dockerFilePath) {
   return {
     stage("Build image ${imageId}") {
       echo "Build image: ${imageId} with dockerfile ${dockerFilePath}"
-      docker.build("${imageId}", "${dockerFilePath}")
+      docker.build("${imageId}", "--no-cache --rm ${dockerFilePath}")
     }
   }
 }
