@@ -10,6 +10,7 @@ node {
   
   def DOCKER_TAG_LATEST = 'latest'
   def DOCKER_TAG_STABLE = 'stable'
+  def DOCKER_NO_TAG_BUILD = 'build'
   
   def currentBuildBranch = evaluateBuildBranch(REPO_LATEST_BRANCH)
   
@@ -50,6 +51,7 @@ node {
 
       def remoteImageTag = DOCKER_TAG_LATEST
       if (isLatestBranch == true) {
+        remoteImageTag = DOCKER_TAG_LATEST
         pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
       }
       else if (((isReleaseBranch == true) || (isStableBranch == true)) && (isCurrentImageBranch == true)) {
@@ -61,6 +63,10 @@ node {
           remoteImageTag = releaseTag != null ? releaseTag : DOCKER_TAG_LATEST
         }
       
+        pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
+      }
+      else if ((isReleaseBranch == false) && (isStableBranch == false)) {
+        remoteImageTag = DOCKER_NO_TAG_BUILD
         pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
       }
     }
