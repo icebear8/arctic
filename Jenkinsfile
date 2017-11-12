@@ -122,7 +122,7 @@ def createDockerBuildStep(imageId, dockerFilePath, isRebuild) {
   def buildArgs = "${dockerFilePath}"
   
   if (isRebuild == true) {
-    buildArgs = "--no-cache --rm ${dockerFilePath}"
+    buildArgs = "--no-cache ${dockerFilePath}"
   }
 
   return {
