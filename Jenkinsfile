@@ -42,13 +42,10 @@ node {
       def isCurrentImageBranch = "${currentBuildBranch}".contains("${itJob.imageName}")
       def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
 
-      if ((isReleaseBranch == false) && (isStableBranch == false)) {
+      if (isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) == true) {
         buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath)
       }
-      else if (((isReleaseBranch == true) || (isStableBranch == true)) && (isCurrentImageBranch == true)) {
-        buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath)
-      }
-
+      
       def remoteImageTag = DOCKER_TAG_LATEST
       if (isLatestBranch == true) {
         remoteImageTag = DOCKER_TAG_LATEST
@@ -80,6 +77,17 @@ node {
       parallel pushTasks
     }
   }
+}
+
+def isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) {
+  if (isCurrentImageBranch == true) {
+    return true
+  }
+  else if ((isStableBranch == false) && (isReleaseBranch == false)) {
+    return true
+  }
+  
+  return false
 }
 
 def evaluateBuildBranch(defaultValue) {
