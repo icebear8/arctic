@@ -43,7 +43,8 @@ node {
       def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
 
       if (isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) == true) {
-        buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath)
+        def isRebuildRequested = ((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true))
+        buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequested)
       }
       
       def remoteImageTag = DOCKER_NO_TAG_BUILD
@@ -117,11 +118,17 @@ def evaluateReleaseTag(releaseBranch, imageName) {
   return releaseBranch.substring(indexOfImage + imageName.length() + 1) // +1 because of additional sign between image id and release tag
 }
 
-def createDockerBuildStep(imageId, dockerFilePath) {
+def createDockerBuildStep(imageId, dockerFilePath, isRebuild) {
+  def buildArgs = "${dockerFilePath}"
+  
+  if (isRebuild == true) {
+    buildArgs = "--no-cache --rm ${dockerFilePath}"
+  }
+
   return {
     stage("Build image ${imageId}") {
       echo "Build image: ${imageId} with dockerfile ${dockerFilePath}"
-      docker.build("${imageId}", "--no-cache --rm ${dockerFilePath}")
+      docker.build("${imageId}", "${buildArgs}")
     }
   }
 }
