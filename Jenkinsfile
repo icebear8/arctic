@@ -43,8 +43,7 @@ node {
       def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
 
       if (isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) == true) {
-        def isRebuildRequested = ((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true))
-        buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequested)
+        buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
       }
       
       def remoteImageTag = DOCKER_NO_TAG_BUILD
@@ -81,6 +80,14 @@ def isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) {
     return true
   }
   else if ((isStableBranch == false) && (isReleaseBranch == false)) {
+    return true
+  }
+  
+  return false
+}
+
+def isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch) {
+  if (((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true)) {
     return true
   }
   
