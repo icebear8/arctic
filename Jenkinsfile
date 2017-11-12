@@ -18,6 +18,8 @@ node {
   def buildTasks = [:]
   def pushTasks = [:]
   
+  properties([buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))])
+  
   stage("Checkout") {
     echo "Checkout branch: ${currentBuildBranch}"
 
@@ -43,8 +45,7 @@ node {
       def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
 
       if (isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) == true) {
-        def isRebuildRequested = ((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true))
-        buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequested)
+        buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
       }
       
       def remoteImageTag = DOCKER_NO_TAG_BUILD
@@ -87,6 +88,14 @@ def isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) {
   return false
 }
 
+def isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch) {
+  if ((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true)) {
+    return true
+  }
+  
+  return false
+}
+
 def isPushRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch, isLatestBranch) {
   
   if (((isReleaseBranch == false) && (isStableBranch == false)) || (isLatestBranch == true)) {
@@ -122,7 +131,7 @@ def createDockerBuildStep(imageId, dockerFilePath, isRebuild) {
   def buildArgs = "${dockerFilePath}"
   
   if (isRebuild == true) {
-    buildArgs = "--no-cache ${dockerFilePath}"
+    buildArgs = "--no-cache --rm ${dockerFilePath}"
   }
 
   return {
