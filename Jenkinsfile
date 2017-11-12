@@ -91,7 +91,7 @@ def isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) {
 }
 
 def isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch) {
-  if (((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true)) {
+  if ((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true)) {
     return true
   }
   
