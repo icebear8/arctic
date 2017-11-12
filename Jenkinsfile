@@ -18,7 +18,12 @@ node {
   def buildTasks = [:]
   def pushTasks = [:]
   
-  properties [[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '5', numToKeepStr: '5']], [$class: 'ScannerJobProperty', doNotScan: false]]
+  properties[
+    [$class: 'BuildDiscarderProperty', strategy:
+      [$class: 'LogRotator', daysToKeepStr: '5', numToKeepStr: '5']
+    ],
+    [$class: 'ScannerJobProperty', doNotScan: false]
+  ]
   
   stage("Checkout") {
     echo "Checkout branch: ${currentBuildBranch}"
