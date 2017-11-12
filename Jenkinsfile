@@ -18,6 +18,10 @@ node {
   def buildTasks = [:]
   def pushTasks = [:]
   
+  options {
+     buildDiscarder(logRotator(numToKeepStr: '2'))
+  }
+  
   stage("Checkout") {
     echo "Checkout branch: ${currentBuildBranch}"
 
