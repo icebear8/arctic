@@ -65,6 +65,8 @@ class RemoteConnection:
         self._listenerThread.start()
 
     def disconnect(self):
+        logging.info("Disconnect method called")
+        
         if self._isConnected is True:
             logging.info("Disconnect")
             self._listenerThread.abort()
