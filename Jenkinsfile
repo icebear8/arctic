@@ -150,7 +150,7 @@ def createDockerPushStep(imageId, remoteTag) {
       
       docker.image("${imageId}").push("${remoteTag}")
       
-      sh 'docker rmi "${imageId}"'
+      sh "docker rmi ${imageId}"
     }
   }
 }
