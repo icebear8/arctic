@@ -22,6 +22,8 @@ node {
   
   stage("Checkout") {
     echo "Checkout branch: ${currentBuildBranch}"
+    echo "Custom build tag: ${env.BRANCH_NAME}_${env.BUILD_NUMBER}"
+    echo "Pipeline build tag: ${env.BUILD_TAG}"
 
     checkout([$class: 'GitSCM', branches: [[name: "*/${currentBuildBranch}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
