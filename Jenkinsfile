@@ -42,7 +42,8 @@ node {
     for(itJob in buildProperties.dockerJobs) {
       
       def isCurrentImageBranch = "${currentBuildBranch}".contains("${itJob.imageName}")
-      def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
+      def localImageTag = "${env.BRANCH_NAME}_${env.BUILD_NUMBER}".replaceAll('/', '-')
+      def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${localImageTag}"
 
       if (isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) == true) {
         buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
