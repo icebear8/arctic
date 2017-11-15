@@ -64,7 +64,7 @@ node {
       
       if (isPushRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch, isLatestBranch) == true) {
         pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
-      }
+      }      
     }
   }
     
@@ -149,6 +149,8 @@ def createDockerPushStep(imageId, remoteTag) {
       echo "Push image: ${imageId} to remote with tag ${remoteTag}"
       
       docker.image("${imageId}").push("${remoteTag}")
+      
+      sh 'docker rmi ${imageId}'
     }
   }
 }
