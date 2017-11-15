@@ -22,8 +22,6 @@ node {
   
   stage("Checkout") {
     echo "Checkout branch: ${currentBuildBranch}"
-    echo "Custom build tag: ${env.BRANCH_NAME}_${env.BUILD_NUMBER}"
-    echo "Pipeline build tag: ${env.BUILD_TAG}"
 
     checkout([$class: 'GitSCM', branches: [[name: "*/${currentBuildBranch}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
@@ -44,7 +42,7 @@ node {
     for(itJob in buildProperties.dockerJobs) {
       
       def isCurrentImageBranch = "${currentBuildBranch}".contains("${itJob.imageName}")
-      def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${DOCKER_TAG_LATEST}"
+      def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${env.BRANCH_NAME}_${env.BUILD_NUMBER}"
 
       if (isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) == true) {
         buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
