@@ -18,7 +18,8 @@ node {
   def buildTasks = [:]
   def pushTasks = [:]
   
-  properties([buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))])
+  properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '5', daysToKeepStr: '5',
+                                        numToKeepStr: '5', artifactNumToKeepStr: '5'))])
   
   stage("Checkout") {
     echo "Checkout branch: ${currentBuildBranch}"
