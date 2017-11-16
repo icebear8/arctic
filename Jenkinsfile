@@ -73,14 +73,18 @@ node {
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
-    stage("Build") {
-      parallel buildTasks
+    try {
+      stage("Build") {
+        parallel buildTasks
+      }
+      stage("Push") {
+        parallel pushTasks
+      }
     }
-    stage("Push") {
-      parallel pushTasks
-    }
-    stage("Clean up") {
-      parallel postTasks
+    finally {
+      stage("Clean up") {
+        parallel postTasks
+      }
     }
   }
 }
