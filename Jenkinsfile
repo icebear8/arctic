@@ -17,6 +17,7 @@ node {
   def buildProperties
   def buildTasks = [:]
   def pushTasks = [:]
+  def postTasks = [:]
   
   properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '5', daysToKeepStr: '5',
                                         numToKeepStr: '5', artifactNumToKeepStr: '5'))])
@@ -65,7 +66,9 @@ node {
       
       if (isPushRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch, isLatestBranch) == true) {
         pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
-      }      
+      }
+      
+      postTasks[itJob.imageName] = createRemoveImageStep(localImageId)
     }
   }
     
@@ -75,6 +78,9 @@ node {
     }
     stage("Push") {
       parallel pushTasks
+    }
+    stage("Clean up") {
+      parallel postTasks
     }
   }
 }
@@ -150,7 +156,14 @@ def createDockerPushStep(imageId, remoteTag) {
       echo "Push image: ${imageId} to remote with tag ${remoteTag}"
       
       docker.image("${imageId}").push("${remoteTag}")
-      
+    }
+  }
+}
+
+createRemoveImageStep(imageId) {
+return {
+    stage("Remove image ${imageId} to ${remoteTag}") {
+      echo "Remove image: ${imageId}"
       sh "docker rmi ${imageId}"
     }
   }
