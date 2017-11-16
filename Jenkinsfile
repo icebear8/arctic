@@ -1,7 +1,6 @@
 node {
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
-  def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
-  
+  def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
   def BUILD_PROPERTIES_FILE = "buildProperties.json"
 
   def REPO_LATEST_BRANCH = 'master'
@@ -12,17 +11,22 @@ node {
   def DOCKER_TAG_STABLE = 'stable'
   def DOCKER_NO_TAG_BUILD = 'build'
   
+  properties([
+    pipelineTriggers([cron('H 15 * * 2')]),
+    buildDiscarder(logRotator(
+      artifactDaysToKeepStr: '5', artifactNumToKeepStr: '5',
+      numToKeepStr: '5', daysToKeepStr: '5'))
+  ])
+  
   def currentBuildBranch = evaluateBuildBranch(REPO_LATEST_BRANCH)
   
   def buildProperties
   def buildTasks = [:]
   def pushTasks = [:]
-  
-  properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '5', daysToKeepStr: '5',
-                                        numToKeepStr: '5', artifactNumToKeepStr: '5'))])
+  def postTasks = [:]
   
   stage("Checkout") {
-    echo "Checkout branch: ${currentBuildBranch}"
+    echo "Current branch: ${currentBuildBranch}"
 
     checkout([$class: 'GitSCM', branches: [[name: "*/${currentBuildBranch}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
@@ -43,8 +47,9 @@ node {
     for(itJob in buildProperties.dockerJobs) {
       
       def isCurrentImageBranch = "${currentBuildBranch}".contains("${itJob.imageName}")
+      def imageId = "${buildProperties.dockerHub.user}/${itJob.imageName}"
       def localImageTag = "${env.BRANCH_NAME}_${env.BUILD_NUMBER}".replaceAll('/', '-')
-      def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${localImageTag}"
+      def localImageId = "${imageId}:${localImageTag}"
 
       if (isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) == true) {
         buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
@@ -65,16 +70,25 @@ node {
       
       if (isPushRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch, isLatestBranch) == true) {
         pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
-      }      
+      }
+      
+      postTasks[itJob.imageName] = createRemoveImageStep(imageId, localImageTag, remoteImageTag)
     }
   }
     
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
-    stage("Build") {
-      parallel buildTasks
+    try {
+      stage("Build") {
+        parallel buildTasks
+      }
+      stage("Push") {
+        parallel pushTasks
+      }
     }
-    stage("Push") {
-      parallel pushTasks
+    finally {
+      stage("Clean up") {
+        parallel postTasks
+      }
     }
   }
 }
@@ -150,8 +164,16 @@ def createDockerPushStep(imageId, remoteTag) {
       echo "Push image: ${imageId} to remote with tag ${remoteTag}"
       
       docker.image("${imageId}").push("${remoteTag}")
-      
-      sh "docker rmi ${imageId}"
+    }
+  }
+}
+
+def createRemoveImageStep(imageId, localImageTag, remoteImageTag) {
+return {
+    stage("Remove image ${imageId}") {
+      echo "Remove image: ${imageId}, tags: ${localImageTag}, ${remoteImageTag}"
+      sh "docker rmi ${imageId}:${localImageTag}"
+      sh "docker rmi ${imageId}:${remoteImageTag}"
     }
   }
 }
