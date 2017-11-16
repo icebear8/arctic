@@ -160,7 +160,7 @@ def createDockerPushStep(imageId, remoteTag) {
   }
 }
 
-createRemoveImageStep(imageId) {
+def createRemoveImageStep(imageId) {
 return {
     stage("Remove image ${imageId} to ${remoteTag}") {
       echo "Remove image: ${imageId}"
