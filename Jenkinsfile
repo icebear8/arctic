@@ -19,10 +19,12 @@ node {
   def pushTasks = [:]
   def postTasks = [:]
   
-  properties([buildDiscarder(logRotator(
-    artifactDaysToKeepStr: '5', artifactNumToKeepStr: '5',
-    numToKeepStr: '5', daysToKeepStr: '5'
-  ))])
+  properties([
+    pipelineTriggers([cron 'H 15 * * 2']),
+    buildDiscarder(logRotator(
+      artifactDaysToKeepStr: '5', artifactNumToKeepStr: '5',
+      numToKeepStr: '5', daysToKeepStr: '5')
+  )])
   
   stage("Checkout") {
     echo "Current branch: ${currentBuildBranch}"
