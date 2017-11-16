@@ -1,7 +1,6 @@
 node {
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
-  def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
-  
+  def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
   def BUILD_PROPERTIES_FILE = "buildProperties.json"
 
   def REPO_LATEST_BRANCH = 'master'
@@ -12,19 +11,19 @@ node {
   def DOCKER_TAG_STABLE = 'stable'
   def DOCKER_NO_TAG_BUILD = 'build'
   
+  properties([
+    pipelineTriggers([cron('H 15 * * 2')]),
+    buildDiscarder(logRotator(
+      artifactDaysToKeepStr: '5', artifactNumToKeepStr: '5',
+      numToKeepStr: '5', daysToKeepStr: '5'))
+  ])
+  
   def currentBuildBranch = evaluateBuildBranch(REPO_LATEST_BRANCH)
   
   def buildProperties
   def buildTasks = [:]
   def pushTasks = [:]
   def postTasks = [:]
-  
-  properties([
-    pipelineTriggers([cron('H 15 * * 2')]),
-    buildDiscarder(logRotator(
-      artifactDaysToKeepStr: '5', artifactNumToKeepStr: '5',
-      numToKeepStr: '5', daysToKeepStr: '5'))
-    ])
   
   stage("Checkout") {
     echo "Current branch: ${currentBuildBranch}"
