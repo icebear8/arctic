@@ -162,7 +162,7 @@ def createDockerPushStep(imageId, remoteTag) {
 
 def createRemoveImageStep(imageId) {
 return {
-    stage("Remove image ${imageId} to ${remoteTag}") {
+    stage("Remove image ${imageId}") {
       echo "Remove image: ${imageId}"
       sh "docker rmi ${imageId}"
     }
