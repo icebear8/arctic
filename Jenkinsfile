@@ -44,8 +44,9 @@ node {
     for(itJob in buildProperties.dockerJobs) {
       
       def isCurrentImageBranch = "${currentBuildBranch}".contains("${itJob.imageName}")
+      def imageId = "${buildProperties.dockerHub.user}/${itJob.imageName}"
+      def localImageId = "${imageId}:${localImageTag}"
       def localImageTag = "${env.BRANCH_NAME}_${env.BUILD_NUMBER}".replaceAll('/', '-')
-      def localImageId = "${buildProperties.dockerHub.user}/${itJob.imageName}:${localImageTag}"
 
       if (isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) == true) {
         buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
@@ -68,7 +69,7 @@ node {
         pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
       }
       
-      postTasks[itJob.imageName] = createRemoveImageStep(localImageId)
+      postTasks[itJob.imageName] = createRemoveImageStep(imageId, localImageTag, remoteImageTag)
     }
   }
     
@@ -164,11 +165,12 @@ def createDockerPushStep(imageId, remoteTag) {
   }
 }
 
-def createRemoveImageStep(imageId) {
+def createRemoveImageStep(imageId, localImageTag, remoteImageTag) {
 return {
     stage("Remove image ${imageId}") {
-      echo "Remove image: ${imageId}"
-      sh "docker rmi ${imageId}"
+      echo "Remove image: ${imageId}, tags: ${localImageTag}, ${remoteImageTag}"
+      sh "docker rmi ${imageId}:localImageTag"
+      sh "docker rmi ${imageId}:remoteImageTag"
     }
   }
 }
