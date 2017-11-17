@@ -45,7 +45,7 @@ node {
       def localImageId = "${imageId}:${localImageTag}"
 
       if (isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) == true) {
-        buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
+        buildTasks[itJob.imageName] = imageBuild.createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
       }
       
       def remoteImageTag = dockerUtils.tagLocalBuild()
@@ -62,10 +62,10 @@ node {
       }
       
       if (isPushRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch, isLatestBranch) == true) {
-        pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
+        pushTasks[itJob.imageName] = imageBuild.createDockerPushStep(localImageId, remoteImageTag)
       }
       
-      postTasks[itJob.imageName] = createRemoveImageStep(imageId, localImageTag, remoteImageTag)
+      postTasks[itJob.imageName] = imageBuild.createRemoveImageStep(imageId, localImageTag, remoteImageTag)
     }
   }
     
@@ -134,39 +134,4 @@ def evaluateReleaseTag(releaseBranch, imageName) {
   }
   
   return releaseBranch.substring(indexOfImage + imageName.length() + 1) // +1 because of additional sign between image id and release tag
-}
-
-def createDockerBuildStep(imageId, dockerFilePath, isRebuild) {
-  def buildArgs = "${dockerFilePath}"
-  
-  if (isRebuild == true) {
-    buildArgs = "--no-cache --rm ${dockerFilePath}"
-  }
-
-  return {
-    stage("Build image ${imageId}") {
-      echo "Build image: ${imageId} with dockerfile ${dockerFilePath}"
-      docker.build("${imageId}", "${buildArgs}")
-    }
-  }
-}
-
-def createDockerPushStep(imageId, remoteTag) {
-  return {
-    stage("Push image ${imageId} to ${remoteTag}") {
-      echo "Push image: ${imageId} to remote with tag ${remoteTag}"
-      
-      docker.image("${imageId}").push("${remoteTag}")
-    }
-  }
-}
-
-def createRemoveImageStep(imageId, localImageTag, remoteImageTag) {
-return {
-    stage("Remove image ${imageId}") {
-      echo "Remove image: ${imageId}, tags: ${localImageTag}, ${remoteImageTag}"
-      sh "docker rmi ${imageId}:${localImageTag}"
-      sh "docker rmi ${imageId}:${remoteImageTag}"
-    }
-  }
 }
