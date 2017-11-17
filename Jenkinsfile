@@ -1,5 +1,5 @@
 node {
-  @Library('common-pipeline-library')
+  @Library('common-pipeline-library') _
   def dockerUtils = new docker.utils()
 
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
