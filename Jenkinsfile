@@ -6,10 +6,6 @@ node {
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
   def BUILD_PROPERTIES_FILE = "buildProperties.json"
   
-  def DOCKER_TAG_LATEST = 'latest'
-  def DOCKER_TAG_STABLE = 'stable'
-  def DOCKER_NO_TAG_BUILD = 'build'
-  
   properties([
     pipelineTriggers([cron('H 15 * * 2')]),
     buildDiscarder(logRotator(
@@ -17,7 +13,7 @@ node {
       numToKeepStr: '5', daysToKeepStr: '5'))
   ])
   
-  def currentBuildBranch = evaluateBuildBranch(repository.latestBranch())
+  def currentBuildBranch = evaluateBuildBranch(repository.branchLatest())
   
   def buildProperties
   def buildTasks = [:]
@@ -28,7 +24,7 @@ node {
     echo "Current branch: ${currentBuildBranch}"
     
     dockerUtils.helloPipelineLibrary()
-    echo "Print the var: ${repository.latestBranch()}"
+    echo "Print the var: ${repository.branchLatest()}"
 
     checkout([$class: 'GitSCM', branches: [[name: "*/${currentBuildBranch}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
@@ -38,9 +34,9 @@ node {
   stage("Setup build") {
     echo "Setup build"
     
-    def isLatestBranch = "${currentBuildBranch}".contains("${repository.latestBranch()}")
-    def isReleaseBranch = "${currentBuildBranch}".contains("${repository.releaseBranch()}")
-    def isStableBranch = "${currentBuildBranch}".contains("${repository.stableBranch()}")
+    def isLatestBranch = "${currentBuildBranch}".contains("${repository.branchLatest()}")
+    def isReleaseBranch = "${currentBuildBranch}".contains("${repository.branchRelease()}")
+    def isStableBranch = "${currentBuildBranch}".contains("${repository.branchStable()}")
     
     buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
     
@@ -57,17 +53,17 @@ node {
         buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
       }
       
-      def remoteImageTag = DOCKER_NO_TAG_BUILD
+      def remoteImageTag = docker.tagLocalBuild()
       
       if (isLatestBranch == true) {
-        remoteImageTag = DOCKER_TAG_LATEST
+        remoteImageTag = docker.tagLatest()
       }
       else if (isStableBranch == true) {
-        remoteImageTag = DOCKER_TAG_STABLE
+        remoteImageTag = docker.tagStable()
       }
       else if (isReleaseBranch == true) {
         def releaseTag = evaluateReleaseTag(currentBuildBranch, itJob.imageName)
-        remoteImageTag = releaseTag != null ? releaseTag : DOCKER_TAG_LATEST
+        remoteImageTag = releaseTag != null ? releaseTag : docker.tagLatest()
       }
       
       if (isPushRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch, isLatestBranch) == true) {
