@@ -40,8 +40,8 @@ node {
       def localImageTag = "${env.BRANCH_NAME}_${env.BUILD_NUMBER}".replaceAll('/', '-')
       def localImageId = "${imageId}:${localImageTag}"
 
-      if (isBuildRequired(isCurrentImageBranch, repositoryUtils.isStableBranch(), repositoryUtils.isReleaseBranch()) == true) {
-        buildTasks[itJob.imageName] = dockerStep.buildImage(localImageId, itJob.dockerfilePath, isRebuildRequired(repositoryUtils.isLatestBranch(), repositoryUtils.isStableBranch(), repositoryUtils.isReleaseBranch()))
+      if (isBuildRequired(isCurrentImageBranch) == true) {
+        buildTasks[itJob.imageName] = dockerStep.buildImage(localImageId, itJob.dockerfilePath, isRebuildRequired())
       }
       
       def remoteImageTag = dockerUtils.tagLocalBuild()
@@ -57,7 +57,7 @@ node {
         remoteImageTag = releaseTag != null ? releaseTag : dockerUtils.tagLatest()
       }
       
-      if (isPushRequired(isCurrentImageBranch, repositoryUtils.isStableBranch(), repositoryUtils.isReleaseBranch(), repositoryUtils.isLatestBranch()) == true) {
+      if (isPushRequired(isCurrentImageBranch) == true) {
         pushTasks[itJob.imageName] = dockerStep.pushImage(localImageId, remoteImageTag)
       }
       
@@ -82,7 +82,7 @@ node {
   }
 }
 
-def isBuildRequired(isCurrentImageBranch, repositoryUtils.isStableBranch(), repositoryUtils.isReleaseBranch()) {
+def isBuildRequired(isCurrentImageBranch) {
   if (isCurrentImageBranch == true) {
     return true
   }
@@ -93,7 +93,7 @@ def isBuildRequired(isCurrentImageBranch, repositoryUtils.isStableBranch(), repo
   return false
 }
 
-def isRebuildRequired(repositoryUtils.isLatestBranch(), repositoryUtils.isStableBranch(), repositoryUtils.isReleaseBranch()) {
+def isRebuildRequired() {
   if ((repositoryUtils.isLatestBranch() == true) || (repositoryUtils.isStableBranch() == true) || (repositoryUtils.isReleaseBranch() == true)) {
     return true
   }
@@ -101,7 +101,7 @@ def isRebuildRequired(repositoryUtils.isLatestBranch(), repositoryUtils.isStable
   return false
 }
 
-def isPushRequired(isCurrentImageBranch, repositoryUtils.isStableBranch(), repositoryUtils.isReleaseBranch(), repositoryUtils.isLatestBranch()) {
+def isPushRequired(isCurrentImageBranch) {
   
   if (((repositoryUtils.isReleaseBranch() == false) && (repositoryUtils.isStableBranch() == false)) || (repositoryUtils.isLatestBranch() == true)) {
     return true
