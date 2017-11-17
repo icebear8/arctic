@@ -1,5 +1,5 @@
 node {
-  @Library('common-pipeline-library') _
+  @Library('common-pipeline-library')
   import icebear8.docker.*
   
   def dockerStep = new icebear8.docker.buildSteps()
