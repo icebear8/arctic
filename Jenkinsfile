@@ -1,6 +1,6 @@
 node {
   @Library('common-pipeline-library') _
-  def dockerUtils = new docker.utils()
+  def someHelper = new icebear8.docker.utils()
 
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
@@ -13,7 +13,7 @@ node {
       numToKeepStr: '5', daysToKeepStr: '5'))
   ])
   
-  def currentBuildBranch = evaluateBuildBranch(repository.branchLatest())
+  def currentBuildBranch = evaluateBuildBranch(repositoryUtils.branchLatest())
   
   def buildProperties
   def buildTasks = [:]
@@ -23,8 +23,8 @@ node {
   stage("Checkout") {
     echo "Current branch: ${currentBuildBranch}"
     
-    dockerUtils.helloPipelineLibrary()
-    echo "Print the var: ${repository.branchLatest()}"
+    someHelper.helloPipelineLibrary()
+    echo "Print the var: ${repositoryUtils.branchLatest()}"
 
     checkout([$class: 'GitSCM', branches: [[name: "*/${currentBuildBranch}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
@@ -34,9 +34,9 @@ node {
   stage("Setup build") {
     echo "Setup build"
     
-    def isLatestBranch = "${currentBuildBranch}".contains("${repository.branchLatest()}")
-    def isReleaseBranch = "${currentBuildBranch}".contains("${repository.branchRelease()}")
-    def isStableBranch = "${currentBuildBranch}".contains("${repository.branchStable()}")
+    def isLatestBranch = "${currentBuildBranch}".contains("${repositoryUtils.branchLatest()}")
+    def isReleaseBranch = "${currentBuildBranch}".contains("${repositoryUtils.branchRelease()}")
+    def isStableBranch = "${currentBuildBranch}".contains("${repositoryUtils.branchStable()}")
     
     buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
     
@@ -53,17 +53,17 @@ node {
         buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
       }
       
-      def remoteImageTag = docker.tagLocalBuild()
+      def remoteImageTag = dockerUtils.tagLocalBuild()
       
       if (isLatestBranch == true) {
-        remoteImageTag = docker.tagLatest()
+        remoteImageTag = dockerUtils.tagLatest()
       }
       else if (isStableBranch == true) {
-        remoteImageTag = docker.tagStable()
+        remoteImageTag = dockerUtils.tagStable()
       }
       else if (isReleaseBranch == true) {
         def releaseTag = evaluateReleaseTag(currentBuildBranch, itJob.imageName)
-        remoteImageTag = releaseTag != null ? releaseTag : docker.tagLatest()
+        remoteImageTag = releaseTag != null ? releaseTag : dockerUtils.tagLatest()
       }
       
       if (isPushRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch, isLatestBranch) == true) {
