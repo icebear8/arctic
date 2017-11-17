@@ -32,7 +32,7 @@ node {
     echo "Current branch: ${currentBuildBranch}"
     
     dockerUtils.helloPipelineLibrary()
-    echo "Print the var: ${repository.latestBranch}"
+    echo "Print the var: ${repository.latestBranch()}"
 
     checkout([$class: 'GitSCM', branches: [[name: "*/${currentBuildBranch}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
