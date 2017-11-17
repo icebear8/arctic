@@ -13,7 +13,7 @@ node {
       numToKeepStr: '5', daysToKeepStr: '5'))
   ])
   
-  def currentBuildBranch = evaluateCurrentBuildBranch()
+  def currentBuildBranch = repositoryUtils.evaluateCurrentBuildBranch()
   
   def buildProperties
   def buildTasks = [:]
