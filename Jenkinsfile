@@ -1,5 +1,6 @@
 node {
   @Library('common-pipeline-library')
+  import docker.*
   def dockerUtils = new docker.utils()
 
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
@@ -32,6 +33,7 @@ node {
     echo "Current branch: ${currentBuildBranch}"
     
     dockerUtils.helloPipelineLibrary()
+    echo "Print the var: ${dockerUtils.SOME_EXTERNAL_VAR}"
 
     checkout([$class: 'GitSCM', branches: [[name: "*/${currentBuildBranch}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
