@@ -22,7 +22,9 @@ node {
       userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
   }
   
-  tmpExtractor.createSetupStage()
+  def buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
+  
+  tmpExtractor.createSetupStage(buildProperties)
   tmpExtractor.createParallelSteps()
 }
 
