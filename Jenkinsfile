@@ -1,5 +1,7 @@
 node {
   @Library('common-pipeline-library') _
+  import icebear8.docker.*
+  
   def dockerStep = new icebear8.docker.buildSteps()
   def tmpExtractor = new icebear8.docker.tempExtraction()
 
