@@ -27,15 +27,15 @@ node {
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
     try {
       stage("Build") {
-        parallel setupBuildTasks(buildProperties)
+        parallel tmpExtractor.setupBuildTasks(buildProperties)
       }
       stage("Push") {
-        parallel setupPushTasks(buildProperties)
+        parallel tmpExtractor.setupPushTasks(buildProperties)
       }
     }
     finally {
       stage("Clean up") {
-        parallel setupPostTasks(buildProperties)
+        parallel tmpExtractor.setupPostTasks(buildProperties)
       }
     }
   }
