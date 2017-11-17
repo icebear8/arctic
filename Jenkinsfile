@@ -29,6 +29,8 @@ node {
   stage("This is a test stage") {
     echo "Just be here and print out some text"
   }
+  
+  dockerStep.createDummyStage("Another step", "Another print")
 
   stage("Setup build") {
     echo "Setup build"
