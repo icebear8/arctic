@@ -1,4 +1,8 @@
+@Library('common-pipeline-library')
+
 node {
+  def dockerUtils = new docker.utils()
+
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
   def BUILD_PROPERTIES_FILE = "buildProperties.json"
@@ -27,6 +31,8 @@ node {
   
   stage("Checkout") {
     echo "Current branch: ${currentBuildBranch}"
+    
+    dockerUtils.helloPipelineLibrary()
 
     checkout([$class: 'GitSCM', branches: [[name: "*/${currentBuildBranch}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
