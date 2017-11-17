@@ -25,6 +25,10 @@ node {
       doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
       userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
   }
+  
+  stage("This is a test stage") {
+    echo "Just be here and print out some text"
+  }
 
   stage("Setup build") {
     echo "Setup build"
