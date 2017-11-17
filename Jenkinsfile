@@ -1,15 +1,10 @@
 node {
+  @Library('common-pipeline-library') _
+  def dockerStep = new icebear8.docker.buildSteps()
+
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
   def BUILD_PROPERTIES_FILE = "buildProperties.json"
-
-  def REPO_LATEST_BRANCH = 'master'
-  def REPO_STABLE_BRANCH = 'stable'
-  def REPO_RELEASE_BRANCH = 'release'
-  
-  def DOCKER_TAG_LATEST = 'latest'
-  def DOCKER_TAG_STABLE = 'stable'
-  def DOCKER_NO_TAG_BUILD = 'build'
   
   properties([
     pipelineTriggers([cron('H 15 * * 2')]),
@@ -18,17 +13,15 @@ node {
       numToKeepStr: '5', daysToKeepStr: '5'))
   ])
   
-  def currentBuildBranch = evaluateBuildBranch(REPO_LATEST_BRANCH)
-  
   def buildProperties
   def buildTasks = [:]
   def pushTasks = [:]
   def postTasks = [:]
   
   stage("Checkout") {
-    echo "Current branch: ${currentBuildBranch}"
+    echo "Current branch: ${repositoryUtils.currentBuildBranch()}"
 
-    checkout([$class: 'GitSCM', branches: [[name: "*/${currentBuildBranch}"]],
+    checkout([$class: 'GitSCM', branches: [[name: "*/${repositoryUtils.currentBuildBranch()}"]],
       doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
       userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
   }
@@ -36,43 +29,39 @@ node {
   stage("Setup build") {
     echo "Setup build"
     
-    def isLatestBranch = "${currentBuildBranch}".contains("${REPO_LATEST_BRANCH}")
-    def isReleaseBranch = "${currentBuildBranch}".contains("${REPO_RELEASE_BRANCH}")
-    def isStableBranch = "${currentBuildBranch}".contains("${REPO_STABLE_BRANCH}")
-    
     buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
     
     echo "Properties: ${buildProperties}"
     
     for(itJob in buildProperties.dockerJobs) {
       
-      def isCurrentImageBranch = "${currentBuildBranch}".contains("${itJob.imageName}")
+      def isCurrentImageBranch = repositoryUtils.containsCurrentBranch(itJob.imageName)
       def imageId = "${buildProperties.dockerHub.user}/${itJob.imageName}"
       def localImageTag = "${env.BRANCH_NAME}_${env.BUILD_NUMBER}".replaceAll('/', '-')
       def localImageId = "${imageId}:${localImageTag}"
 
-      if (isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) == true) {
-        buildTasks[itJob.imageName] = createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
+      if (isBuildRequired(isCurrentImageBranch) == true) {
+        buildTasks[itJob.imageName] = dockerStep.buildImage(localImageId, itJob.dockerfilePath, isRebuildRequired())
       }
       
-      def remoteImageTag = DOCKER_NO_TAG_BUILD
+      def remoteImageTag = dockerUtils.tagLocalBuild()
       
-      if (isLatestBranch == true) {
-        remoteImageTag = DOCKER_TAG_LATEST
+      if (repositoryUtils.isLatestBranch() == true) {
+        remoteImageTag = dockerUtils.tagLatest()
       }
-      else if (isStableBranch == true) {
-        remoteImageTag = DOCKER_TAG_STABLE
+      else if (repositoryUtils.isStableBranch() == true) {
+        remoteImageTag = dockerUtils.tagStable()
       }
-      else if (isReleaseBranch == true) {
-        def releaseTag = evaluateReleaseTag(currentBuildBranch, itJob.imageName)
-        remoteImageTag = releaseTag != null ? releaseTag : DOCKER_TAG_LATEST
-      }
-      
-      if (isPushRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch, isLatestBranch) == true) {
-        pushTasks[itJob.imageName] = createDockerPushStep(localImageId, remoteImageTag)
+      else if (repositoryUtils.isReleaseBranch() == true) {
+        def releaseTag = evaluateReleaseTag(repositoryUtils.currentBuildBranch(), itJob.imageName)
+        remoteImageTag = releaseTag != null ? releaseTag : dockerUtils.tagLatest()
       }
       
-      postTasks[itJob.imageName] = createRemoveImageStep(imageId, localImageTag, remoteImageTag)
+      if (isPushRequired(isCurrentImageBranch) == true) {
+        pushTasks[itJob.imageName] = dockerStep.pushImage(localImageId, remoteImageTag)
+      }
+      
+      postTasks[itJob.imageName] = dockerStep.removeImage(imageId, localImageTag, remoteImageTag)
     }
   }
     
@@ -93,43 +82,35 @@ node {
   }
 }
 
-def isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) {
+def isBuildRequired(isCurrentImageBranch) {
   if (isCurrentImageBranch == true) {
     return true
   }
-  else if ((isStableBranch == false) && (isReleaseBranch == false)) {
+  else if ((repositoryUtils.isStableBranch() == false) && (repositoryUtils.isReleaseBranch() == false)) {
     return true
   }
   
   return false
 }
 
-def isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch) {
-  if ((isLatestBranch == true) || (isStableBranch == true) || (isReleaseBranch == true)) {
+def isRebuildRequired() {
+  if ((repositoryUtils.isLatestBranch() == true) || (repositoryUtils.isStableBranch() == true) || (repositoryUtils.isReleaseBranch() == true)) {
     return true
   }
   
   return false
 }
 
-def isPushRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch, isLatestBranch) {
+def isPushRequired(isCurrentImageBranch) {
   
-  if (((isReleaseBranch == false) && (isStableBranch == false)) || (isLatestBranch == true)) {
+  if (((repositoryUtils.isReleaseBranch() == false) && (repositoryUtils.isStableBranch() == false)) || (repositoryUtils.isLatestBranch() == true)) {
     return true
   }
-  else if ((isCurrentImageBranch == true) && ((isReleaseBranch == true) || (isStableBranch == true))) {
+  else if ((isCurrentImageBranch == true) && ((repositoryUtils.isReleaseBranch() == true) || (repositoryUtils.isStableBranch() == true))) {
     return true
   }
   
   return false
-}
-
-def evaluateBuildBranch(defaultValue) {
-  if (env.BRANCH_NAME != null) {
-    return env.BRANCH_NAME
-  }
-  
-  return defaultValue
 }
 
 def evaluateReleaseTag(releaseBranch, imageName) {
@@ -141,39 +122,4 @@ def evaluateReleaseTag(releaseBranch, imageName) {
   }
   
   return releaseBranch.substring(indexOfImage + imageName.length() + 1) // +1 because of additional sign between image id and release tag
-}
-
-def createDockerBuildStep(imageId, dockerFilePath, isRebuild) {
-  def buildArgs = "${dockerFilePath}"
-  
-  if (isRebuild == true) {
-    buildArgs = "--no-cache --rm ${dockerFilePath}"
-  }
-
-  return {
-    stage("Build image ${imageId}") {
-      echo "Build image: ${imageId} with dockerfile ${dockerFilePath}"
-      docker.build("${imageId}", "${buildArgs}")
-    }
-  }
-}
-
-def createDockerPushStep(imageId, remoteTag) {
-  return {
-    stage("Push image ${imageId} to ${remoteTag}") {
-      echo "Push image: ${imageId} to remote with tag ${remoteTag}"
-      
-      docker.image("${imageId}").push("${remoteTag}")
-    }
-  }
-}
-
-def createRemoveImageStep(imageId, localImageTag, remoteImageTag) {
-return {
-    stage("Remove image ${imageId}") {
-      echo "Remove image: ${imageId}, tags: ${localImageTag}, ${remoteImageTag}"
-      sh "docker rmi ${imageId}:${localImageTag}"
-      sh "docker rmi ${imageId}:${remoteImageTag}"
-    }
-  }
 }
