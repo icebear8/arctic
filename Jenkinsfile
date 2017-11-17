@@ -1,6 +1,6 @@
 node {
   @Library('common-pipeline-library') _
-  def imageBuild = new icebear8.docker.buildSteps()
+  def dockerStep = new icebear8.docker.buildSteps()
 
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
@@ -45,7 +45,7 @@ node {
       def localImageId = "${imageId}:${localImageTag}"
 
       if (isBuildRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch) == true) {
-        buildTasks[itJob.imageName] = imageBuild.createDockerBuildStep(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
+        buildTasks[itJob.imageName] = dockerStep.buildImage(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch, isStableBranch, isReleaseBranch))
       }
       
       def remoteImageTag = dockerUtils.tagLocalBuild()
@@ -62,10 +62,10 @@ node {
       }
       
       if (isPushRequired(isCurrentImageBranch, isStableBranch, isReleaseBranch, isLatestBranch) == true) {
-        pushTasks[itJob.imageName] = imageBuild.createDockerPushStep(localImageId, remoteImageTag)
+        pushTasks[itJob.imageName] = dockerStep.pushImage(localImageId, remoteImageTag)
       }
       
-      postTasks[itJob.imageName] = imageBuild.createRemoveImageStep(imageId, localImageTag, remoteImageTag)
+      postTasks[itJob.imageName] = dockerStep.removeImage(imageId, localImageTag, remoteImageTag)
     }
   }
     
