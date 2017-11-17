@@ -24,7 +24,7 @@ node {
   
   def buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
   
-  tmpExtractor.createSetupStage(buildProperties)
+  tmpExtractor.createStages(buildProperties)
 }
 
 def isBuildRequired(isCurrentImageBranch) {
