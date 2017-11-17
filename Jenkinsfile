@@ -35,7 +35,7 @@ node {
     
     for(itJob in buildProperties.dockerJobs) {
       
-      def isCurrentImageBranch = containsCurrentBranch(itJob.imageName)
+      def isCurrentImageBranch = repositoryUtils.containsCurrentBranch(itJob.imageName)
       def imageId = "${buildProperties.dockerHub.user}/${itJob.imageName}"
       def localImageTag = "${env.BRANCH_NAME}_${env.BUILD_NUMBER}".replaceAll('/', '-')
       def localImageId = "${imageId}:${localImageTag}"
