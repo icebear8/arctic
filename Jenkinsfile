@@ -40,24 +40,24 @@ node {
       def localImageTag = "${env.BRANCH_NAME}_${env.BUILD_NUMBER}".replaceAll('/', '-')
       def localImageId = "${imageId}:${localImageTag}"
 
-      if (isBuildRequired(isCurrentImageBranch, isStableBranch(), isReleaseBranch()) == true) {
-        buildTasks[itJob.imageName] = dockerStep.buildImage(localImageId, itJob.dockerfilePath, isRebuildRequired(isLatestBranch(), isStableBranch(), isReleaseBranch()))
+      if (isBuildRequired(isCurrentImageBranch, repositoryUtils.isStableBranch(), repositoryUtils.isReleaseBranch()) == true) {
+        buildTasks[itJob.imageName] = dockerStep.buildImage(localImageId, itJob.dockerfilePath, isRebuildRequired(repositoryUtils.isLatestBranch(), repositoryUtils.isStableBranch(), repositoryUtils.isReleaseBranch()))
       }
       
       def remoteImageTag = dockerUtils.tagLocalBuild()
       
-      if (isLatestBranch() == true) {
+      if (repositoryUtils.isLatestBranch() == true) {
         remoteImageTag = dockerUtils.tagLatest()
       }
-      else if (isStableBranch() == true) {
+      else if (repositoryUtils.isStableBranch() == true) {
         remoteImageTag = dockerUtils.tagStable()
       }
-      else if (isReleaseBranch() == true) {
+      else if (repositoryUtils.isReleaseBranch() == true) {
         def releaseTag = evaluateReleaseTag(repositoryUtils.currentBuildBranch(), itJob.imageName)
         remoteImageTag = releaseTag != null ? releaseTag : dockerUtils.tagLatest()
       }
       
-      if (isPushRequired(isCurrentImageBranch, isStableBranch(), isReleaseBranch(), isLatestBranch()) == true) {
+      if (isPushRequired(isCurrentImageBranch, repositoryUtils.isStableBranch(), repositoryUtils.isReleaseBranch(), repositoryUtils.isLatestBranch()) == true) {
         pushTasks[itJob.imageName] = dockerStep.pushImage(localImageId, remoteImageTag)
       }
       
@@ -82,31 +82,31 @@ node {
   }
 }
 
-def isBuildRequired(isCurrentImageBranch, isStableBranch(), isReleaseBranch()) {
+def isBuildRequired(isCurrentImageBranch, repositoryUtils.isStableBranch(), repositoryUtils.isReleaseBranch()) {
   if (isCurrentImageBranch == true) {
     return true
   }
-  else if ((isStableBranch() == false) && (isReleaseBranch() == false)) {
+  else if ((repositoryUtils.isStableBranch() == false) && (repositoryUtils.isReleaseBranch() == false)) {
     return true
   }
   
   return false
 }
 
-def isRebuildRequired(isLatestBranch(), isStableBranch(), isReleaseBranch()) {
-  if ((isLatestBranch() == true) || (isStableBranch() == true) || (isReleaseBranch() == true)) {
+def isRebuildRequired(repositoryUtils.isLatestBranch(), repositoryUtils.isStableBranch(), repositoryUtils.isReleaseBranch()) {
+  if ((repositoryUtils.isLatestBranch() == true) || (repositoryUtils.isStableBranch() == true) || (repositoryUtils.isReleaseBranch() == true)) {
     return true
   }
   
   return false
 }
 
-def isPushRequired(isCurrentImageBranch, isStableBranch(), isReleaseBranch(), isLatestBranch()) {
+def isPushRequired(isCurrentImageBranch, repositoryUtils.isStableBranch(), repositoryUtils.isReleaseBranch(), repositoryUtils.isLatestBranch()) {
   
-  if (((isReleaseBranch() == false) && (isStableBranch() == false)) || (isLatestBranch() == true)) {
+  if (((repositoryUtils.isReleaseBranch() == false) && (repositoryUtils.isStableBranch() == false)) || (repositoryUtils.isLatestBranch() == true)) {
     return true
   }
-  else if ((isCurrentImageBranch == true) && ((isReleaseBranch() == true) || (isStableBranch() == true))) {
+  else if ((isCurrentImageBranch == true) && ((repositoryUtils.isReleaseBranch() == true) || (repositoryUtils.isStableBranch() == true))) {
     return true
   }
   
