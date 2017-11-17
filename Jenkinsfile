@@ -5,10 +5,6 @@ node {
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
   def BUILD_PROPERTIES_FILE = "buildProperties.json"
-
-  def REPO_LATEST_BRANCH = 'master'
-  def REPO_STABLE_BRANCH = 'stable'
-  def REPO_RELEASE_BRANCH = 'release'
   
   def DOCKER_TAG_LATEST = 'latest'
   def DOCKER_TAG_STABLE = 'stable'
@@ -21,7 +17,7 @@ node {
       numToKeepStr: '5', daysToKeepStr: '5'))
   ])
   
-  def currentBuildBranch = evaluateBuildBranch(REPO_LATEST_BRANCH)
+  def currentBuildBranch = evaluateBuildBranch(repository.latestBranch())
   
   def buildProperties
   def buildTasks = [:]
@@ -42,9 +38,9 @@ node {
   stage("Setup build") {
     echo "Setup build"
     
-    def isLatestBranch = "${currentBuildBranch}".contains("${REPO_LATEST_BRANCH}")
-    def isReleaseBranch = "${currentBuildBranch}".contains("${REPO_RELEASE_BRANCH}")
-    def isStableBranch = "${currentBuildBranch}".contains("${REPO_STABLE_BRANCH}")
+    def isLatestBranch = "${currentBuildBranch}".contains("${repository.latestBranch()}")
+    def isReleaseBranch = "${currentBuildBranch}".contains("${repository.releaseBranch()}")
+    def isStableBranch = "${currentBuildBranch}".contains("${repository.stableBranch()}")
     
     buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
     
