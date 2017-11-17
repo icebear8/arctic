@@ -35,7 +35,7 @@ node {
     
     for(itJob in buildProperties.dockerJobs) {
       
-      def isCurrentImageBranch = "${repositoryUtils.currentBuildBranch()}".contains("${itJob.imageName}")
+      def isCurrentImageBranch = containsCurrentBranch(itJob.imageName)
       def imageId = "${buildProperties.dockerHub.user}/${itJob.imageName}"
       def localImageTag = "${env.BRANCH_NAME}_${env.BUILD_NUMBER}".replaceAll('/', '-')
       def localImageId = "${imageId}:${localImageTag}"
@@ -111,14 +111,6 @@ def isPushRequired(isCurrentImageBranch) {
   }
   
   return false
-}
-
-def evaluateBuildBranch(defaultValue) {
-  if (env.BRANCH_NAME != null) {
-    return env.BRANCH_NAME
-  }
-  
-  return defaultValue
 }
 
 def evaluateReleaseTag(releaseBranch, imageName) {
