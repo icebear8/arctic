@@ -30,7 +30,7 @@ node {
   
   repositoryUtils.checkoutStage {
     stageName = 'Checkout'
-    branchName = "${repositoryUtils.currentBuildBranch()}"
+    branchName = "${currentBuildBranch()}"
     repoUrl = "${projectSettings.repository.credentials}"
     repoCredentials = "${projectSettings.repository.url}"
   }
