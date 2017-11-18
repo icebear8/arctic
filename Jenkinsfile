@@ -3,7 +3,8 @@
 def dockerStep = new icebear8.docker.buildSteps()
 def tmpExtractor = new icebear8.docker.tempExtraction()
 
-def buildProperties2 = readJSON text: '''{
+def buildProperties = readJSON text: '''
+{
   "dockerHub": {
     "user": "icebear8"
   },
@@ -17,7 +18,6 @@ def buildProperties2 = readJSON text: '''{
 node {
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
-  def BUILD_PROPERTIES_FILE = "buildProperties.json"
   
   properties([
     pipelineTriggers([cron('H 15 * * 2')]),
@@ -33,8 +33,6 @@ node {
       doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
       userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
   }
-  
-  def buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
   
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
     try {
