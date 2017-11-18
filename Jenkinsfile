@@ -1,9 +1,9 @@
-node {
-  @Library('common-pipeline-library') _
+@Library('common-pipeline-library') _
   
-  def dockerStep = new icebear8.docker.buildSteps()
-  def tmpExtractor = new icebear8.docker.tempExtraction()
+def dockerStep = new icebear8.docker.buildSteps()
+def tmpExtractor = new icebear8.docker.tempExtraction()
 
+node {
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
   def BUILD_PROPERTIES_FILE = "buildProperties.json"
