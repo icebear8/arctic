@@ -28,16 +28,11 @@ node {
       numToKeepStr: '5', daysToKeepStr: '5'))
   ])
   
-  stage("Checkout") {
-    echo "Current branch: ${repositoryUtils.currentBuildBranch()}"
-
-    checkout([
-      $class: 'GitSCM',
-      branches: [[name: "*/${repositoryUtils.currentBuildBranch()}"]],
-      doGenerateSubmoduleConfigurations: false,
-      extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']],
-      submoduleCfg: [],
-      userRemoteConfigs: [[credentialsId: "${projectSettings.repository.credentials}", url: "${projectSettings.repository.url}"]]])
+  repositoryUtils.checkoutStage {
+    stageName = 'Checkout'
+    branchName = "${repositoryUtils.currentBuildBranch()}"
+    repoUrl = "${projectSettings.repository.credentials}"
+    repoCredentials = "${projectSettings.repository.url}"
   }
   
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
