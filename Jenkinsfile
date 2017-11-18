@@ -1,11 +1,26 @@
-node {
-  @Library('common-pipeline-library') _
-  def dockerStep = new icebear8.docker.buildSteps()
+// Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
 
-  def REPO_URL = 'https://github.com/icebear8/arctic.git'
-  def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
-  def BUILD_PROPERTIES_FILE = "buildProperties.json"
+@Library('common-pipeline-library') _
   
+def dockerStep = new icebear8.docker.buildSteps()
+def tmpExtractor = new icebear8.docker.tempExtraction()
+
+def projectSettings = readJSON text: '''{
+  "dockerHub": {
+    "user": "icebear8"
+  },
+  "repository": {
+    "url": "https://github.com/icebear8/arctic.git",
+    "credentials": "3bc30eda-c17e-4444-a55b-d81ee0d68981"
+  },
+  "dockerJobs": [
+    {"imageName": "nginx",        "dockerfilePath": "./nginx" },
+    {"imageName": "denonservice", "dockerfilePath": "./denonRemoteControl" },
+    {"imageName": "grav",         "dockerfilePath": "./grav" }
+  ]
+}'''
+
+node {
   properties([
     pipelineTriggers([cron('H 15 * * 2')]),
     buildDiscarder(logRotator(
@@ -13,70 +28,30 @@ node {
       numToKeepStr: '5', daysToKeepStr: '5'))
   ])
   
-  def buildProperties
-  def buildTasks = [:]
-  def pushTasks = [:]
-  def postTasks = [:]
-  
   stage("Checkout") {
     echo "Current branch: ${repositoryUtils.currentBuildBranch()}"
 
-    checkout([$class: 'GitSCM', branches: [[name: "*/${repositoryUtils.currentBuildBranch()}"]],
-      doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
-      userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
+    checkout([
+      $class: 'GitSCM',
+      branches: [[name: "*/${repositoryUtils.currentBuildBranch()}"]],
+      doGenerateSubmoduleConfigurations: false,
+      extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']],
+      submoduleCfg: [],
+      userRemoteConfigs: [[credentialsId: "${projectSettings.repository.credentials}", url: "${projectSettings.repository.url}"]]])
   }
-
-  stage("Setup build") {
-    echo "Setup build"
-    
-    buildProperties = readJSON file: "${BUILD_PROPERTIES_FILE}"
-    
-    echo "Properties: ${buildProperties}"
-    
-    for(itJob in buildProperties.dockerJobs) {
-      
-      def isCurrentImageBranch = repositoryUtils.containsCurrentBranch(itJob.imageName)
-      def imageId = "${buildProperties.dockerHub.user}/${itJob.imageName}"
-      def localImageTag = "${env.BRANCH_NAME}_${env.BUILD_NUMBER}".replaceAll('/', '-')
-      def localImageId = "${imageId}:${localImageTag}"
-
-      if (isBuildRequired(isCurrentImageBranch) == true) {
-        buildTasks[itJob.imageName] = dockerStep.buildImage(localImageId, itJob.dockerfilePath, isRebuildRequired())
-      }
-      
-      def remoteImageTag = dockerUtils.tagLocalBuild()
-      
-      if (repositoryUtils.isLatestBranch() == true) {
-        remoteImageTag = dockerUtils.tagLatest()
-      }
-      else if (repositoryUtils.isStableBranch() == true) {
-        remoteImageTag = dockerUtils.tagStable()
-      }
-      else if (repositoryUtils.isReleaseBranch() == true) {
-        def releaseTag = evaluateReleaseTag(repositoryUtils.currentBuildBranch(), itJob.imageName)
-        remoteImageTag = releaseTag != null ? releaseTag : dockerUtils.tagLatest()
-      }
-      
-      if (isPushRequired(isCurrentImageBranch) == true) {
-        pushTasks[itJob.imageName] = dockerStep.pushImage(localImageId, remoteImageTag)
-      }
-      
-      postTasks[itJob.imageName] = dockerStep.removeImage(imageId, localImageTag, remoteImageTag)
-    }
-  }
-    
+  
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
     try {
       stage("Build") {
-        parallel buildTasks
+        parallel tmpExtractor.setupBuildTasks(projectSettings)
       }
       stage("Push") {
-        parallel pushTasks
+        parallel tmpExtractor.setupPushTasks(projectSettings)
       }
     }
     finally {
       stage("Clean up") {
-        parallel postTasks
+        parallel tmpExtractor.setupPostTasks(projectSettings)
       }
     }
   }
