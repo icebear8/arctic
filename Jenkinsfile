@@ -28,16 +28,10 @@ node {
       numToKeepStr: '5', daysToKeepStr: '5'))
   ])
   
-  stage("Checkout") {
-    echo "Current branch: ${repositoryUtils.currentBuildBranch()}"
-
-    checkout([
-      $class: 'GitSCM',
-      branches: [[name: "*/${repositoryUtils.currentBuildBranch()}"]],
-      doGenerateSubmoduleConfigurations: false,
-      extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']],
-      submoduleCfg: [],
-      userRemoteConfigs: [[credentialsId: "${projectSettings.repository.credentials}", url: "${projectSettings.repository.url}"]]])
+  repositoryUtils.checkoutCurrentBranch {
+    stageName = 'Checkout'
+    repoUrl = "${projectSettings.repository.url}"
+    repoCredentials = "${projectSettings.repository.credentials}"
   }
   
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
@@ -55,46 +49,4 @@ node {
       }
     }
   }
-}
-
-def isBuildRequired(isCurrentImageBranch) {
-  if (isCurrentImageBranch == true) {
-    return true
-  }
-  else if ((repositoryUtils.isStableBranch() == false) && (repositoryUtils.isReleaseBranch() == false)) {
-    return true
-  }
-  
-  return false
-}
-
-def isRebuildRequired() {
-  if ((repositoryUtils.isLatestBranch() == true) || (repositoryUtils.isStableBranch() == true) || (repositoryUtils.isReleaseBranch() == true)) {
-    return true
-  }
-  
-  return false
-}
-
-def isPushRequired(isCurrentImageBranch) {
-  
-  if (((repositoryUtils.isReleaseBranch() == false) && (repositoryUtils.isStableBranch() == false)) || (repositoryUtils.isLatestBranch() == true)) {
-    return true
-  }
-  else if ((isCurrentImageBranch == true) && ((repositoryUtils.isReleaseBranch() == true) || (repositoryUtils.isStableBranch() == true))) {
-    return true
-  }
-  
-  return false
-}
-
-def evaluateReleaseTag(releaseBranch, imageName) {
-  def indexOfImage = releaseBranch.indexOf(imageName)
-  
-  if (indexOfImage < 0)
-  {
-    return null // exit if no valid release tag could be found
-  }
-  
-  return releaseBranch.substring(indexOfImage + imageName.length() + 1) // +1 because of additional sign between image id and release tag
 }
