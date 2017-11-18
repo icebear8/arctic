@@ -4,7 +4,7 @@ def dockerStep = new icebear8.docker.buildSteps()
 def tmpExtractor = new icebear8.docker.tempExtraction()
 
 def buildProperties2 = readJSON text:
-"{
+'{
   "dockerHub": {
     "user": "icebear8"
   },
@@ -13,7 +13,7 @@ def buildProperties2 = readJSON text:
     {"imageName": "denonservice", "dockerfilePath": "./denonRemoteControl" },
     {"imageName": "grav",         "dockerfilePath": "./grav" }
   ]
-}"
+}'
 
 node {
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
