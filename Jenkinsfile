@@ -3,6 +3,18 @@
 def dockerStep = new icebear8.docker.buildSteps()
 def tmpExtractor = new icebear8.docker.tempExtraction()
 
+def buildProperties2 = readJSON text:
+"{
+  "dockerHub": {
+    "user": "icebear8"
+  },
+  "dockerJobs": [
+    {"imageName": "nginx",        "dockerfilePath": "./nginx" },
+    {"imageName": "denonservice", "dockerfilePath": "./denonRemoteControl" },
+    {"imageName": "grav",         "dockerfilePath": "./grav" }
+  ]
+}"
+
 node {
   def REPO_URL = 'https://github.com/icebear8/arctic.git'
   def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
