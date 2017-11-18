@@ -28,9 +28,10 @@ node {
       numToKeepStr: '5', daysToKeepStr: '5'))
   ])
   
+  def aBranch = "${repositoryUtils.currentBuildBranch()}"
   repositoryUtils.checkoutStage {
     stageName = 'Checkout'
-    branchName = repositoryUtils.currentBuildBranch()
+    branchName = aBranch
     repoUrl = "${projectSettings.repository.credentials}"
     repoCredentials = "${projectSettings.repository.url}"
   }
