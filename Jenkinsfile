@@ -1,3 +1,5 @@
+// Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
+
 @Library('common-pipeline-library') _
   
 def dockerStep = new icebear8.docker.buildSteps()
