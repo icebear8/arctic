@@ -32,8 +32,8 @@ node {
   repositoryUtils.checkoutStage {
     stageName = 'Checkout'
     branchName = aBranch
-    repoUrl = "${projectSettings.repository.credentials}"
-    repoCredentials = "${projectSettings.repository.url}"
+    repoUrl = "${projectSettings.repository.url}"
+    repoCredentials = "${projectSettings.repository.credentials}"
   }
   
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
