@@ -5,10 +5,13 @@
 def dockerStep = new icebear8.docker.buildSteps()
 def tmpExtractor = new icebear8.docker.tempExtraction()
 
-def buildProperties = readJSON text: '''
-{
+def projectSettings = readJSON text: '''{
   "dockerHub": {
     "user": "icebear8"
+  },
+  "repository": {
+    "url": "https://github.com/icebear8/arctic.git",
+    "credentials": "3bc30eda-c17e-4444-a55b-d81ee0d68981"
   },
   "dockerJobs": [
     {"imageName": "nginx",        "dockerfilePath": "./nginx" },
@@ -18,9 +21,6 @@ def buildProperties = readJSON text: '''
 }'''
 
 node {
-  def REPO_URL = 'https://github.com/icebear8/arctic.git'
-  def REPO_CREDENTIALS = '3bc30eda-c17e-4444-a55b-d81ee0d68981'  
-  
   properties([
     pipelineTriggers([cron('H 15 * * 2')]),
     buildDiscarder(logRotator(
@@ -31,23 +31,27 @@ node {
   stage("Checkout") {
     echo "Current branch: ${repositoryUtils.currentBuildBranch()}"
 
-    checkout([$class: 'GitSCM', branches: [[name: "*/${repositoryUtils.currentBuildBranch()}"]],
-      doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']], submoduleCfg: [],
-      userRemoteConfigs: [[credentialsId: "${REPO_CREDENTIALS}", url: "${REPO_URL}"]]])
+    checkout([
+      $class: 'GitSCM',
+      branches: [[name: "*/${repositoryUtils.currentBuildBranch()}"]],
+      doGenerateSubmoduleConfigurations: false,
+      extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'PruneStaleBranch']],
+      submoduleCfg: [],
+      userRemoteConfigs: [[credentialsId: "${projectSettings.repository.credentials}", url: "${projectSettings.repository.url}"]]])
   }
   
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
     try {
       stage("Build") {
-        parallel tmpExtractor.setupBuildTasks(buildProperties)
+        parallel tmpExtractor.setupBuildTasks(projectSettings)
       }
       stage("Push") {
-        parallel tmpExtractor.setupPushTasks(buildProperties)
+        parallel tmpExtractor.setupPushTasks(projectSettings)
       }
     }
     finally {
       stage("Clean up") {
-        parallel tmpExtractor.setupPostTasks(buildProperties)
+        parallel tmpExtractor.setupPostTasks(projectSettings)
       }
     }
   }
