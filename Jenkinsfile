@@ -11,7 +11,7 @@ def projectSettings = readJSON text: '''{
     "credentials": "3bc30eda-c17e-4444-a55b-d81ee0d68981"
   },
   "docker": {
-    "hostConnection": env.DEFAULT_DOCKER_HOST_CONNECTION,
+    "hostConnection": "${env.DEFAULT_DOCKER_HOST_CONNECTION}",
     "hostCredentials": 'default-docker-host-credentials',
     "user": "icebear8"
   }
