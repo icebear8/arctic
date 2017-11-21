@@ -37,7 +37,10 @@ node {
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
     try {
       stage("Build") {
-        parallel tmpExtractor.setupBuildTasks(projectSettings)
+        parallel dockerImage.setupBuildTasks {
+          dockerRegistryUser = "${projectSettings.dockerHub.user}"
+          buildJobs = projectSettings.dockerJobs
+        }
       }
       stage("Push") {
         parallel tmpExtractor.setupPushTasks(projectSettings)
