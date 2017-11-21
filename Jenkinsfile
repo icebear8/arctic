@@ -43,7 +43,10 @@ node {
         }
       }
       stage("Push") {
-        parallel tmpExtractor.setupPushTasks(projectSettings)
+        parallel dockerImage.setupPushTasks {
+          dockerRegistryUser = "${projectSettings.dockerHub.user}"
+          buildJobs = projectSettings.dockerJobs
+        }
       }
     }
     finally {
