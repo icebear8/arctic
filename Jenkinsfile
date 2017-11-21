@@ -2,9 +2,6 @@
 
 @Library('common-pipeline-library') _
 
-def dockerStep = new icebear8.docker.buildSteps()
-def tmpExtractor = new icebear8.docker.tempExtraction()
-
 def projectSettings = readJSON text: '''{
   "repository": {
     "url": "https://github.com/icebear8/arctic.git",
