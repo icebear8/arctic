@@ -51,7 +51,10 @@ node {
     }
     finally {
       stage("Clean up") {
-        parallel tmpExtractor.setupPostTasks(projectSettings)
+        parallel dockerImage.setupRemoveTasks {
+          dockerRegistryUser = "${projectSettings.dockerHub.user}"
+          buildJobs = projectSettings.dockerJobs
+        }
       }
     }
   }
