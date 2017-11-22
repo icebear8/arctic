@@ -15,10 +15,15 @@ def projectSettings = readJSON text: '''{
 
 // Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
 library identifier: 'common-pipeline-library@master',
-  retriever: modernSCM(
-    [$class: 'GitSCMSource',
-      remote: "git@github.com:icebear8/pipelineLibrary.git",
-      credentialsId: "${projectSettings.repository.credentials}"])
+  retriever: modernSCM(github(
+    credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981',
+    id: '18306726-fec7-4d80-8226-b78a05add4d0',
+    repoOwner: 'icebear8',
+    repository: 'pipelineLibrary',
+    traits: [
+      [$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
+      [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
+      [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
 
 node {
 
