@@ -13,20 +13,19 @@ def projectSettings = readJSON text: '''{
   ]
 }'''
 
-node {
-  // Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
-  library identifier: 'common-pipeline-library@stable',
-  retriever: modernSCM(github(
-    credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981',
-    id: '4373d2d2-7662-45a3-b336-94ac3cd4aa1a',
-    repoOwner: 'icebear8',
-    repository: 'pipelineLibrary',
-    traits: [
-      [$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
-      [class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
-      [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
+// Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
+library identifier: 'common-pipeline-library@stable',
+retriever: modernSCM(github(
+  credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981',
+  id: '4373d2d2-7662-45a3-b336-94ac3cd4aa1a',
+  repoOwner: 'icebear8',
+  repository: 'pipelineLibrary',
+  traits: [
+    [$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
+    [class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
+    [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
 
-  @Library('common-pipeline-library') _
+node {
 
   properties([
     pipelineTriggers([cron('H 15 * * 2')]),
