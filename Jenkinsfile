@@ -14,7 +14,7 @@ def projectSettings = readJSON text: '''{
 }'''
 
 // Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
-library identifier: 'common-pipeline-library@stable',
+library identifier: 'common-pipeline-library@master',
   retriever: modernSCM(
     [$class: 'GitSCMSource',
       remote: "${projectSettings.repository.url}",
