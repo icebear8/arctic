@@ -1,45 +1,66 @@
+def projectSettings = readJSON text: '''{
+  "repository": {
+    "url": "https://github.com/icebear8/arctic.git",
+    "credentials": "3bc30eda-c17e-4444-a55b-d81ee0d68981"
+  },
+  "dockerHub": {
+    "user": "icebear8"
+  },
+  "dockerJobs": [
+    {"imageName": "nginx",        "dockerfilePath": "./nginx" },
+    {"imageName": "denonservice", "dockerfilePath": "./denonRemoteControl" },
+    {"imageName": "grav",         "dockerfilePath": "./grav" }
+  ]
+}'''
+
+// Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
+library identifier: 'common-pipeline-library@stable',
+  retriever: modernSCM(github(
+    id: '18306726-fec7-4d80-8226-b78a05add4d0',
+    credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981',
+    repoOwner: 'icebear8',
+    repository: 'pipelineLibrary',
+    traits: [
+      [$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
+      [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
+      [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
+
 node {
-    
-  def imgJenkins
-  
-  def REPOSITORY='https://github.com/icebear8/arctic.git'
-  
-  def TAG_LATEST = 'latest'
-  def TAG_STABLE = 'stable'
-  
-  def MY_BUILD_TAG = env.REPO_BUILD_TAG != null ? env.REPO_BUILD_TAG : "${TAG_LATEST}"
-  def MY_IMAGE_USER = env.DOCKER_USER != null ? env.DOCKER_USER : "icebear8"
-  def MY_IMAGE_TAG = env.RELEASE_TAG != null ? env.RELEASE_TAG : "${TAG_LATEST}"
-  def MY_IS_IMAGE_STABLE = env.RELEASE_AS_STABLE != null ? env.RELEASE_AS_STABLE : false
+
+  properties([
+    pipelineTriggers([cron('H 15 * * 2')]),
+    buildDiscarder(logRotator(
+      artifactDaysToKeepStr: '5', artifactNumToKeepStr: '5',
+      numToKeepStr: '5', daysToKeepStr: '5'))
+  ])
+
+  repositoryUtils.checkoutCurrentBranch {
+    stageName = 'Checkout'
+    repoUrl = "${projectSettings.repository.url}"
+    repoCredentials = "${projectSettings.repository.credentials}"
+  }
 
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
-  
-    stage('Clone Repository') {
-      if ("${MY_BUILD_TAG}" == "${TAG_LATEST}") {
-        git branch: 'master', url: "${REPOSITORY}"
+    try {
+      stage("Build") {
+        parallel dockerImage.setupBuildTasks {
+          dockerRegistryUser = "${projectSettings.dockerHub.user}"
+          buildJobs = projectSettings.dockerJobs
+        }
       }
-      else {
-        checkout scm: [$class: 'GitSCM', 
-          userRemoteConfigs: [[url: "${REPOSITORY}"]], 
-          branches: [[name: "refs/tags/${MY_BUILD_TAG}"]]], changelog: false, poll: false
+      stage("Push") {
+        parallel dockerImage.setupPushTasks {
+          dockerRegistryUser = "${projectSettings.dockerHub.user}"
+          buildJobs = projectSettings.dockerJobs
+        }
       }
     }
-    
-    stage ('Build Images') {
-      def MY_IMAGE_NAME='nginx'
-      
-      imgJenkins = docker.build("${MY_IMAGE_USER}/${MY_IMAGE_NAME}:${TAG_LATEST}", "./${MY_IMAGE_NAME}")
-    }
-    
-    stage ('Push Images') {  
-      imgJenkins.push("${TAG_LATEST}")
-      
-      if ("${MY_IMAGE_TAG}" != "${TAG_LATEST}") {
-          imgJenkins.push("${MY_IMAGE_TAG}")
-      }
-      
-      if ("${MY_IS_IMAGE_STABLE}" == "true") {
-          imgJenkins.push("${TAG_STABLE}")
+    finally {
+      stage("Clean up") {
+        parallel dockerImage.setupRemoveTasks {
+          dockerRegistryUser = "${projectSettings.dockerHub.user}"
+          buildJobs = projectSettings.dockerJobs
+        }
       }
     }
   }
