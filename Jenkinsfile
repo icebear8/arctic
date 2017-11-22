@@ -17,7 +17,7 @@ def projectSettings = readJSON text: '''{
 library identifier: 'common-pipeline-library@master',
   retriever: modernSCM(
     [$class: 'GitSCMSource',
-      remote: "${projectSettings.repository.url}",
+      remote: "git@github.com:icebear8/pipelineLibrary.git",
       credentialsId: "${projectSettings.repository.credentials}"])
 
 node {
