@@ -1,7 +1,3 @@
-// Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
-
-@Library('common-pipeline-library') _
-
 def projectSettings = readJSON text: '''{
   "repository": {
     "url": "https://github.com/icebear8/arctic.git",
@@ -16,6 +12,14 @@ def projectSettings = readJSON text: '''{
     {"imageName": "grav",         "dockerfilePath": "./grav" }
   ]
 }'''
+
+// Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
+library identifier: 'common-pipeline-library@stable', retriever: modernSCM(
+  [$class: 'GitSCMSource',
+   remote: "${projectSettings.repository.url}",
+   credentialsId: "${projectSettings.repository.credentials}"])
+
+@Library('common-pipeline-library') _
 
 node {
   properties([
