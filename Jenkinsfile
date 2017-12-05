@@ -27,8 +27,13 @@ library identifier: 'common-pipeline-library@stable',
 
 node {
 
+  def triggers = []
+  if (repositoryUtils.isLatestBranch() == true) {
+	triggers << cron('H 15 * * *')
+  }
+
   properties([
-    pipelineTriggers([cron('H 15 * * 2')]),
+	pipelineTriggers(triggers),
     buildDiscarder(logRotator(
       artifactDaysToKeepStr: '5', artifactNumToKeepStr: '5',
       numToKeepStr: '5', daysToKeepStr: '5'))
