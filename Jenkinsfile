@@ -28,7 +28,7 @@ library identifier: 'common-pipeline-library@stable',
 node {
 
   def triggers = []
-  if (isLatestBranch() == true) {
+  if (repositoryUtils.isLatestBranch() == true) {
 	triggers << cron('H 15 * * *')
   }
 
