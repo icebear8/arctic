@@ -123,13 +123,19 @@ def getConnection():
 def connection(command):
   logging.info("Connection command received: %s", command)
     
-    connectionCommand = str(command).upper()
-    if connectionCommand is 'DISCONNECT':
-        RestService.remoteConnection.disconnect()
+  connectionCommand = str(command).upper()
+	
+  logging.info("Command to upper: %s", connectionCommand)
+	
+  if connectionCommand == 'DISCONNECT':
+    logging.info("Call dicsonnect method")
+    RestService.remoteConnection.disconnect()
+  else:
+    logging.info("No disconnection command")
     
-    if connectionCommand is 'CONNECT':
-        RestService.remoteConnection.connect()
-    return "Connection command executed";
+  if connectionCommand == 'CONNECT':
+    RestService.remoteConnection.connect()
+  return "Connection command executed";
 
 class RestService(threading.Thread):
   isShutdownAllowed = True
