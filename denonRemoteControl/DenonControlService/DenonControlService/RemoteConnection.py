@@ -7,6 +7,7 @@ defaultHost = '192.168.0.50'
 defaultIp = '192.168.0.50'
 defaultPort = 23
 bufferSize = 1024
+inactiveConnectionTimeoutSeconds = 300.0
 
 class DeviceData:
     def __init__(self):
@@ -19,6 +20,7 @@ class RemoteConnection:
         self._socket = socket.socket()
         self._isConnected = False
         self._listenerThread = None
+        self._disconnectTimer = None
         self.data = DeviceData()
 
     @property
@@ -77,6 +79,7 @@ class RemoteConnection:
         self._isConnected = False
 
     def send(self, message):
+        self._restartConnectionTimeout()
         if not self._isConnected:
             self.connect()
         logging.debug("Send: %s", message.strip())
@@ -85,6 +88,14 @@ class RemoteConnection:
             self._socket.send(message.encode('ASCII'))
         else:
             logging.error("Unable to send command: %s", message.strip())
+            self.disconnect()
+    
+    def _restartConnectionTimeout(self):
+      if not (self._disconnectTimer == None):
+        logging.info("Cancel timer")
+        self._disconnectTimer.cancel()
+      self._disconnectTimer = threading.Timer(inactiveConnectionTimeoutSeconds, self.disconnect)
+      self._disconnectTimer.start()
         
 class ListenerThread(threading.Thread):
     def __init__(self, socket, data):
