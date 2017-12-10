@@ -10,7 +10,7 @@ from flask import request
 
 from RemoteConnection import RemoteConnection
 
-versionId = '0.1.1:20161130'
+versionId = '0.1.2:20171210'
 
 app = Flask(__name__)
 
