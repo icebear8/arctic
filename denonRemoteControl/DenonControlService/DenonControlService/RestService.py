@@ -87,7 +87,7 @@ def startVolume(volume):
   time.sleep(5)
   RestService.remoteConnection.send(volumeCommand)
   RestService.remoteConnection.send("SIFAVORITES\r")
-  time.sleep(2)
+  time.sleep(3)
   RestService.remoteConnection.send("NS94\r") # enter
   return "Start";
 
@@ -95,7 +95,7 @@ def startVolume(volume):
 def next():
   logging.info("Next request")
   RestService.remoteConnection.send("SIFAVORITES\r")
-  time.sleep(2)
+  time.sleep(3)
   RestService.remoteConnection.send("NS91\r") # next
   time.sleep(1)
   RestService.remoteConnection.send("NS94\r") # enter
