@@ -122,19 +122,14 @@ def getConnection():
 @app.route('/connection/<command>', methods=['PUT'])
 def connection(command):
   logging.info("Connection command received: %s", command)
-    
   connectionCommand = str(command).upper()
 	
-  logging.info("Command to upper: %s", connectionCommand)
-	
   if connectionCommand == 'DISCONNECT':
-    logging.info("Call dicsonnect method")
     RestService.remoteConnection.disconnect()
-  else:
-    logging.info("No disconnection command")
     
   if connectionCommand == 'CONNECT':
     RestService.remoteConnection.connect()
+
   return "Connection command executed";
 
 class RestService(threading.Thread):
