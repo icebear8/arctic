@@ -133,7 +133,7 @@ class ListenerThread(threading.Thread):
                             if line.startswith('MV'):
                                 if line[2:].isdecimal():
                                     logging.info("Volume received: " + line[2:])
-                                    self.deviceData.volume = line[2:]
+                                    self.deviceData.volume = line[2:4]
                             logging.info("Received: " + line)
                     except UnicodeDecodeError:
                         logging.info("Decode error: " + str(data))
