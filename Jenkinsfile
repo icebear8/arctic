@@ -41,5 +41,5 @@ node {
   }
       
   def buildScript = load 'build/build.groovy'
-  buildScript.run()
+  buildScript.executeBuildSteps()
 }
