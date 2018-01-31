@@ -11,16 +11,12 @@ library identifier: 'common-pipeline-library@stable',
       [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
 
 node {
-  checkout([
-    $class: 'GitSCM',
-    branches: [[name: '*/master']],
-    doGenerateSubmoduleConfigurations: false,
-    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'build']],
-    submoduleCfg: [],
-    userRemoteConfigs: [[url: 'https://github.com/icebear8/arcticBuild.git', credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981']]])
-      
-  stage("Debug") {
-    sh 'ls'
+  repositoryUtils.checkoutBranchToSubdir {
+    stageName = 'Checkout build script'
+    branchName = '*/master'
+    subDirectory = 'build'
+    repoUrl = 'https://github.com/icebear8/arcticBuild.git'
+    repoCredentials = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
   }
       
   load 'build/Jenkinsfile'
