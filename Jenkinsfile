@@ -40,5 +40,6 @@ node {
     sh 'ls'
   }
       
-  load 'build/Jenkinsfile'
+  def buildScript = load 'build/build.groovy'
+  buildScript.run()
 }
