@@ -1,18 +1,3 @@
-def projectSettings = readJSON text: '''{
-  "repository": {
-    "url": "https://github.com/icebear8/arctic.git",
-    "credentials": "3bc30eda-c17e-4444-a55b-d81ee0d68981"
-  },
-  "dockerHub": {
-    "user": "icebear8"
-  },
-  "dockerJobs": [
-    {"imageName": "nginx",        "dockerfilePath": "./nginx" },
-    {"imageName": "denonservice", "dockerfilePath": "./denonRemoteControl" },
-    {"imageName": "grav",         "dockerfilePath": "./grav" }
-  ]
-}'''
-
 // Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
 library identifier: 'common-pipeline-library@stable',
   retriever: modernSCM(github(
@@ -30,11 +15,9 @@ node {
     $class: 'GitSCM',
     branches: [[name: '*/master']],
     doGenerateSubmoduleConfigurations: false,
-    extensions: [[
-      $class: 'RelativeTargetDirectory',
-      relativeTargetDir: 'build']],
-      submoduleCfg: [],
-      userRemoteConfigs: [[url: 'https://github.com/icebear8/arcticBuild.git', credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981']]])
+    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'build']],
+    submoduleCfg: [],
+    userRemoteConfigs: [[url: 'https://github.com/icebear8/arcticBuild.git', credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981']]])
       
   stage("Debug") {
     sh 'ls'
