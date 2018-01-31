@@ -36,5 +36,9 @@ node {
       submoduleCfg: [],
       userRemoteConfigs: [[url: 'https://github.com/icebear8/arcticBuild.git', credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981']]])
       
+  stage("Debug") {
+    sh 'ls'
+  }
+      
   load 'build/Jenkinsfile'
 }
