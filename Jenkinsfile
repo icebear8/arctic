@@ -11,13 +11,15 @@ library identifier: 'common-pipeline-library@stable',
       [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
 
 node {
+  def buildScriptDir = 'build'
+
   repositoryUtils.checkoutBranchToSubdir {
     stageName = 'Checkout build script'
     branchName = '*/master'
-    subDirectory = 'build'
+    subDirectory = "${buildScriptDir}"
     repoUrl = 'https://github.com/icebear8/arcticBuild.git'
     repoCredentials = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
   }
       
-  load 'build/Jenkinsfile'
+  load "${buildScriptDir}/Jenkinsfile"
 }
