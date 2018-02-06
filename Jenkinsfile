@@ -33,5 +33,6 @@ node {
   }
   
   sh "ls ${buildScriptDir}"
-  load "${buildScriptDir}/buildInstruction.groovy"
+  def aBuildScript = load "${buildScriptDir}/buildInstruction.groovy"
+  aBuildScript.buildMethod()
 }
