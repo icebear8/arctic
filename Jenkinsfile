@@ -27,8 +27,11 @@ node {
         [$class: 'RelativeTargetDirectory', relativeTargetDir: "{buildScriptDir}"]],
       submoduleCfg: [],
       userRemoteConfigs: [[url: 'https://github.com/icebear8/arcticBuild.git', credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981']]])
+  
+    sh "ls ${buildScriptDir}"
+  
   }
+  
   sh "ls ${buildScriptDir}"
-  sh 'git rev-parse HEAD'
   load "${buildScriptDir}/buildInstruction.groovy"
 }
