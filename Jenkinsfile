@@ -16,7 +16,7 @@ node {
 
   repositoryUtils.checkoutBranchToSubdir {
     stageName = 'Checkout build script'
-    branchName = '*/stable'
+    branchName = '*/master'
     subDirectory = "${buildScriptDir}"
     repoUrl = 'https://github.com/icebear8/arcticBuild.git'
     repoCredentials = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
