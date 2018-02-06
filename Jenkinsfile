@@ -12,7 +12,7 @@ library identifier: 'common-pipeline-library@stable',
       [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
 
 node {
-  def buildScriptDir = 'build'
+  def buildScriptDir = 'buildSubDir'
 
   stage("Checkout build script") {
     echo "Checkout branch: master"
