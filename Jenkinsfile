@@ -14,12 +14,19 @@ library identifier: 'common-pipeline-library@stable',
 node {
   def buildScriptDir = 'build'
 
-  repositoryUtils.checkoutBranchToSubdir {
-    stageName = 'Checkout build script'
-    branchName = '*/master'
-    subDirectory = "${buildScriptDir}"
-    repoUrl = 'https://github.com/icebear8/arcticBuild.git'
-    repoCredentials = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
+  stage("Checkout build script") {
+    echo "Checkout branch: master"
+
+    checkout([
+      $class: 'GitSCM',
+      branches: [[name: "*/master"]],
+      doGenerateSubmoduleConfigurations: false,
+      extensions: [
+        [$class: 'CleanBeforeCheckout'],
+        [$class: 'PruneStaleBranch'],
+        [$class: 'RelativeTargetDirectory', relativeTargetDir: "{buildScriptDir}"]],
+      submoduleCfg: [],
+      userRemoteConfigs: [[url: 'https://github.com/icebear8/arcticBuild.git', credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981']]])
   }
       
   load "${buildScriptDir}/Jenkinsfile"
