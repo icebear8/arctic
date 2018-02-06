@@ -24,7 +24,7 @@ node {
       extensions: [
         [$class: 'CleanBeforeCheckout'],
         [$class: 'PruneStaleBranch'],
-        [$class: 'RelativeTargetDirectory', relativeTargetDir: "{buildScriptDir}"]],
+        [$class: 'RelativeTargetDirectory', relativeTargetDir: "${buildScriptDir}"]],
       submoduleCfg: [],
       userRemoteConfigs: [[url: 'https://github.com/icebear8/arcticBuild.git', credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981']]])
   
