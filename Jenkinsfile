@@ -29,5 +29,5 @@ node {
       userRemoteConfigs: [[url: 'https://github.com/icebear8/arcticBuild.git', credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981']]])
   }
       
-  load "${buildScriptDir}/Jenkinsfile"
+  load "${buildScriptDir}/buildInstruction.groovy"
 }
