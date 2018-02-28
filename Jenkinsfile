@@ -28,5 +28,5 @@ node {
     ]
   }'''
 
-  library('common-pipeline-library@master').icebear8.projects.arctic.buildDefinition.buildMethod(projectSettings)
+  library('common-pipeline-library').icebear8.projects.arctic.buildDefinition.buildMethod(projectSettings)
 }
