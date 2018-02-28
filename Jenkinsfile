@@ -30,6 +30,6 @@ node {
     ]
   }'''
 
-  def dockerBuild = new icebear8.projects.arctic.buildDefinition()
+  def dockerBuild = new projects.arctic.buildDefinition()
   dockerBuild.buildMethod(projectSettings)
 }
