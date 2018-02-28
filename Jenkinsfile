@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
+
 // Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
-library identifier: 'common-pipeline-library@stable',
+library identifier: 'common-pipeline-library@master',
   retriever: modernSCM(github(
     id: '18306726-fec7-4d80-8226-b78a05add4d0',
     credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981',
@@ -10,29 +11,24 @@ library identifier: 'common-pipeline-library@stable',
       [$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
       [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
       [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
-
+      
 node {
-  def buildScriptDir = 'buildSubDir'
+  def projectSettings = readJSON text: '''{
+    "repository": {
+      "url": "https://github.com/icebear8/arctic.git",
+      "credentials": "3bc30eda-c17e-4444-a55b-d81ee0d68981"
+    },
+    "dockerHub": {
+      "user": "icebear8"
+    },
+    "dockerJobs": [
+      {"imageName": "nginx",        "dockerfilePath": "./nginx" },
+      {"imageName": "denonservice", "dockerfilePath": "./denonRemoteControl" },
+      {"imageName": "grav",         "dockerfilePath": "./grav" }
+    ]
+  }'''
 
-  stage("Checkout build script") {
-    echo "Checkout branch: master"
-
-    checkout([
-      $class: 'GitSCM',
-      branches: [[name: "*/master"]],
-      doGenerateSubmoduleConfigurations: false,
-      extensions: [
-        [$class: 'CleanBeforeCheckout'],
-        [$class: 'PruneStaleBranch'],
-        [$class: 'RelativeTargetDirectory', relativeTargetDir: "${buildScriptDir}"]],
-      submoduleCfg: [],
-      userRemoteConfigs: [[url: 'https://github.com/icebear8/arcticBuild.git', credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981']]])
+  def dockerBuild = new icebear8.projects.arctic.build()
   
-    sh "ls ${buildScriptDir}"
-  
-  }
-  
-  sh "ls ${buildScriptDir}"
-  def aBuildScript = load "${buildScriptDir}/buildInstruction.groovy"
-  aBuildScript.buildMethod()
+  dockerBuild.buildMethod(projectSettings)
 }
