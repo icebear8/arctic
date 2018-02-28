@@ -31,5 +31,7 @@ node {
           [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
   }
 
-  projectArctic.buildMethod(projectSettings)
+  library('common-pipeline-library').icebear8.projects.arctic.buildMethod(projectSettings)
+  
+  //projectArctic.buildMethod(projectSettings)
 }
