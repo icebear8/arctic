@@ -17,7 +17,6 @@ node {
     ]
   }'''
   
-  stage('Load library') {
     // Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
     library identifier: 'common-pipeline-library@master',
       retriever: modernSCM(github(
@@ -29,7 +28,6 @@ node {
           [$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
           [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
           [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
-  }
 
   library('common-pipeline-library').icebear8.projects.arctic.buildMethod(projectSettings)
   
