@@ -30,7 +30,7 @@ node {
     ]
   }'''
 
-  library('common-pipeline-library').icebear8.projects.arctic.buildMethod(projectSettings)
+  library('common-pipeline-library').icebear8.projects.arctic.buildDefinition.buildMethod(projectSettings)
   
   //projectArctic.buildMethod(projectSettings)
 }
