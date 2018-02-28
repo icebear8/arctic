@@ -12,6 +12,8 @@ library identifier: 'common-pipeline-library@master',
       [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
       [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
       
+import icebear8.projects.arctic.build
+      
 node {
   def projectSettings = readJSON text: '''{
     "repository": {
