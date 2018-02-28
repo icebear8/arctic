@@ -13,6 +13,8 @@ library identifier: 'common-pipeline-library@master',
       [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
 
 node {
+  @Library('common-pipeline-library') _
+
   def projectSettings = readJSON text: '''{
     "repository": {
       "url": "https://github.com/icebear8/arctic.git",
