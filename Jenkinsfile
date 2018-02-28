@@ -28,7 +28,5 @@ node {
     ]
   }'''
 
-  def aLib = new library('common-pipeline-library').icebear8.projects.arctic.buildDefinition()
-  
-  projectArctic.buildMethod(projectSettings)
+  library('common-pipeline-library').icebear8.projects.arctic.buildDefinition.buildMethod(projectSettings)
 }
