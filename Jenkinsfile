@@ -12,8 +12,6 @@ library identifier: 'common-pipeline-library@master',
       [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
       [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
 
-@Library('common-pipeline-library')
-      
 node {
   def projectSettings = readJSON text: '''{
     "repository": {
@@ -30,6 +28,6 @@ node {
     ]
   }'''
 
-  def dockerBuild = new icebear8.projects.arctic.build()
+  def dockerBuild = new icebear8.projects.arctic.buildDefinition()
   dockerBuild.buildMethod(projectSettings)
 }
