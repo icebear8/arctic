@@ -28,8 +28,9 @@ node {
       {"imageName": "grav",         "dockerfilePath": "./grav" }
     ]
   }'''
-
-  library('common-pipeline-library').icebear8.projects.arctic.buildDefinition.buildMethod(projectSettings)
   
-  //projectArctic.buildMethod(projectSettings)
+  projectArctic.buildMethod(projectSettings)
+  
+  // accessing the sub class in the library is not working
+  //library('common-pipeline-library').icebear8.projects.arctic.buildDefinition.buildMethod(projectSettings)
 }
