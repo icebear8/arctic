@@ -29,6 +29,5 @@ node {
     ]
   }'''
   
-  def buildDefinition = new icebear8.projects.arctic.buildDefinition()
-  buildDefinition.buildMethod(projectSettings)
+  library('common-pipeline-library').icebear8.projects.arctic.buildDefinition().buildMethod(projectSettings)
 }
