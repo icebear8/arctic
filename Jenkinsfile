@@ -29,6 +29,5 @@ node {
     ]
   }'''
   
-  def tempMethod = "buildMethod"
-  projectArctic."${tempMethod}"(projectSettings)
+  projectArctic.buildMethod(projectSettings)
 }
