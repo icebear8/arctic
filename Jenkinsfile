@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 // Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
 library identifier: 'common-pipeline-library@stable',
   retriever: modernSCM(github(
@@ -11,15 +13,21 @@ library identifier: 'common-pipeline-library@stable',
       [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
 
 node {
-  def buildScriptDir = 'build'
 
-  repositoryUtils.checkoutBranchToSubdir {
-    stageName = 'Checkout build script'
-    branchName = '*/stable'
-    subDirectory = "${buildScriptDir}"
-    repoUrl = 'https://github.com/icebear8/arcticBuild.git'
-    repoCredentials = '3bc30eda-c17e-4444-a55b-d81ee0d68981'
-  }
-      
-  load "${buildScriptDir}/Jenkinsfile"
+  def projectSettings = readJSON text: '''{
+    "repository": {
+      "url": "https://github.com/icebear8/arctic.git",
+      "credentials": "3bc30eda-c17e-4444-a55b-d81ee0d68981"
+    },
+    "dockerHub": {
+      "user": "icebear8"
+    },
+    "dockerJobs": [
+      {"imageName": "nginx",        "dockerfilePath": "./nginx" },
+      {"imageName": "denonservice", "dockerfilePath": "./denonRemoteControl" },
+      {"imageName": "grav",         "dockerfilePath": "./grav" }
+    ]
+  }'''
+  
+  projectArctic.buildMethod(projectSettings)
 }
