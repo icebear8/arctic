@@ -29,7 +29,7 @@ node {
     ]
   }'''
   
-  def triggers = jobProperties.getJobBuildTriggers()
+  def triggers = jobProperties.getJobBuildTriggers{}
   
   properties([
     pipelineTriggers(triggers),
