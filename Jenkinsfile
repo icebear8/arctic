@@ -55,10 +55,13 @@ node {
           buildJobs = projectSettings.dockerJobs
         }
       }
-      stage("Push") {
-        parallel dockerImage.setupPushTasks {
-          dockerRegistryUser = "${projectSettings.dockerHub.user}"
-          buildJobs = projectSettings.dockerJobs
+
+      docker.withRegistry('https://index.docker.io/v1/', '91159a0f-4ca9-41bf-911d-55e43059097c') {
+        stage("Push") {
+          parallel dockerImage.setupPushTasks {
+            dockerRegistryUser = "${projectSettings.dockerHub.user}"
+            buildJobs = projectSettings.dockerJobs
+          }
         }
       }
     }
