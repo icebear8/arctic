@@ -56,7 +56,7 @@ node {
         }
       }
 
-      docker.withRegistry('https://index.docker.io/v1/', '91159a0f-4ca9-41bf-911d-55e43059097c') {
+      docker.withRegistry(env.DEFAULT_DOCKER_REGISTRY_CONNECTION, 'default-docker-registry-credentials') {
         stage("Push") {
           parallel dockerImage.setupPushTasks {
             dockerRegistryUser = "${projectSettings.dockerHub.user}"
