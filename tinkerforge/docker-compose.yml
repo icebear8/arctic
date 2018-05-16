@@ -2,7 +2,7 @@ version: '2'
 services:
   tinkerforge:
     build: .
-    image: icebear8/tinkerforge
+    image: icebear8/tinkerforge:0.1
     container_name: tinkerforge
     volumes:
     - ./config:/var/tinkerforge/config:ro
