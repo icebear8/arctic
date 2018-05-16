@@ -1,0 +1,9 @@
+version: '2'
+services:
+  tinkerforge:
+    build: .
+    image: icebear8/tinkerforge
+    container_name: tinkerforge
+    volumes:
+    - ./config:/var/tinkerforge/config:ro
+    restart: always
