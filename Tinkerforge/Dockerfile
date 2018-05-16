@@ -1,7 +1,8 @@
 FROM debian:jessie
 MAINTAINER Dominik Ebert <dominik.ebert@zuehlke.com>
 
-ARG app_dir=/var/tinkerforge
+ARG app_dir=/var/tinkerforge/
+ENV app_launcher=${app_dir}/launchScript.sh
 
 RUN apt-get update && apt-get install -y \
   git \
@@ -21,4 +22,9 @@ RUN wget https://raw.githubusercontent.com/Tinkerforge/brick-mqtt-proxy/master/b
 RUN pip3 install tinkerforge
 RUN pip3 install paho-mqtt
 
-CMD ["/bin/bash"]
+COPY resources/tinkerforge/* ${app_dir}/
+RUN chmod +x ${app_launcher}
+
+VOLUME /var/tinkerforge/config
+
+CMD ["/var/tinkerforge/launchScript.sh"]
