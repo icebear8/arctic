@@ -25,7 +25,8 @@ node {
     "dockerJobs": [
       {"imageName": "nginx",        "dockerfilePath": "./nginx" },
       {"imageName": "denonservice", "dockerfilePath": "./denonRemoteControl" },
-      {"imageName": "grav",         "dockerfilePath": "./grav" }
+      {"imageName": "grav",         "dockerfilePath": "./grav" },
+      {"imageName": "tinkerforge",  "dockerfilePath": "./tinkerforge" }
     ]
   }'''
   
