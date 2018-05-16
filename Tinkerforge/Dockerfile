@@ -1,24 +1,24 @@
-FROM alpine:3.7
+FROM debian:jessie
 MAINTAINER Dominik Ebert <dominik.ebert@zuehlke.com>
 
 ARG app_dir=/var/tinkerforge
 
-RUN apk update && apk add --no-cache \
+RUN apt-get update && apt-get install -y \
   git \
-  libusb-dev \
-  make \
-  pkgconfig \
+  mosquitto \
+  mosquitto-clients \
   python3 \
-  py-pip
+  python3-pip \
+  wget \
+  && rm -rf /var/lib/apt/lists/*
   
 RUN mkdir -p ${app_dir}
-WORKDIR ${app_dir}
 
-RUN git clone https://github.com/Tinkerforge/brickd ${app_dir}/daemon
-WORKDIR ${app_dir}/daemon/src
-RUN git clone https://github.com/Tinkerforge/daemonlib
-WORKDIR ${app_dir}/daemon/src/brickd
-RUN make
-RUN make install
-  
+RUN mkdir -p ${app_dir}/mqttProxy
+WORKDIR ${app_dir}/mqttProxy
+RUN wget https://raw.githubusercontent.com/Tinkerforge/brick-mqtt-proxy/master/brick-mqtt-proxy.py
+
+RUN pip3 install tinkerforge
+RUN pip3 install paho-mqtt
+
 CMD ["/bin/bash"]
