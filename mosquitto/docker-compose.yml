@@ -1,0 +1,11 @@
+version: '2'
+services:
+  mosquitto:
+    build: .
+    image: icebear8/mosquitto:latest
+    container_name: mosquitto
+    restart: always
+    ports:
+    - "1883:1883"
+    env_file:
+      - ./config/default.env
