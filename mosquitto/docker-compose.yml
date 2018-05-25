@@ -2,7 +2,7 @@ version: '2'
 services:
   mosquitto:
     build: .
-    image: icebear8/mosquitto:latest
+    image: icebear8/mosquitto:0.1
     container_name: mosquitto
     restart: always
     ports:
