@@ -1,13 +1,11 @@
 FROM alpine:3.7
 MAINTAINER Dominik Ebert <dominik.ebert@zuehlke.com>
 
-ARG app_dir=/var/tinkerforge/
-ENV app_launcher=${app_dir}/launchScript.sh
+ENV APP_DIR=/opt/tinkermqtt
+ENV CONFIG_DIR=${APP_DIR}/config
+ENV APP_LAUNCHER=${APP_DIR}/launchScript.sh
 
 RUN apk update && apk add --no-cache \
-  git \
-  mosquitto \
-  mosquitto-clients \
   python3 \
   wget
 
@@ -17,17 +15,19 @@ RUN python3 -m ensurepip
 RUN pip3 install tinkerforge
 RUN pip3 install paho-mqtt
   
-RUN mkdir -p ${app_dir}
+RUN mkdir -p ${APP_DIR}
 
 # Install tinkerforge MQTT proxy
-RUN mkdir -p ${app_dir}/mqttProxy
-WORKDIR ${app_dir}/mqttProxy
+RUN mkdir -p ${APP_DIR}/mqttProxy
+WORKDIR ${APP_DIR}/mqttProxy
 RUN wget https://raw.githubusercontent.com/Tinkerforge/brick-mqtt-proxy/master/brick-mqtt-proxy.py
 
 # Copy launcher script
-COPY resources/tinkerforge/* ${app_dir}/
-RUN chmod +x ${app_launcher}
+COPY resources/* ${APP_DIR}
+RUN chmod +x ${APP_LAUNCHER}
 
-VOLUME /var/tinkerforge/config
+VOLUME ${CONFIG_DIR}
 
-CMD ["sh", "/var/tinkerforge/launchScript.sh"]
+ENTRYPOINT ["sh", "-c"]
+
+CMD ["sh ${APP_LAUNCHER}"]
