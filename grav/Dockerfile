@@ -7,7 +7,7 @@ ARG group=www
 ARG uid=1000
 ARG gid=1000
 ARG app_dir=/var/www/
-ARG grav_repo=grav-admin-v1.2.4.zip
+ARG grav_repo=grav-v1.4.6.zip
 
 RUN apk add --no-cache \
   git \
