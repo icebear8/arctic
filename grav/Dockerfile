@@ -9,7 +9,8 @@ ARG gid=1000
 ARG app_dir=/var/www/
 ARG grav_repo=grav-v1.4.6.zip
 
-RUN apk add --no-cache \
+RUN apk update \
+  && apk add --no-cache \
   git \
   logrotate \
   nginx \
@@ -32,7 +33,7 @@ RUN apk add --no-cache \
   unzip  
 
 RUN addgroup -g ${gid} ${group} \
-    && adduser -h "$JENKINS_HOME" -u ${uid} -G ${group} -s /bin/bash -D ${user}
+    && adduser -u ${uid} -G ${group} -D ${user}
 
 RUN mkdir -p ${app_dir}
 
