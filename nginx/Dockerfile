@@ -1,11 +1,12 @@
-FROM alpine:3.4
+FROM alpine:3.7
 
 MAINTAINER Dominik Ebert <doe@zuehlke.com>
 
 ARG user=www
 ARG app_dir=/var/www
 
-RUN apk add --no-cache \
+RUN apk update &&\
+  apk add --no-cache \
   logrotate \
   nginx
 
@@ -22,9 +23,7 @@ COPY ./resources/www/* /var/www/
 RUN mkdir -p ${app_dir}
 RUN chown -R ${user}:${user} ${app_dir}
 RUN chown -R ${user}:${user} /var/lib/nginx
-RUN chown -R ${user}:${user} /var/log/nginx
-RUN chown -R ${user}:${user} /var/run
-RUN chown -R ${user}:${user} /etc/nginx
+RUN chown -Rh ${user}:${user} /var/lib/nginx
 
 EXPOSE 8080
 
