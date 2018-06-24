@@ -20,11 +20,11 @@ COPY ./resources/config/* /etc/nginx/sites-enabled/
 COPY ./resources/www/* /var/www/
 
 RUN mkdir -p ${app_dir}
-#RUN chown -R ${user}:${user} ${app_dir}
-#RUN chown -R ${user}:${user} /var/lib/nginx
-#RUN chown -R ${user}:${user} /var/log/nginx
-#RUN chown -R ${user}:${user} /var/run
-#RUN chown -R ${user}:${user} /etc/nginx
+RUN chown -R ${user}:${user} ${app_dir}
+RUN chown -R ${user}:${user} /var/lib/nginx
+RUN chown -R ${user}:${user} /var/log/nginx
+RUN chown -R ${user}:${user} /var/run
+RUN chown -R ${user}:${user} /etc/nginx
 
 EXPOSE 8080
 
