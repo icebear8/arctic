@@ -37,8 +37,9 @@ RUN addgroup -g ${gid} ${group} \
 RUN mkdir -p ${app_dir}
 
 RUN chown -R ${user} /var/log
-RUN chown -R ${user} /var/lib/nginx
+RUN chown -R ${user} /var/tmp/nginx
 RUN chown -R ${user} /var/run
+RUN chown -R ${user} /var/lib/nginx
 
 COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /resources/nginx/config/* /etc/nginx/sites-enabled/
