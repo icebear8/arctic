@@ -36,10 +36,10 @@ RUN addgroup -g ${gid} ${group} \
 
 RUN mkdir -p ${app_dir}
 
-RUN chown -R ${user} /var/log
-RUN chown -R ${user} /var/tmp
-RUN chown -R ${user} /var/run
-RUN chown -R ${user} /var/lib/nginx
+RUN chown -R ${user}:${group} /var/log
+RUN chown -R ${user}:${group} /var/tmp/nginx
+RUN chown -R ${user}:${group} /var/run
+RUN chown -R ${user}:${group} /var/lib/nginx
 
 COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /resources/nginx/config/* /etc/nginx/sites-enabled/
@@ -49,7 +49,7 @@ COPY /resources/${grav_repo} ${app_dir}/
 RUN unzip ${app_dir}/${grav_repo} -d ${app_dir}\
     && rm ${app_dir}/${grav_repo}
 
-RUN chown -R ${user} ${app_dir}
+RUN chown -R ${user}:${group} ${app_dir}
 
 USER ${user}
     
