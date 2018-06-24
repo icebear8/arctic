@@ -24,6 +24,8 @@ RUN touch /var/run/nginx.pid
 
 RUN mkdir -p ${app_dir}
 RUN chown -R ${user}:${user} ${app_dir}
+RUN chown -R ${user}:${user} /var/log/nginx
+RUN chown -R ${user}:${user} /var/tmp/nginx
 RUN chown -R ${user}:${user} /var/lib/nginx
 RUN chown -R ${user}:${user} /var/run/nginx.pid
 RUN chown -Rh ${user}:${user} /var/lib/nginx
