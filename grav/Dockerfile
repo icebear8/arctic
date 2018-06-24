@@ -1,8 +1,11 @@
-FROM alpine:3.4
+FROM alpine:3.7
 
 MAINTAINER Dominik Ebert <doe@zuehlke.com>
 
 ARG user=www
+ARG group=www
+ARG uid=1000
+ARG gid=1000
 ARG app_dir=/var/www/
 ARG grav_repo=grav-admin-v1.2.4.zip
 
@@ -28,22 +31,24 @@ RUN apk add --no-cache \
   wget \
   unzip  
 
-RUN adduser -D -u 1000 -g '${user}' ${user}
+RUN addgroup -g ${gid} ${group} \
+    && adduser -h "$JENKINS_HOME" -u ${uid} -G ${group} -s /bin/bash -D ${user}
+
 RUN mkdir -p ${app_dir}
 
-RUN chown -R ${user}:${user} /var/log
-RUN chown -R ${user}:${user} /var/lib/nginx
-RUN chown -R ${user}:${user} /var/run
+RUN chown -R ${user} /var/log
+RUN chown -R ${user} /var/lib/nginx
+RUN chown -R ${user} /var/run
 
 COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /resources/nginx/config/* /etc/nginx/sites-enabled/
 COPY /resources/run.sh ${app_dir}/
 
 COPY /resources/${grav_repo} ${app_dir}/
-RUN unzip ${app_dir}/${grav_repo} -d ${app_dir}&&\
-    rm ${app_dir}/${grav_repo}
+RUN unzip ${app_dir}/${grav_repo} -d ${app_dir}\
+    && rm ${app_dir}/${grav_repo}
 
-RUN chown -R ${user}:${user} ${app_dir}
+RUN chown -R ${user} ${app_dir}
 
 USER ${user}
     
