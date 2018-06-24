@@ -28,4 +28,6 @@ RUN chown -R ${user}:${user} /etc/nginx
 
 EXPOSE 8080
 
+USER ${user}
+
 CMD ["nginx", "-g", "daemon off;"]
