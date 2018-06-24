@@ -45,9 +45,12 @@ COPY /resources/${grav_repo} ${app_dir}/
 RUN unzip ${app_dir}/${grav_repo} -d ${app_dir}\
     && rm ${app_dir}/${grav_repo}
 
-RUN chown -R ${user}:${group} /var/log
-RUN chown -R ${user}:${group} /var/lib/nginx
+RUN touch /var/run/nginx.pid
+RUN mkdir -p ${app_dir}
 RUN chown -R ${user}:${group} ${app_dir}
+RUN chown -R ${user}:${group} /var/log/nginx
+RUN chown -R ${user}:${group} /var/lib/nginx
+RUN chown -R ${user}:${group} /var/run/nginx.pid
 
 USER ${user}
     
