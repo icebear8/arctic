@@ -48,7 +48,7 @@ RUN unzip ${app_dir}/${grav_repo} -d ${app_dir}\
 RUN chown -R ${user}:${group} /etc/nginx
 RUN chown -R ${user}:${group} /var/log
 RUN chown -R ${user}:${group} /var/run
-RUN chown -R ${user}:${group} /var/tmp/nginx
+RUN chown -R ${user}:${group} /var/tmp
 RUN chown -R ${user}:${group} /var/lib/nginx
 RUN chown -R ${user}:${group} ${app_dir}
 
