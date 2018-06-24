@@ -40,8 +40,7 @@ RUN mkdir -p /var/tmp/nginx
 
 
 RUN touch /var/run/nginx.pid && \
-  chown -R ${user}:${group} /var/run/nginx.pid && \
-  chown -R ${user}:${group} /var/cache/nginx
+  chown -R ${user}:${group} /var/run/nginx.pid
 
 COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /resources/nginx/config/* /etc/nginx/sites-enabled/
