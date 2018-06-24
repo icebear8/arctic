@@ -36,7 +36,7 @@ RUN addgroup -g ${gid} ${group} \
     && adduser -u ${uid} -G ${group} -D ${user}
 
 RUN mkdir -p ${app_dir}
-RUN mkdir /var/tmp/nginx
+RUN mkdir -p /var/tmp/nginx
 
 COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /resources/nginx/config/* /etc/nginx/sites-enabled/
