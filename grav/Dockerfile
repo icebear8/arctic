@@ -6,8 +6,11 @@ ARG user=www
 ARG group=www
 ARG uid=1000
 ARG gid=1000
-ARG app_dir=/var/www/
 ARG grav_repo=grav-v1.4.6.zip
+
+ENV APP_DIR=/var/www
+ENV CONTENT_REPO_URL=
+ENV CONTENT_DIR=
 
 RUN apk update \
   && apk add --no-cache \
@@ -35,19 +38,19 @@ RUN apk update \
 RUN addgroup -g ${gid} ${group} \
     && adduser -u ${uid} -G ${group} -D ${user}
 
-RUN mkdir -p ${app_dir}
+RUN mkdir -p ${APP_DIR}
 
 COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /resources/nginx/config/* /etc/nginx/sites-enabled/
-COPY /resources/run.sh ${app_dir}/
+COPY /resources/run.sh ${APP_DIR}/
 
-COPY /resources/${grav_repo} ${app_dir}/
-RUN unzip ${app_dir}/${grav_repo} -d ${app_dir}\
-    && rm ${app_dir}/${grav_repo}
+COPY /resources/${grav_repo} ${APP_DIR}/
+RUN unzip ${APP_DIR}/${grav_repo} -d ${APP_DIR}\
+    && rm ${APP_DIR}/${grav_repo}
 
 RUN touch /var/run/nginx.pid
-RUN mkdir -p ${app_dir}
-RUN chown -R ${user}:${group} ${app_dir}
+RUN mkdir -p ${APP_DIR}
+RUN chown -R ${user}:${group} ${APP_DIR}
 RUN chown -R ${user}:${group} /var/log
 RUN chown -R ${user}:${group} /var/lib/nginx
 RUN chown -R ${user}:${group} /var/run/nginx.pid
