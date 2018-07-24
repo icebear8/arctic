@@ -8,8 +8,9 @@ ARG uid=1000
 ARG gid=1000
 ARG grav_repo=grav-v1.4.6.zip
 
-ENV APP_DIR=/var/www/
+ENV APP_DIR=/var/www
 ENV CONTENT_REPO_URL=
+ENV CONTENT_DIR=
 
 RUN apk update \
   && apk add --no-cache \

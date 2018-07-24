@@ -1,8 +1,9 @@
 #!/bin/sh
 
 if ! [[ -z "${CONTENT_REPO_URL}" ]]; then
-  rm -rf ${APP_DIR}/user/pages/*
-  git clone --depth 1 ${CONTENT_REPO_URL} ${APP_DIR}/user/
+  git clone --depth 1 ${CONTENT_REPO_URL} ${CONTENT_DIR}
+  rm -rf ${APP_DIR}/grav/user
+  ln -s ${CONTENT_DIR}/public/user ${APP_DIR}/grav/user
 fi
 
 php-fpm5
