@@ -9,6 +9,9 @@ ARG gid=1000
 ARG grav_repo=grav-v1.4.6.zip
 
 ENV APP_DIR=/var/www
+ENV UTILS_DIR=${APP_DIR}/utils
+ENV APP_LAUNCHER=${UTILS_DIR}/launcher.sh
+
 ENV CONTENT_REPO_URL=
 ENV CONTENT_DIR=
 
@@ -42,15 +45,17 @@ RUN mkdir -p ${APP_DIR}
 
 COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /resources/nginx/config/* /etc/nginx/sites-enabled/
-COPY /resources/run.sh ${APP_DIR}/
+
+RUN mkdir -p ${UTILS_DIR}
+COPY /utils/* ${UTILS_DIR}
 
 COPY /resources/${grav_repo} ${APP_DIR}/
 RUN unzip ${APP_DIR}/${grav_repo} -d ${APP_DIR}\
     && rm ${APP_DIR}/${grav_repo}
 
 RUN touch /var/run/nginx.pid
-RUN mkdir -p ${APP_DIR}
 RUN chown -R ${user}:${group} ${APP_DIR}
+RUN chown -R ${user}:${group} ${UTILS_DIR}
 RUN chown -R ${user}:${group} /var/log
 RUN chown -R ${user}:${group} /var/lib/nginx
 RUN chown -R ${user}:${group} /var/run/nginx.pid
@@ -59,4 +64,6 @@ USER ${user}
     
 EXPOSE 8080
 
-CMD ["sh", "/var/www/run.sh"]
+ENTRYPOINT ["sh", "-c"]
+
+CMD ["sh ${APP_LAUNCHER}"]
