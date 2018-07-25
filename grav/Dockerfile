@@ -11,9 +11,9 @@ ARG grav_repo=grav-v1.4.6.zip
 ENV APP_DIR=/var/www
 ENV UTILS_DIR=${APP_DIR}/utils
 ENV APP_LAUNCHER=${UTILS_DIR}/launcher.sh
-
+ENV CONTENT_DIR=/var/www/content
+ENV WEB_CONTENT_DIR=${CONTENT_DIR}/web
 ENV CONTENT_REPO_URL=
-ENV CONTENT_DIR=
 
 RUN apk update \
   && apk add --no-cache \
@@ -38,24 +38,36 @@ RUN apk update \
   wget \
   unzip  
 
+# Create user
 RUN addgroup -g ${gid} ${group} \
     && adduser -u ${uid} -G ${group} -D ${user}
 
-RUN mkdir -p ${APP_DIR}
-
+# Prepare nginx
 COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /resources/nginx/config/* /etc/nginx/sites-enabled/
+RUN touch /var/run/nginx.pid
 
+# Prepare utilities
 RUN mkdir -p ${UTILS_DIR}
 COPY /utils/* ${UTILS_DIR}
 
-COPY /resources/${grav_repo} ${APP_DIR}/
-RUN unzip ${APP_DIR}/${grav_repo} -d ${APP_DIR}\
+# Create application directory and copy grav
+RUN mkdir -p ${APP_DIR}
+COPY /resources/${grav_repo} ${APP_DIR}
+RUN unzip ${APP_DIR}/${grav_repo} -d ${APP_DIR} \
     && rm ${APP_DIR}/${grav_repo}
 
-RUN touch /var/run/nginx.pid
+# Move the web content into a separate directory and create a symlink
+RUN mkdir -p ${CONTENT_DIR} \
+    && mkdir -p ${WEB_CONTENT_DIR} \
+    && mv ${APP_DIR}/grav/user ${WEB_CONTENT_DIR}/user \
+    && ln -s ${WEB_CONTENT_DIR}/user ${APP_DIR}/grav/user
+
+# Give access to the resources for the specified user
 RUN chown -R ${user}:${group} ${APP_DIR}
 RUN chown -R ${user}:${group} ${UTILS_DIR}
+RUN chown -R ${user}:${group} ${CONTENT_DIR}
+RUN chown -R ${user}:${group} ${WEB_CONTENT_DIR}
 RUN chown -R ${user}:${group} /var/log
 RUN chown -R ${user}:${group} /var/lib/nginx
 RUN chown -R ${user}:${group} /var/run/nginx.pid
@@ -63,6 +75,8 @@ RUN chown -R ${user}:${group} /var/run/nginx.pid
 USER ${user}
     
 EXPOSE 8080
+
+VOLUME ${CONTENT_DIR}
 
 ENTRYPOINT ["sh", "-c"]
 
