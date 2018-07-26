@@ -49,7 +49,7 @@ RUN touch /var/run/nginx.pid
 
 # Prepare utilities
 RUN mkdir -p ${UTILS_DIR}
-COPY /utils/* ${UTILS_DIR}
+COPY /utils/* ${UTILS_DIR}/
 
 # Create application directory and copy grav
 RUN mkdir -p ${APP_DIR}
