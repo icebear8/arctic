@@ -70,6 +70,7 @@ COPY /resources/deploy.php ${MAIN_APP_DIR}/
 # Give access to the resources for the specified user
 RUN chown -R ${user}:${group} ${WORK_DIR}
 RUN chown -R ${user}:${group} ${UTILS_DIR}
+RUN chmod -R 755 ${UTILS_DIR}
 RUN chown -R ${user}:${group} ${CONTENT_DIR}
 RUN chown -R ${user}:${group} ${WEB_CONTENT_DIR}
 RUN chown -R ${user}:${group} /var/log
