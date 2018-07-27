@@ -7,9 +7,10 @@ ARG group=www
 ARG uid=1000
 ARG gid=1000
 ARG grav_repo=grav-v1.4.6.zip
+ARG WORK_DIR=/var/www
+ARG MAIN_APP_DIR=${WORK_DIR}/grav
 
-ENV APP_DIR=/var/www
-ENV UTILS_DIR=${APP_DIR}/utils
+ENV UTILS_DIR=${WORK_DIR}/utils
 ENV APP_LAUNCHER=${UTILS_DIR}/launcher.sh
 ENV CONTENT_DIR=/var/www/content
 ENV WEB_CONTENT_DIR=${CONTENT_DIR}/web
@@ -49,23 +50,27 @@ RUN touch /var/run/nginx.pid
 
 # Prepare utilities
 RUN mkdir -p ${UTILS_DIR}
-COPY /utils/* ${UTILS_DIR}
+COPY /utils/* ${UTILS_DIR}/
 
 # Create application directory and copy grav
-RUN mkdir -p ${APP_DIR}
-COPY /resources/${grav_repo} ${APP_DIR}
-RUN unzip ${APP_DIR}/${grav_repo} -d ${APP_DIR} \
-    && rm ${APP_DIR}/${grav_repo}
+RUN mkdir -p ${WORK_DIR}
+COPY /resources/${grav_repo} ${WORK_DIR}/
+RUN unzip ${WORK_DIR}/${grav_repo} -d ${WORK_DIR} \
+    && rm ${WORK_DIR}/${grav_repo}
 
 # Move the web content into a separate directory and create a symlink
 RUN mkdir -p ${CONTENT_DIR} \
     && mkdir -p ${WEB_CONTENT_DIR} \
-    && mv ${APP_DIR}/grav/user ${WEB_CONTENT_DIR}/user \
-    && ln -s ${WEB_CONTENT_DIR}/user ${APP_DIR}/grav/user
+    && mv ${MAIN_APP_DIR}/user ${WEB_CONTENT_DIR}/user \
+    && ln -s ${WEB_CONTENT_DIR}/user ${MAIN_APP_DIR}/user
+    
+# Setup update script, it can be used if it is located in the nginx base directory
+COPY /resources/deploy.php ${MAIN_APP_DIR}/
 
 # Give access to the resources for the specified user
-RUN chown -R ${user}:${group} ${APP_DIR}
+RUN chown -R ${user}:${group} ${WORK_DIR}
 RUN chown -R ${user}:${group} ${UTILS_DIR}
+RUN chmod -R 755 ${UTILS_DIR}
 RUN chown -R ${user}:${group} ${CONTENT_DIR}
 RUN chown -R ${user}:${group} ${WEB_CONTENT_DIR}
 RUN chown -R ${user}:${group} /var/log
