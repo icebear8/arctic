@@ -1,7 +1,16 @@
 #!/bin/sh
 
-cd ${CONTENT_DIR}
-git pull --rebase origin master
+if ! [[ -z "${CONTENT_REPO_URL}" ]]; then
+  # Only update if there is a repository available
+  echo "Start update"
+  date
 
-# Wait for all processes to be finished
-wait
+  cd ${CONTENT_DIR}
+  git pull --rebase origin master
+
+  # Wait for all processes to be finished
+  wait
+
+  echo "Update done"
+
+fi
