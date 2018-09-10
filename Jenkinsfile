@@ -23,11 +23,12 @@ node {
       "user": "icebear8"
     },
     "dockerJobs": [
-      {"imageName": "nginx",        "dockerfilePath": "./nginx" },
-      {"imageName": "denonservice", "dockerfilePath": "./denonRemoteControl" },
-      {"imageName": "grav",         "dockerfilePath": "./grav" },
-      {"imageName": "tinkerforge",  "dockerfilePath": "./tinkerforge" },
-      {"imageName": "mosquitto",    "dockerfilePath": "./mosquitto" }
+      {"imageName": "bubbleupnpserver", "dockerfilePath": "./bubbleUpnpServer" },
+      {"imageName": "nginx",            "dockerfilePath": "./nginx" },
+      {"imageName": "denonservice",     "dockerfilePath": "./denonRemoteControl" },
+      {"imageName": "grav",             "dockerfilePath": "./grav" },
+      {"imageName": "tinkerforge",      "dockerfilePath": "./tinkerforge" },
+      {"imageName": "mosquitto",        "dockerfilePath": "./mosquitto" }
     ]
   }'''
   
