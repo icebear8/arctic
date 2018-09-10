@@ -1,0 +1,12 @@
+version: '2'
+services:
+  bubbleupnpserver:
+    build: .
+    image: icebear8/bubbleupnpserver
+    container_name: bubbleUpnpServer
+    restart: always
+    net: "host"
+    ports:
+      - "58050:58050"
+    env_file:
+      - ./config/default.env
