@@ -30,7 +30,8 @@ RUN mkdir -p ${APP_DIR} \
 
 RUN chmod -R +x ${APP_DIR}
 
-EXPOSE 58050/tcp 58051/tcp 1900/udp
+EXPOSE 58050/tcp
+#EXPOSE 58051/tcp 1900/udp
 
 ENTRYPOINT ["sh", "-c"]
 
