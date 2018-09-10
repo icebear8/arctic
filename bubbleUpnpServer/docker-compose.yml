@@ -2,7 +2,7 @@ version: '2'
 services:
   bubbleupnpserver:
     build: .
-    image: icebear8/bubbleupnpserver
+    image: icebear8/bubbleupnpserver:0.1-r1
     container_name: bubbleUpnpServer
     restart: always
     net: "host"
