@@ -7,3 +7,5 @@ services:
     volumes:
     - ./config:/opt/tinkermqtt/config:ro
     restart: always
+    env_file:
+      - ./config/default.env

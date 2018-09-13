@@ -3,7 +3,8 @@ MAINTAINER Dominik Ebert <dominik.ebert@zuehlke.com>
 
 ENV APP_DIR=/opt/tinkermqtt
 ENV CONFIG_DIR=${APP_DIR}/config
-ENV APP_LAUNCHER=${APP_DIR}/launchScript.sh
+
+ENV SERVICE_ARGS='--help'
 
 RUN apk update && apk add --no-cache \
   python3 \
@@ -22,12 +23,8 @@ RUN mkdir -p ${APP_DIR}/mqttProxy
 WORKDIR ${APP_DIR}/mqttProxy
 RUN wget https://raw.githubusercontent.com/Tinkerforge/brick-mqtt-proxy/master/brick-mqtt-proxy.py
 
-# Copy launcher script
-COPY resources/* ${APP_DIR}
-RUN chmod +x ${APP_LAUNCHER}
-
 VOLUME ${CONFIG_DIR}
 
 ENTRYPOINT ["sh", "-c"]
 
-CMD ["sh ${APP_LAUNCHER}"]
+CMD ["python3 brick-mqtt-proxy.py ${SERVICE_ARGS}"]
