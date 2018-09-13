@@ -27,6 +27,7 @@ node {
       {"imageName": "nginx",            "dockerfilePath": "./nginx" },
       {"imageName": "denonservice",     "dockerfilePath": "./denonRemoteControl" },
       {"imageName": "grav",             "dockerfilePath": "./grav" },
+      {"imageName": "nodered",             "dockerfilePath": "./nodered" },
       {"imageName": "tinkerforge",      "dockerfilePath": "./tinkerforge" },
       {"imageName": "mosquitto",        "dockerfilePath": "./mosquitto" }
     ]
