@@ -1,8 +1,8 @@
 FROM alpine:3.8
 MAINTAINER Dominik Ebert <dominik.ebert@zuehlke.com>
 
-ARG user=pan
-ARG group=pan
+ARG user=boxer
+ARG group=boxer
 ARG uid=1000
 ARG gid=1000
 
