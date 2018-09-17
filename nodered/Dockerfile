@@ -6,15 +6,10 @@ ARG group=boxer
 ARG uid=1000
 ARG gid=1000
 
-ENV APP_DIR=/usr/src/node-red
 ENV DATA_DIR=/data
 
-# Environment variable holding file path for flows configuration
-ENV FLOWS=flows.json
-ENV NODE_PATH=${APP_DIR}/node_modules:${DATA_DIR}/node_modules
-
 # Default arguments for service execution
-ENV SERVICE_ARGS="--userDir ${DATA_DIR} -v ${FLOWS}"
+ENV SERVICE_ARGS="--userDir ${DATA_DIR}"
 
 RUN apk update && apk add --no-cache \
   nodejs \
@@ -23,20 +18,14 @@ RUN apk update && apk add --no-cache \
 RUN addgroup -g ${gid} ${group} && \
     adduser -u ${uid} -G ${group} -D ${user}
   
-# Home directory for Node-RED application source code.
-RUN mkdir -p ${APP_DIR}
-
-# User data directory, contains flows, config and nodes.
-RUN mkdir ${DATA_DIR}
-
-WORKDIR ${APP_DIR}
-
 # Install node-red
 RUN npm install -g --unsafe-perm node-red
+  
+# Directory for storing the data
+RUN mkdir -p ${DATA_DIR}
 
 # Add node-red user so we aren't running as root.
-RUN chown -R ${user}:${group} ${DATA_DIR} && \
-    chown -R ${user}:${group} ${APP_DIR}
+RUN chown -R ${user}:${group} ${DATA_DIR}
 
 USER ${user}
 
