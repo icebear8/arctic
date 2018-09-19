@@ -21,7 +21,7 @@ RUN addgroup -g ${gid} ${group} && \
     adduser -u ${uid} -G ${group} -D ${user}
   
 # Install node-red
-RUN npm install -g --unsafe-perm node-red
+RUN npm install -g --unsafe-perm node-red@0.19.4
   
 # Directory for storing the data
 RUN mkdir -p ${DATA_DIR}
