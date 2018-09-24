@@ -8,7 +8,7 @@ ARG GID=1000
 
 ARG APPLICATION_REPO=BubbleUPnPServer-distrib-2018-09.zip
 ENV APP_DIR=/opt/bubbleupnpserver
-ENV SERVICE_ARGS=
+ENV SERVICE_ARGS=-nologfile -logLevel SEVERE -disableAutoUpdate
 
 
 RUN apk update && apk add --no-cache \
