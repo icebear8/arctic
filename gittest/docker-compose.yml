@@ -1,0 +1,9 @@
+version: '2'
+services:
+  gittest:
+    build: .
+    image: icebear8/gittest:latest
+    container_name: gittest
+    restart: always
+    env_file:
+      - ./config/default.env
