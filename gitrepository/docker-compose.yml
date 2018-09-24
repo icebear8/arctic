@@ -1,9 +1,9 @@
 version: '2'
 services:
-  gittest:
+  gitrepository:
     build: .
-    image: icebear8/gittest:latest
-    container_name: gittest
+    image: icebear8/gitrepository:latest
+    container_name: gitRepository
     restart: always
     env_file:
       - ./config/default.env
