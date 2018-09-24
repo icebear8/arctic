@@ -7,7 +7,10 @@ ARG uid=1000
 ARG gid=1000
 
 ENV UTILS_DIR=/opt/utils
-ENV APP_LAUNCHER=${UTILS_DIR}/launcher.sh
+ENV APP_LAUNCHER=${UTILS_DIR}/setupRepoAccess.sh
+
+ENV REPO_DIR=/opt/repo/
+ENV REPO_URL=
 
 RUN apk update && apk add --no-cache \
   git \
@@ -17,12 +20,6 @@ RUN apk update && apk add --no-cache \
 RUN addgroup -g ${gid} ${group} && \
     adduser -u ${uid} -G ${group} -D ${user}
     
-# Git configuration
-RUN touch /home/${user}/.gitconfig && \
-    echo "[user]" >> /home/${user}/.gitconfig && \
-    echo "  name = ${user}" >> /home/${user}/.gitconfig && \
-    echo "  email = ${user}@container" >> /home/${user}/.gitconfig
-
 # Add known hosts
 COPY resources/known_hostsGithub /home/${user}/.ssh/known_hosts
 
@@ -31,11 +28,15 @@ RUN mkdir -p ${UTILS_DIR}
 COPY utils/* ${UTILS_DIR}/
 
 # Access for the user
+RUN mkdir ${REPO_DIR}
+RUN chown -R ${user}:${group} ${REPO_DIR}
 RUN chown -R ${user}:${group} /home/${user}
 RUN chmod -R 755 ${UTILS_DIR}
 
 USER ${user}
-WORKDIR ${UTILS_DIR}
+WORKDIR ${REPO_DIR}
+
+VOLUME ${REPO_DIR}
   
 ENTRYPOINT ["sh", "-c"]
 
