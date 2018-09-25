@@ -24,10 +24,11 @@ node {
     },
     "dockerJobs": [
       {"imageName": "bubbleupnpserver", "dockerfilePath": "./bubbleUpnpServer" },
-      {"imageName": "nginx",            "dockerfilePath": "./nginx" },
       {"imageName": "denonservice",     "dockerfilePath": "./denonRemoteControl" },
       {"imageName": "grav",             "dockerfilePath": "./grav" },
-      {"imageName": "nodered",             "dockerfilePath": "./nodered" },
+      {"imageName": "gitrepoutils",     "dockerfilePath": "./gitRepoUtils" },
+      {"imageName": "nginx",            "dockerfilePath": "./nginx" },
+      {"imageName": "nodered",          "dockerfilePath": "./nodered" },
       {"imageName": "tinkerforge",      "dockerfilePath": "./tinkerforge" },
       {"imageName": "mosquitto",        "dockerfilePath": "./mosquitto" }
     ]
