@@ -1,8 +1,8 @@
-FROM alpine:3.7
+FROM alpine:3.8
 MAINTAINER Dominik Ebert <dominik.ebert@zuehlke.com>
 
-ARG USER=boxer
-ARG GROUP=boxer
+ARG USER=Ahab
+ARG GROUP=Ahab
 ARG UID=1000
 ARG GID=1000
 
@@ -28,7 +28,8 @@ RUN mkdir -p ${APP_DIR} \
     && unzip /tmp/${APPLICATION_REPO} -d ${APP_DIR} \
     && rm /tmp/${APPLICATION_REPO}
 
-RUN chmod -R +x ${APP_DIR}
+RUN chown -R ${USER}:${GROUP} ${APP_DIR}
+USER ${USER}
 
 EXPOSE 58050/tcp
 #EXPOSE 58051/tcp 1900/udp
