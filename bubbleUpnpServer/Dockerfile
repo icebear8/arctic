@@ -29,6 +29,7 @@ RUN mkdir -p ${APP_DIR} \
     && rm /tmp/${APPLICATION_REPO}
 
 RUN chown -R ${USER}:${GROUP} ${APP_DIR}
+RUN chmod -R +x ${APP_DIR}
 USER ${USER}
 
 EXPOSE 58050/tcp
