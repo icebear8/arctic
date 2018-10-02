@@ -1,7 +1,7 @@
 FROM alpine:3.8
 MAINTAINER Dominik Ebert <dominik.ebert@zuehlke.com>
 
-ENV UTILS_DIR=/opt/utils
+ENV GIT_UTILS_DIR=/opt/utils/git
 ENV REPO_URL=
 
 RUN apk update && apk add --no-cache \
@@ -10,9 +10,8 @@ RUN apk update && apk add --no-cache \
   openssh-keygen
   
 # Add utils
-RUN mkdir -p ${UTILS_DIR}
-COPY utils/* ${UTILS_DIR}/
+RUN mkdir -p ${GIT_UTILS_DIR}
+COPY utils/* ${GIT_UTILS_DIR}/
 
 ENTRYPOINT ["sh", "-c"]
-
 CMD [""]

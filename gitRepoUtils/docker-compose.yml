@@ -2,8 +2,6 @@ version: '2'
 services:
   gitrepository:
     build: .
-    image: icebear8/gitrepository:latest
+    image: icebear8/gitrepository:0.1
     container_name: gitRepository
     restart: always
-    env_file:
-      - ./config/default.env
