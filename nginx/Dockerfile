@@ -40,4 +40,5 @@ EXPOSE 8080
 VOLUME ${APP_DIR}
 VOLUME ${CONFIG_DIR}
 
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["sh", "-c"]
+CMD ["nginx -g daemon off;"]
