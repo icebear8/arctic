@@ -9,6 +9,6 @@ $logDestination   = '/var/log/updateContent.log';
 shell_exec('sh '.$updateScript.' >> '.$logDestination.' 2>&1');
 shell_exec('sh '.$clearCacheScript.' >> '.$logDestination.' 2>&1');
 
-header ("Location: http://intranet.arctic:8080");
+header("Location: {$_SERVER['HTTP_REFERER']}");
 
 ?>
