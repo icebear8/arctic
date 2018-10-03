@@ -1,27 +1,32 @@
 FROM alpine:3.7
 
-MAINTAINER Dominik Ebert <doe@zuehlke.com>
+MAINTAINER icebear
 
-ARG user=www
-ARG group=www
-ARG uid=1000
-ARG gid=1000
-ARG grav_repo=grav-v1.4.6.zip
-ARG WORK_DIR=/var/www
-ARG MAIN_APP_DIR=${WORK_DIR}/grav
+ARG USER=www
+ARG GROUP=www
+ARG UID=1000
+ARG GID=1000
 
-ENV UTILS_DIR=${WORK_DIR}/utils
-ENV APP_LAUNCHER=${UTILS_DIR}/launcher.sh
-ENV CONTENT_DIR=/var/www/content
-ENV WEB_CONTENT_DIR=${CONTENT_DIR}/web
-ENV CONTENT_REPO_URL=
+ARG GRAV_REPO=grav-v1.4.6.zip
+ARG BASE_DIR=/opt
+ARG MAIN_APP_DIR=${BASE_DIR}/grav
+
+ENV REPO_DIR=/opt/repo
+ENV WEB_CONTENT_DIR=${REPO_DIR}/web
+
+ENV GIT_UTILS_DIR=${BASE_DIR}/utils/git
+ENV GRAV_UTILS_DIR=${BASE_DIR}/utils/grav
+ENV APP_LAUNCHER=${GRAV_UTILS_DIR}/launcher.sh
 
 RUN apk update \
   && apk add --no-cache \
   git \
   logrotate \
   nginx \
+  openssh-client \
+  openssh-keygen \
   php5 \
+  php5-cli \
   php5-ctype \
   php5-curl \
   php5-dom \
@@ -40,26 +45,32 @@ RUN apk update \
   unzip  
 
 # Create user
-RUN addgroup -g ${gid} ${group} \
-    && adduser -u ${uid} -G ${group} -D ${user}
+RUN addgroup -g ${GID} ${GROUP} \
+    && adduser -u ${UID} -G ${GROUP} -D ${USER}
 
 # Prepare nginx
 COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /resources/nginx/config/* /etc/nginx/sites-enabled/
 RUN touch /var/run/nginx.pid
 
+# Prepare git remote repo access
+RUN git clone --depth 1 https://github.com/icebear8/gitRepoUtils.git /opt/utils/git
+RUN mkdir -p /home/${USER}/.ssh/ \
+  && touch /home/${USER}/.ssh/known_hosts \
+  && cat /opt/utils/git/resources/known_hostsGithub >> /home/${USER}/.ssh/known_hosts
+
 # Prepare utilities
-RUN mkdir -p ${UTILS_DIR}
-COPY /utils/* ${UTILS_DIR}/
+RUN mkdir -p ${GRAV_UTILS_DIR}
+COPY /utils/* ${GRAV_UTILS_DIR}/
 
 # Create application directory and copy grav
-RUN mkdir -p ${WORK_DIR}
-COPY /resources/${grav_repo} ${WORK_DIR}/
-RUN unzip ${WORK_DIR}/${grav_repo} -d ${WORK_DIR} \
-    && rm ${WORK_DIR}/${grav_repo}
+RUN mkdir -p ${BASE_DIR}
+COPY /resources/${GRAV_REPO} ${BASE_DIR}/
+RUN unzip ${BASE_DIR}/${GRAV_REPO} -d ${BASE_DIR} \
+    && rm ${BASE_DIR}/${GRAV_REPO}
 
 # Move the web content into a separate directory and create a symlink
-RUN mkdir -p ${CONTENT_DIR} \
+RUN mkdir -p ${REPO_DIR} \
     && mkdir -p ${WEB_CONTENT_DIR} \
     && mv ${MAIN_APP_DIR}/user ${WEB_CONTENT_DIR}/user \
     && ln -s ${WEB_CONTENT_DIR}/user ${MAIN_APP_DIR}/user
@@ -68,21 +79,19 @@ RUN mkdir -p ${CONTENT_DIR} \
 COPY /resources/deploy.php ${MAIN_APP_DIR}/
 
 # Give access to the resources for the specified user
-RUN chown -R ${user}:${group} ${WORK_DIR}
-RUN chown -R ${user}:${group} ${UTILS_DIR}
-RUN chmod -R 755 ${UTILS_DIR}
-RUN chown -R ${user}:${group} ${CONTENT_DIR}
-RUN chown -R ${user}:${group} ${WEB_CONTENT_DIR}
-RUN chown -R ${user}:${group} /var/log
-RUN chown -R ${user}:${group} /var/lib/nginx
-RUN chown -R ${user}:${group} /var/run/nginx.pid
+RUN chown -R ${USER}:${GROUP} /home/${USER}
+RUN chown -R ${USER}:${GROUP} ${MAIN_APP_DIR}
+RUN chmod -R 755 ${GIT_UTILS_DIR}/*.sh
+RUN chmod -R 755 ${GRAV_UTILS_DIR}/*.sh
+RUN chown -R ${USER}:${GROUP} ${REPO_DIR}
+RUN chown -R ${USER}:${GROUP} /var/log
+RUN chown -R ${USER}:${GROUP} /var/lib/nginx
+RUN chown -R ${USER}:${GROUP} /var/run/nginx.pid
 
-USER ${user}
-    
+USER ${USER}
+WORKDIR ${REPO_DIR}    
+VOLUME ${REPO_DIR}
 EXPOSE 8080
 
-VOLUME ${CONTENT_DIR}
-
 ENTRYPOINT ["sh", "-c"]
-
 CMD ["sh ${APP_LAUNCHER}"]

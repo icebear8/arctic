@@ -1,8 +1,7 @@
 #!/bin/sh
 
-if ! [[ -z "${CONTENT_REPO_URL}" ]]; then
-  rm -rf ${CONTENT_DIR}
-  git clone --depth 1 ${CONTENT_REPO_URL} ${CONTENT_DIR}
+if ! [[ -z "${REPO_URL}" ]]; then
+  sh ${GIT_UTILS_DIR}/setupRepoAccess.sh
 fi
 
 php-fpm5
