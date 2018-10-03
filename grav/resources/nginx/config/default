@@ -3,7 +3,7 @@ server {
     index index.html index.php;
 
     ## Begin - Server Info
-    root /var/www/grav;
+    root /opt/grav;
     server_name localhost;
     ## End - Server Info
 
