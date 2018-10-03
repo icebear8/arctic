@@ -26,7 +26,6 @@ node {
       {"imageName": "bubbleupnpserver", "dockerfilePath": "./bubbleUpnpServer" },
       {"imageName": "denonservice",     "dockerfilePath": "./denonRemoteControl" },
       {"imageName": "grav",             "dockerfilePath": "./grav" },
-      {"imageName": "gitrepoutils",     "dockerfilePath": "./gitRepoUtils" },
       {"imageName": "nginx",            "dockerfilePath": "./nginx" },
       {"imageName": "nodered",          "dockerfilePath": "./nodered" },
       {"imageName": "tinkerforge",      "dockerfilePath": "./tinkerforge" },
