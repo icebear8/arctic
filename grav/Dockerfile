@@ -14,6 +14,7 @@ ARG MAIN_APP_DIR=${BASE_DIR}/grav
 ENV REPO_DIR=/opt/repo
 ENV WEB_CONTENT_DIR=${REPO_DIR}/web
 
+ENV GIT_UTILS_DIR=${BASE_DIR}/utils/git
 ENV GRAV_UTILS_DIR=${BASE_DIR}/utils/grav
 ENV APP_LAUNCHER=${GRAV_UTILS_DIR}/launcher.sh
 
@@ -22,6 +23,8 @@ RUN apk update \
   git \
   logrotate \
   nginx \
+  openssh-client \
+  openssh-keygen \
   php5 \
   php5-cli \
   php5-ctype \
@@ -50,6 +53,12 @@ COPY /resources/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY /resources/nginx/config/* /etc/nginx/sites-enabled/
 RUN touch /var/run/nginx.pid
 
+# Prepare git remote repo access
+RUN git clone --depth 1 https://github.com/icebear8/gitRepoUtils.git /opt/utils/git
+RUN mkdir -p /home/${USER}/.ssh/ \
+  && touch /home/${USER}/.ssh/known_hosts \
+  && cat /opt/utils/git/resources/known_hostsGithub >> /home/${USER}/.ssh/known_hosts
+
 # Prepare utilities
 RUN mkdir -p ${GRAV_UTILS_DIR}
 COPY /utils/* ${GRAV_UTILS_DIR}/
@@ -72,6 +81,7 @@ COPY /resources/deploy.php ${MAIN_APP_DIR}/
 # Give access to the resources for the specified user
 RUN chown -R ${USER}:${GROUP} /home/${USER}
 RUN chown -R ${USER}:${GROUP} ${MAIN_APP_DIR}
+RUN chmod -R 755 ${GIT_UTILS_DIR}/*.sh
 RUN chmod -R 755 ${GRAV_UTILS_DIR}/*.sh
 RUN chown -R ${USER}:${GROUP} ${REPO_DIR}
 RUN chown -R ${USER}:${GROUP} /var/log
