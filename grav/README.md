@@ -1,8 +1,3 @@
-# Supported tags and respective `Dockerfile` links
-* 1.4.6-r5, latest [(grav/Dockerfile)](https://github.com/icebear8/arctic/blob/grav/1.4.6-r5/grav/Dockerfile)
-
-The image tag identifies the Grav version.
-
 # Grav
 [Grav](https://getgrav.org/) is a modern open source flat-file CMS and allows to manage website content with markdown files.
 
@@ -27,7 +22,7 @@ Currently only managing the content on Github is supported.
 The environment variable `REPO_URL` defines the remote git repository which is used.
 For this image the SSH should be used as the URL (git@github.com:<someRepository>) .
 
-`docker run -p 80:8080 -d -e REPO_URL=git@github.com:<someRepository> --name grav icebear8/grav`
+`docker run -p 8080:8080 -d -e REPO_URL=git@github.com:<someRepository> --name grav icebear8/grav`
 
 ##  Key Management
 
