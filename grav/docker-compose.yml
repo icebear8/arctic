@@ -2,7 +2,7 @@ version: '2'
 services:
   grav:
     build: .
-    image: icebear8/grav:1.5.2-r1
+    image: icebear8/grav:1.5.2-r3
     container_name: grav
     ports:
     - "8080:8080"
