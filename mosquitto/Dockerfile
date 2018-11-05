@@ -1,5 +1,5 @@
 FROM alpine:3.7
-MAINTAINER Dominik Ebert <dominik.ebert@zuehlke.com>
+MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
 ENV SERVICE_ARGS=
 

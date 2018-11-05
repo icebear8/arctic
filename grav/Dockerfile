@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-MAINTAINER icebear
+MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
 ARG USER=www
 ARG GROUP=www

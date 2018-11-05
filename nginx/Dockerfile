@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-MAINTAINER Dominik Ebert <doe@zuehlke.com>
+MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
 ARG USER=Ahab
 ARG GROUP=Ahab

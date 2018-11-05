@@ -1,5 +1,5 @@
 FROM alpine:3.4
-MAINTAINER Dominik Ebert <doe@zuehlke.com>
+MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
 ARG user=PeterPan
 ARG app_dir=/service

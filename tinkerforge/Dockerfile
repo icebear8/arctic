@@ -1,5 +1,5 @@
 FROM alpine:3.7
-MAINTAINER Dominik Ebert <dominik.ebert@zuehlke.com>
+MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
 ENV APP_DIR=/opt/tinkermqtt
 ENV CONFIG_DIR=${APP_DIR}/config
