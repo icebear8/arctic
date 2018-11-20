@@ -13,12 +13,19 @@ ARG BUBBLE_SERVER_VERSION=v0.9-update30
 ENV BUBBLE_APP_DIR=/opt/bubbleupnpserver
 ENV BUBBLE_SERVICE_ARGS="-nologfile -logLevel SEVERE -disableAutoUpdate"
 
+# Supporting rest service
+ENV REST_RESOURCE_DIR=/resources/restService
+ENV REST_APP_DIR=/opt/restservice
+
 RUN apk update && apk add --no-cache \
   ffmpeg \
   openjdk8-jre \
+  python3 \
   sox \
   unzip \
   wget
+  
+RUN pip3 install flask
   
 # Create user
 RUN addgroup -g ${GID} ${GROUP} \
@@ -34,10 +41,16 @@ COPY ${BUBBLE_RESOURCE_DIR}/BubbleUPnPServer-${BUBBLE_SERVER_VERSION}.jar /${BUB
 
 RUN chown -R ${USER}:${GROUP} ${BUBBLE_APP_DIR}
 RUN chmod -R +x ${BUBBLE_APP_DIR}
-USER ${USER}
 
+# Add rest service to the image
+COPY ${REST_RESOURCE_DIR}/* ${REST_APP_DIR}
+RUN chown -R ${USER} ${REST_APP_DIR}
+
+USER ${USER}
+# Bubble upnp server port
 EXPOSE 58050/tcp
-#EXPOSE 58051/tcp 1900/udp
+# Rest service port
+EXPOSE 5000
 
 ENTRYPOINT ["sh", "-c"]
 CMD ["${BUBBLE_APP_DIR}/launch.sh ${BUBBLE_SERVICE_ARGS}"]
