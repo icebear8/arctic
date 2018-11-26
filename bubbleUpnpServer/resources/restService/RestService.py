@@ -1,5 +1,6 @@
 
 import logging
+import subprocess
 import sys
 import threading
 import time
@@ -27,11 +28,25 @@ def shutdown():
 @app.route('/service/start', methods=['PUT'])
 def startService():
   logging.info("Service started")
+  if RestService.runningProcess is None:
+    logging.info("Start service");
+    RestService.runningProcess = subprocess.Popen('/opt/bubbleupnpserver/launch.sh')
+  else:
+    logging.info("Servie already running");
+
   return "Service started"
 
 @app.route('/service/stop', methods=['PUT'])
 def stopService():
   logging.info("Service stopped")
+  if RestService.runningProcess is not None:
+    logging.info("Kill running process");
+    RestService.runningProcess.terminate()
+    RestService.runningProcess.kill()
+    RestService.runningProcess = None
+  else:
+    logging.info("No service running");
+  
   return "Service stopped"
     
 @app.route('/')
@@ -41,6 +56,7 @@ def hello_world():
 
 class RestService(threading.Thread):
   isServiceRunning = True
+  runningProcess = None
 
   def __init__(self):
     threading.Thread.__init__(self)
