@@ -14,8 +14,9 @@ ENV BUBBLE_APP_DIR=/opt/bubbleupnpserver
 ENV BUBBLE_SERVICE_ARGS="-nologfile -logLevel SEVERE -disableAutoUpdate"
 
 # Supporting rest service
-ENV REST_RESOURCE_DIR=/resources/restService
+ARG REST_RESOURCE_DIR=/resources/restService
 ENV REST_APP_DIR=/opt/restservice
+ENV REST_APP_PORT=58051
 
 RUN apk update && apk add --no-cache \
   ffmpeg \
@@ -43,14 +44,14 @@ RUN chown -R ${USER}:${GROUP} ${BUBBLE_APP_DIR}
 RUN chmod -R +x ${BUBBLE_APP_DIR}
 
 # Add rest service to the image
-COPY ${REST_RESOURCE_DIR}/* ${REST_APP_DIR}
+COPY ${REST_RESOURCE_DIR}/* ${REST_APP_DIR}/
 RUN chown -R ${USER} ${REST_APP_DIR}
 
 USER ${USER}
 # Bubble upnp server port
 EXPOSE 58050/tcp
 # Rest service port
-EXPOSE 5000
+EXPOSE ${REST_APP_PORT}
 
 ENTRYPOINT ["sh", "-c"]
-CMD ["${BUBBLE_APP_DIR}/launch.sh ${BUBBLE_SERVICE_ARGS}"]
+CMD ["python3 ${REST_APP_DIR}/RestService.py ${REST_APP_PORT}"]
