@@ -29,12 +29,15 @@ def shutdown():
 def startService():
   logging.info("Service started")
   if RestService.runningProcess is None:
-    logging.info("Start service");
-    RestService.runningProcess = subprocess.Popen('/opt/bubbleupnpserver/launch.sh')
+    if RestService.commandToRun is not None:
+      logging.info("Start service");
+      RestService.runningProcess = subprocess.Popen(RestService.commandToRun)
+    else:
+      logging.info("Command not valid");
   else:
     logging.info("Servie already running");
 
-  return "Service started"
+  return "Service running"
 
 @app.route('/service/stop', methods=['PUT'])
 def stopService():
@@ -57,6 +60,7 @@ def hello_world():
 class RestService(threading.Thread):
   isServiceRunning = True
   runningProcess = None
+  commandToRun = None
 
   def __init__(self):
     threading.Thread.__init__(self)
@@ -82,6 +86,10 @@ if __name__ == '__main__':
       restService._port = int(sys.argv[1])
     except ValueError:
       pass    # Nothing to do
+      
+  if len(sys.argv) >= 3:
+    RestService.commandToRun = str(sys.argv[2])
+    logging.info("Command to run: " + RestService.commandToRun)
   
   restService.start()
   

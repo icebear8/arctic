@@ -11,6 +11,7 @@ ARG BUBBLE_RESOURCE_DIR=/resources/bubble
 ARG BUBBLE_APPLICATION_REPO=BubbleUPnPServer-distrib.zip
 ARG BUBBLE_SERVER_VERSION=v0.9-update30
 ENV BUBBLE_APP_DIR=/opt/bubbleupnpserver
+ENV BUBBLE_APP_LAUNCHER=${BUBBLE_APP_DIR}/launch.sh
 ENV BUBBLE_SERVICE_ARGS="-nologfile -logLevel SEVERE -disableAutoUpdate"
 
 # Supporting rest service
@@ -54,4 +55,4 @@ EXPOSE 58050/tcp
 EXPOSE ${REST_APP_PORT}
 
 ENTRYPOINT ["sh", "-c"]
-CMD ["python3 ${REST_APP_DIR}/RestService.py ${REST_APP_PORT}"]
+CMD ["python3 ${REST_APP_DIR}/RestService.py ${REST_APP_PORT} ${BUBBLE_APP_LAUNCHER}"]
