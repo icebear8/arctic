@@ -34,8 +34,9 @@ def startService():
       RestService.runningProcess = subprocess.Popen(RestService.commandToRun)
     else:
       logging.info("Command not valid");
+      return "Service cannot be started"
   else:
-    logging.info("Servie already running");
+    logging.info("Service already running");
 
   return "Service running"
 
@@ -50,6 +51,14 @@ def stopService():
   else:
     logging.info("No service running");
   
+  return "Service stopped"
+  
+@app.route('/service', methods=['GET'])
+def isServiceRunning():
+  logging.info("Service stopped")
+  if RestService.runningProcess is not None:
+    return "Service running"
+
   return "Service stopped"
     
 @app.route('/')
@@ -77,7 +86,7 @@ class RestService(threading.Thread):
     logging.info("Rest service stopped")
 
 if __name__ == '__main__':
-  logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p', level=logging.INFO)
+  logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p', level=logging.WARNING)
   logging.info("Main started")
   restService = RestService()
   
@@ -91,7 +100,8 @@ if __name__ == '__main__':
     RestService.commandToRun = str(sys.argv[2])
     logging.info("Command to run: " + RestService.commandToRun)
   
-  restService.start()
+  restService.start() # Start rest thread
+  startService()  # Initially start the command to be executed
   
   logging.info("Wait loop")
   while RestService.isServiceRunning:
