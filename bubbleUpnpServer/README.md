@@ -1,4 +1,5 @@
 # Supported tags and respective `Dockerfile` links
+* 0.9-u30-r3: Improved tear down of the Bubble UPnP Service
 * 0.9-u30-r2: Add a rest api to start/stop the Bubble UPnP Server
 * 0.9-u30-r1: Basic Bubble UPnP Server
 
@@ -9,7 +10,8 @@ The Bubble UPnP server allows to play media from a media library on a renderer w
 The Bubble UPnP App can be used as a control point.
 See: [Bubble UPnP Server](http://www.bubblesoftapps.com/bubbleupnpserver/)
 
-The images are setup to run a specific Bubble UPnP Server version. The auto update feature is disabled by default.
+The images are setup to run a specific Bubble UPnP Server version.
+The auto update feature is disabled by default.
 
 # Usage
 The service has to share the network interface with the host for proper usage.
@@ -25,6 +27,7 @@ By default the server is started without logging and auto update is disabled (se
 
 ## Rest API
 The rest service is running on port 58051 and allows to start/stop the BubbleUPnP Server.
+The rest API was introduced to terminate the Bubble UPnP Service when it is not used because it prevented the NAS from standby mode.
 Rest API supports:
 
 * `GET <host>:58051/service`: Gets the state of the service ('running' or 'stopped')
