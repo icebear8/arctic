@@ -1,5 +1,8 @@
 
+
 import logging
+import os
+import signal
 import subprocess
 import sys
 import threading
@@ -31,7 +34,7 @@ def startService():
   if RestService.runningProcess is None:
     if RestService.commandToRun is not None:
       logging.info("Start service");
-      RestService.runningProcess = subprocess.Popen(RestService.commandToRun)
+      RestService.runningProcess = subprocess.Popen(RestService.commandToRun, preexec_fn=os.setsid)
     else:
       logging.info("Command not valid");
       return "Service cannot be started"
@@ -45,8 +48,7 @@ def stopService():
   logging.info("Service stopped")
   if RestService.runningProcess is not None:
     logging.info("Kill running process");
-    RestService.runningProcess.terminate()
-    RestService.runningProcess.kill()
+    os.killpg(os.getpgid(RestService.runningProcess.pid), signal.SIGTERM)
     RestService.runningProcess = None
   else:
     logging.info("No service running");
