@@ -71,7 +71,7 @@ def hello_world():
 class RestService(threading.Thread):
   isServiceRunning = True
   runningProcess = None
-  commandToRun = None
+  commandToRun = []
 
   def __init__(self):
     threading.Thread.__init__(self)
@@ -97,10 +97,12 @@ if __name__ == '__main__':
       restService._port = int(sys.argv[1])
     except ValueError:
       pass    # Nothing to do
-      
+
   if len(sys.argv) >= 3:
-    RestService.commandToRun = str(sys.argv[2])
-    logging.info("Command to run: " + RestService.commandToRun)
+    for i in range(2, len(sys.argv)):
+      RestService.commandToRun.append(sys.argv[i])
+
+  logging.info("Command to run: " + " ".join(RestService.commandToRun))
   
   restService.start() # Start rest thread
   startService()  # Initially start the command to be executed

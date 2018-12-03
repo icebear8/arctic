@@ -17,7 +17,7 @@ ENV BUBBLE_SERVICE_ARGS="-nologfile -logLevel SEVERE -disableAutoUpdate"
 # Supporting rest service
 ARG REST_RESOURCE_DIR=/resources/restService
 ENV REST_APP_DIR=/opt/restservice
-ENV REST_APP_PORT=58051
+ENV REST_APP_PORT=58052
 
 RUN apk update && apk add --no-cache \
   ffmpeg \
@@ -55,4 +55,4 @@ EXPOSE 58050/tcp
 EXPOSE ${REST_APP_PORT}
 
 ENTRYPOINT ["sh", "-c"]
-CMD ["python3 ${REST_APP_DIR}/RestService.py ${REST_APP_PORT} ${BUBBLE_APP_LAUNCHER}"]
+CMD ["python3 ${REST_APP_DIR}/RestService.py ${REST_APP_PORT} ${BUBBLE_APP_LAUNCHER} ${BUBBLE_SERVICE_ARGS}"]
