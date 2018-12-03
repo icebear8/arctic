@@ -17,7 +17,7 @@ ENV BUBBLE_SERVICE_ARGS="-nologfile -logLevel SEVERE -disableAutoUpdate"
 # Supporting rest service
 ARG REST_RESOURCE_DIR=/resources/restService
 ENV REST_APP_DIR=/opt/restservice
-ENV REST_APP_PORT=58051
+ENV REST_APP_PORT=58052
 
 RUN apk update && apk add --no-cache \
   ffmpeg \

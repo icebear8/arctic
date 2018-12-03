@@ -8,6 +8,6 @@ services:
     network_mode: "host"
     ports:
       - "58050:58050"
-      - "58051:58051"
+      - "58052:58052"
     env_file:
       - ./config/default.env
