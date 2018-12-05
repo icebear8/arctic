@@ -6,6 +6,7 @@ ARG USER=Ahab
 ARG GROUP=Ahab
 ARG UID=1000
 ARG GID=1000
+
 ARG APP_DIR=/var/www
 ARG CONFIG_DIR=/etc/nginx/sites-enabled/
 
@@ -23,7 +24,6 @@ COPY ./resources/nginx.conf /etc/nginx/nginx.conf
 
 RUN mkdir -p ${CONFIG_DIR}
 COPY ./resources/config/* ${CONFIG_DIR}
-
 COPY ./resources/www/* ${APP_DIR}
 
 RUN touch /var/run/nginx.pid
@@ -37,6 +37,7 @@ RUN chown -Rh ${USER}:${GROUP} /var/lib/nginx
 
 USER ${USER}
 EXPOSE 8080
+
 VOLUME ${APP_DIR}
 VOLUME ${CONFIG_DIR}
 
