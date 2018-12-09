@@ -1,6 +1,6 @@
 server {
   listen                  8080;
-  server_name             *.arctic default_server;
+  server_name             *.local default_server;
 
   location / {
       root                    /var/www;

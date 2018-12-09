@@ -2,11 +2,9 @@ version: '2'
 services:
   nginx:
     build: .
-    image: icebear8/nginx:0.8
+    image: icebear8/nginx:0.10-r1
     container_name: nginx
     ports:
     - "8080:8080"
-    volumes:
-    - ./config:/etc/nginx/sites-enabled/:ro
-    - ./www:/var/www/:ro
-    restart: always
+    env_file:
+      - ./config/default.env
