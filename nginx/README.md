@@ -4,6 +4,10 @@
 This image contains everything to run Nginx with a basic configuration.
 Additionally a link to a (private or public) git repository can be used to manage the maintain the nginx configuration files.
 
+##  Changelog
+* nginx:0.10-r1, Nginx with git repo support, config files can be managed on Github
+* nginx:0.9, Basic nginx, configuration files with mapped volumes
+
 # Usage
 `docker run -p 8080:8080 icebear8/nginx`
 
