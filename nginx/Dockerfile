@@ -51,9 +51,9 @@ COPY ./resources/nginx.conf /etc/nginx/nginx.conf
 RUN mkdir -p ${REPO_DIR} \
   && mkdir -p ${CONFIG_REPO_DIR} \
   && ln -s ${CONFIG_REPO_DIR} ${CONFIG_DIR} \
-  && mkdir -p ${CONTENT_REPO_DIR} \
   && rm -rf ${CONTENT_DIR} \
-  && ln -s ${CONFIG_REPO_DIR} ${CONTENT_DIR}
+  && mkdir -p ${CONTENT_REPO_DIR} \
+  && ln -s ${CONTENT_REPO_DIR} ${CONTENT_DIR}
 
 COPY ./resources/config/* ${CONFIG_REPO_DIR}
 COPY ./resources/www/* ${CONTENT_REPO_DIR}
