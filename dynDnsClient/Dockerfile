@@ -37,8 +37,8 @@ RUN apk update && apk add --no-cache \
 RUN cpan Data::Validate::IP
 
 # Create user
-#RUN addgroup -g ${GID} ${GROUP} \
-#    && adduser -u ${UID} -G ${GROUP} -D ${USER}
+RUN addgroup -g ${GID} ${GROUP} \
+    && adduser -u ${UID} -G ${GROUP} -D ${USER}
     
 # Create application directory and copy application
 RUN mkdir -p ${BASE_DIR}
@@ -54,11 +54,11 @@ RUN mkdir /etc/ddclient \
 COPY /resources/sample-etc_ddclient.conf /etc/ddclient/ddclient.conf
   
 # User access for the app directories
-#RUN chown -R ${USER}:${GROUP} /etc/ddclient
-#RUN chown -R ${USER}:${GROUP} /var/cache/ddclient
-#RUN chown -R ${USER}:${GROUP} ${BASE_DIR}
+RUN chown -R ${USER}:${GROUP} /etc/ddclient
+RUN chown -R ${USER}:${GROUP} /var/cache/ddclient
+RUN chown -R ${USER}:${GROUP} ${BASE_DIR}
     
-#USER ${USER}
+USER ${USER}
 
 ENTRYPOINT ["sh", "-c"]
 CMD ["sh ${APP_LAUNCHER}"]
