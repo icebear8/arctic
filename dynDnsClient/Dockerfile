@@ -15,23 +15,18 @@ ARG BASE_DIR=/opt
 ARG MAIN_APP_DIR=${BASE_DIR}/${APP_NAME}
 
 RUN apk update && apk add --no-cache \
-  bzip2 \
-	curl \
-	gcc \
 	make \
-	tar \
-	wget \
   inotify-tools \
 	perl \
 	perl-digest-sha1 \
 	perl-io-socket-ssl \
 	perl-json \
-  unzip \
-  perl-utils \
-  perl-netaddr-ip \
-  perl-net-ip \
-  perl-yaml \
   perl-log-log4perl \
+  perl-net-ip \
+  perl-netaddr-ip \
+  perl-utils \
+  perl-yaml \
+  unzip \
   && apk del --purge
 
 RUN cpan Data::Validate::IP
