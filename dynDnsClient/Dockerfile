@@ -15,8 +15,8 @@ ARG BASE_DIR=/opt
 ARG MAIN_APP_DIR=${BASE_DIR}/${APP_NAME}
 
 RUN apk update && apk add --no-cache \
-	make \
-  inotify-tools \
+	inotify-tools \
+  make \
 	perl \
 	perl-digest-sha1 \
 	perl-io-socket-ssl \
@@ -44,13 +44,15 @@ RUN unzip ${BASE_DIR}/${APP_REPO} -d ${BASE_DIR} \
 
 # Prepare directories for the application
 RUN mkdir /etc/ddclient \
-  && mkdir /var/cache/ddclient
+  && mkdir /var/cache/ddclient \
+  && touch /var/run/ddclient.pid
   
-COPY /resources/sample-etc_ddclient.conf /etc/ddclient/ddclient.conf
+COPY /resources/base-etc_ddclient.conf /etc/ddclient/ddclient.conf
   
 # User access for the app directories
 RUN chown -R ${USER}:${GROUP} /etc/ddclient
 RUN chown -R ${USER}:${GROUP} /var/cache/ddclient
+RUN chown -R ${USER}:${GROUP} /var/run/ddclient.pid
 RUN chown -R ${USER}:${GROUP} ${BASE_DIR}
     
 USER ${USER}
