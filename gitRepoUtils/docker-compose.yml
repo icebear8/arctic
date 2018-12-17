@@ -1,0 +1,8 @@
+version: '2'
+services:
+  gitrepo:
+    build: .
+    image: icebear8/gitrepoutils:3.8-r1
+    container_name: gitrepoutils
+    env_file:
+      - ./config/default.env
