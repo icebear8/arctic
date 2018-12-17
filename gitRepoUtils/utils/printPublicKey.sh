@@ -1,4 +1,4 @@
 #!/bin/sh
 
 echo "Public key is:"
-cat ${GIT_KEY_DIR}/.ssh/id_rsa.pub
+cat ${GIT_USER_ACCESS_DIR}/.ssh/id_rsa.pub

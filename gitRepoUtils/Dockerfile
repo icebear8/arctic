@@ -21,14 +21,15 @@ COPY /utils/ ${GIT_UTILS_DIR}/
 # Fix access rights
 RUN chmod -R 755 ${GIT_UTILS_DIR}/*.sh
 
+# Prepare repo directory
+RUN mkdir -p ${REPO_DIR}
+
 # Prepare ssh directory with known hosts
 RUN mkdir -p ${GIT_USER_ACCESS_DIR}/.ssh/ \
   && touch ${GIT_USER_ACCESS_DIR}/.ssh/known_hosts \
   && cat ${GIT_UTILS_DIR}/resources/known_hostsGithub >> ${GIT_USER_ACCESS_DIR}/.ssh/known_hosts
-
-VOLUME ${REPO_DIR}
-VOLUME ${GIT_USER_ACCESS_DIR}
-
-WORKDIR ${REPO_DIR}
+  
+# Prepare git user config file
+RUN touch ${GIT_USER_ACCESS_DIR}/.gitconfig
 
 ENTRYPOINT ["sh", "-c"]
