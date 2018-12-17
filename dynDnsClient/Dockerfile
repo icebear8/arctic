@@ -2,17 +2,26 @@ FROM alpine:3.8
 
 MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
+# User settings
 ARG USER=Ahab
 ARG GROUP=Ahab
 ARG UID=1000
 ARG GID=1000
 
+# App location settings
 ARG APP_NAME=ddclient
 ARG APP_VERSION=3.9.0
-
 ARG APP_REPO=${APP_NAME}-${APP_VERSION}.zip
 ARG BASE_DIR=/opt
-ARG MAIN_APP_DIR=${BASE_DIR}/${APP_NAME}
+ENV MAIN_APP_DIR=${BASE_DIR}/${APP_NAME}
+
+# App configuration settings
+ENV APP_CONFIG_ARGUMENT_LIST=
+ENV APP_STARTUP_ARGUMENTS="-help"
+
+# Utils for supporting functionality
+ENV UTILS_DIR=${BASE_DIR}/utils
+ENV APP_LAUNCHER=${UTILS_DIR}/launcher.sh
 
 RUN apk update && apk add --no-cache \
 	inotify-tools \
@@ -48,12 +57,17 @@ RUN mkdir /etc/ddclient \
   && touch /var/run/ddclient.pid
   
 COPY /resources/base-etc_ddclient.conf /etc/ddclient/ddclient.conf
+
+# Prepare utils
+RUN mkdir -p ${UTILS_DIR}
+COPY /utils/* ${UTILS_DIR}/
   
 # User access for the app directories
 RUN chown -R ${USER}:${GROUP} /etc/ddclient
 RUN chown -R ${USER}:${GROUP} /var/cache/ddclient
 RUN chown -R ${USER}:${GROUP} /var/run/ddclient.pid
 RUN chown -R ${USER}:${GROUP} ${BASE_DIR}
+RUN chmod -R 755 ${UTILS_DIR}/*.sh
     
 USER ${USER}
 
