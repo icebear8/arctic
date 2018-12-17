@@ -5,6 +5,7 @@ This image contains everything to run Nginx with a basic configuration.
 Additionally a link to a (private or public) git repository can be used to manage the maintain the nginx configuration files.
 
 ##  Changelog
+* nginx:0.10-r3, Use icebear8/gitrepoutils:3.8-r1 as base image to access a git repo
 * nginx:0.10-r2, Bugfix and update to alpine 3.8
 * nginx:0.10-r1, Nginx with git repo support, config files can be managed on Github
 * nginx:0.9, Basic nginx, configuration files with mapped volumes
@@ -14,7 +15,7 @@ Additionally a link to a (private or public) git repository can be used to manag
 
 # Setup Content on Github
 The container supports managing the configuration on a Github repository.
-See https://github.com/icebear8/gitRepoUtils for detailed usage instructions.
+See https://cloud.docker.com/repository/docker/icebear8/gitrepoutils/general for detailed usage instructions.
 
 ##  Configuration Structure
 * Put the nginx configuration files to the path `nginx/config` in the repository

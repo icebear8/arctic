@@ -2,7 +2,7 @@ version: '2'
 services:
   nginx:
     build: .
-    image: icebear8/nginx:0.10-r2
+    image: icebear8/nginx:0.10-r3
     container_name: nginx
     ports:
     - "8080:8080"
