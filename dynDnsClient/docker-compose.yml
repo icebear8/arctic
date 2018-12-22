@@ -1,0 +1,9 @@
+version: '2'
+services:
+  dyndnsclient:
+    build: .
+    image: icebear8/dyndnsclient:3.9.0-r1
+    container_name: dynDnsClient
+    restart: always
+    env_file:
+      - ./config/default.env

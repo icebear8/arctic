@@ -25,6 +25,7 @@ node {
     "dockerJobs": [
       {"imageName": "bubbleupnpserver", "dockerfilePath": "./bubbleUpnpServer" },
       {"imageName": "denonservice",     "dockerfilePath": "./denonRemoteControl" },
+      {"imageName": "dyndnsclient",     "dockerfilePath": "./dynDnsClient" },
       {"imageName": "grav",             "dockerfilePath": "./grav" },
       {"imageName": "gitrepoutils",     "dockerfilePath": "./gitRepoUtils" },
       {"imageName": "nginx",            "dockerfilePath": "./nginx" },
