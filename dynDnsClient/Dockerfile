@@ -25,7 +25,8 @@ ENV UTILS_DIR=${BASE_DIR}/utils
 ENV APP_LAUNCHER=${UTILS_DIR}/launcher.sh
 
 RUN apk update && apk add --no-cache \
-	inotify-tools \
+	curl \
+  inotify-tools \
   make \
 	perl \
 	perl-digest-sha1 \
@@ -37,9 +38,12 @@ RUN apk update && apk add --no-cache \
   perl-utils \
   perl-yaml \
   unzip \
+  wget \
   && apk del --purge
 
-RUN cpan Data::Validate::IP
+RUN curl -L http://cpanmin.us | perl - App::cpanminus\
+  && cpanm \
+	Data::Validate::IP
 
 # Create user
 RUN addgroup -g ${GID} ${GROUP} \
