@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Add arguments to config file
-cp -f /etc/ddclient/ddclient_source.conf /etc/ddclient/ddclient.conf
+cp -f /etc/ddclient/ddclient_source.conf ${APP_CONFIG_DIR}/ddclient.conf
 for arg in $APP_CONFIG_ARGUMENT_LIST; do
   echo $arg >> /etc/ddclient/ddclient.conf
 done

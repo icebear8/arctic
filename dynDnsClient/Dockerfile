@@ -18,6 +18,7 @@ ENV MAIN_APP_DIR=${BASE_DIR}/${APP_NAME}
 # App configuration settings
 ENV APP_CONFIG_ARGUMENT_LIST=
 ENV APP_STARTUP_ARGUMENTS="-help"
+ENV APP_CONFIG_DIR=/etc/ddclient
 
 # Utils for supporting functionality
 ENV UTILS_DIR=${BASE_DIR}/utils
@@ -52,24 +53,26 @@ RUN unzip ${BASE_DIR}/${APP_REPO} -d ${BASE_DIR} \
   && mv ${BASE_DIR}/${APP_NAME}-${APP_VERSION} ${MAIN_APP_DIR}
 
 # Prepare directories for the application
-RUN mkdir /etc/ddclient \
+RUN mkdir ${APP_CONFIG_DIR} \
   && mkdir /var/cache/ddclient \
   && touch /var/run/ddclient.pid
   
-COPY /resources/base-etc_ddclient.conf /etc/ddclient/ddclient_source.conf
+COPY /resources/base-etc_ddclient.conf ${APP_CONFIG_DIR}/ddclient_source.conf
 
 # Prepare utils
 RUN mkdir -p ${UTILS_DIR}
 COPY /utils/* ${UTILS_DIR}/
   
 # User access for the app directories
-RUN chown -R ${USER}:${GROUP} /etc/ddclient
+RUN chown -R ${USER}:${GROUP} ${APP_CONFIG_DIR}
 RUN chown -R ${USER}:${GROUP} /var/cache/ddclient
 RUN chown -R ${USER}:${GROUP} /var/run/ddclient.pid
 RUN chown -R ${USER}:${GROUP} ${BASE_DIR}
 RUN chmod -R 755 ${UTILS_DIR}/*.sh
     
 USER ${USER}
+
+VOLUME ${APP_CONFIG_DIR}
 
 ENTRYPOINT ["sh", "-c"]
 CMD ["sh ${APP_LAUNCHER}"]
