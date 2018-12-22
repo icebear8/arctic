@@ -1,8 +1,9 @@
 #!/bin/sh
 
-IFS=',' read -ra ADDR <<< "$APP_CONFIG_ARGUMENT_LIST"
-for i in "${ADDR[@]}"; do
-    echo "$i" >> /etc/ddclient/ddclient.conf
+# Add arguments to config file
+cp -f /etc/ddclient/ddclient_source.conf /etc/ddclient/ddclient.conf
+for arg in $APP_CONFIG_ARGUMENT_LIST; do
+  echo $arg >> /etc/ddclient/ddclient.conf
 done
 
 # Run the application with the startup arguments

@@ -8,11 +8,11 @@ ARG GROUP=Ahab
 ARG UID=1000
 ARG GID=1000
 
-# App location settings
-ARG APP_NAME=ddclient
+# App location settings, ARG for build time, ENV for runtime parameters
+ARG BASE_DIR=/opt
+ENV APP_NAME=ddclient
 ARG APP_VERSION=3.9.0
 ARG APP_REPO=${APP_NAME}-${APP_VERSION}.zip
-ARG BASE_DIR=/opt
 ENV MAIN_APP_DIR=${BASE_DIR}/${APP_NAME}
 
 # App configuration settings
@@ -56,7 +56,7 @@ RUN mkdir /etc/ddclient \
   && mkdir /var/cache/ddclient \
   && touch /var/run/ddclient.pid
   
-COPY /resources/base-etc_ddclient.conf /etc/ddclient/ddclient.conf
+COPY /resources/base-etc_ddclient.conf /etc/ddclient/ddclient_source.conf
 
 # Prepare utils
 RUN mkdir -p ${UTILS_DIR}
