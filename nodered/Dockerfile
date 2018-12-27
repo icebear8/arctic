@@ -17,7 +17,9 @@ RUN apk update && apk add --no-cache \
   git \
   nodejs \
   nodejs-npm \
-  openssh-keygen
+  openssh-client \
+  openssh-keygen \
+  && apk del --purge
   
 RUN addgroup -g ${gid} ${group} && \
     adduser -u ${uid} -G ${group} -D ${user}
