@@ -1,8 +1,10 @@
 FROM alpine:3.8
 MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
-ARG user=boxer
-ARG group=boxer
+# node-red
+
+ARG user=Ahab
+ARG group=Ahab
 ARG uid=1000
 ARG gid=1000
 
