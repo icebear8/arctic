@@ -1,12 +1,13 @@
-FROM alpine:3.8
+# Git Repo Utils
 
+FROM alpine:3.8
 MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
-# Repo settings
+# Repo settings and paths
 ENV REPO_URL=
 ENV REPO_DIR=/opt/repo
-ENV GIT_UTILS_DIR=/opt/gitUtils
-ENV GIT_USER_ACCESS_DIR=/data
+ENV GIT_HELPERS_DIR=/opt/gitHelperTools
+ENV GIT_CONFIG_DIR=/srv/gitConfig
 
 RUN apk update \
   && apk add --no-cache \
@@ -15,21 +16,18 @@ RUN apk update \
   openssh-keygen \
   && apk del --purge
 
-# Get git remote access utilities
-COPY /utils/ ${GIT_UTILS_DIR}/
+# Copy the git helper tools and make them executable
+COPY /utils/ ${GIT_HELPERS_DIR}/
+RUN chmod -R 755 ${GIT_HELPERS_DIR}/*.sh
 
-# Fix access rights
-RUN chmod -R 755 ${GIT_UTILS_DIR}/*.sh
+# Prepare git configuration and ssh directory
+# Prepare known hosts
+RUN mkdir -p ${GIT_CONFIG_DIR}/.ssh/ \
+  && touch ${GIT_CONFIG_DIR}/.gitconfig \
+  && touch ${GIT_CONFIG_DIR}/.ssh/known_hosts \
+  && cat ${GIT_HELPERS_DIR}/resources/known_hostsGithub >> ${GIT_CONFIG_DIR}/.ssh/known_hosts
 
 # Prepare repo directory
 RUN mkdir -p ${REPO_DIR}
-
-# Prepare ssh directory with known hosts
-RUN mkdir -p ${GIT_USER_ACCESS_DIR}/.ssh/ \
-  && touch ${GIT_USER_ACCESS_DIR}/.ssh/known_hosts \
-  && cat ${GIT_UTILS_DIR}/resources/known_hostsGithub >> ${GIT_USER_ACCESS_DIR}/.ssh/known_hosts
-  
-# Prepare git user config file
-RUN touch ${GIT_USER_ACCESS_DIR}/.gitconfig
 
 ENTRYPOINT ["sh", "-c"]

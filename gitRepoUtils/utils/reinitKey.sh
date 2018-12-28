@@ -1,6 +1,6 @@
 #!/bin/sh
 
-KEY_DIRECTORY=${GIT_USER_ACCESS_DIR}/.ssh
+KEY_DIRECTORY=${GIT_CONFIG_DIR}/.ssh
 
 
 # Remove keys if they exist
