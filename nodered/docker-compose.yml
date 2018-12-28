@@ -2,10 +2,10 @@ version: '2'
 services:
   nodered:
     build: .
-    image: icebear8/nodered:0.19.5-r1
+    image: icebear8/nodered:0.19.5-r2
     container_name: nodered
     restart: always
     ports:
-    - "1880:1880"
+      - "1880:1880"
     env_file:
       - ./config/default.env
