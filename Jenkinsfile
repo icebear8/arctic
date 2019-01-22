@@ -56,9 +56,12 @@ node {
   docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
     try {
       stage("Build") {
-        parallel dockerImage.setupBuildTasks {
+        def buildTasks = dockerImage.setupBuildTasks {
           dockerRegistryUser = "${projectSettings.dockerHub.user}"
           buildJobs = projectSettings.dockerJobs
+        }
+        for (build in buildTasks.values()) {
+          build.call()
         }
       }
 
