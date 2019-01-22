@@ -60,8 +60,8 @@ node {
           dockerRegistryUser = "${projectSettings.dockerHub.user}"
           buildJobs = projectSettings.dockerJobs
         }
-        for (build in buildTasks.values()) {
-          build.call()
+        for (task in buildTasks.values()) {
+          task.call()
         }
       }
 
@@ -76,9 +76,13 @@ node {
     }
     finally {
       stage("Clean up") {
-        dockerImage.setupClenupAllUnusedTask {
+        def cleanupTasks = dockerImage.setupClenupAllUnusedTask {
           dockerRegistryUser = "${projectSettings.dockerHub.user}"
           buildJobs = projectSettings.dockerJobs
+        }
+        
+        for (task in cleanupTasks.values()) {
+          task.call()
         }
       }
     }
