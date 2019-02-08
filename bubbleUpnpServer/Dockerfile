@@ -9,7 +9,7 @@ ARG GID=1000
 # Bubble upnp server app settings
 ARG BUBBLE_RESOURCE_DIR=/resources/bubble
 ARG BUBBLE_APPLICATION_REPO=BubbleUPnPServer-distrib.zip
-ARG BUBBLE_SERVER_VERSION=v0.9-update30
+ARG BUBBLE_SERVER_VERSION=v0.9-update31
 ENV BUBBLE_APP_DIR=/opt/bubbleupnpserver
 ENV BUBBLE_APP_LAUNCHER=${BUBBLE_APP_DIR}/launch.sh
 ENV BUBBLE_SERVICE_ARGS="-nologfile -logLevel SEVERE -disableAutoUpdate"
