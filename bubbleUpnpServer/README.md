@@ -1,4 +1,5 @@
 # Supported tags and respective `Dockerfile` links
+* 0.9-u31-r1: Update to Bubble UPnP Server 0.9 update 31
 * 0.9-u30-r4: Fixed missing startup parameters
 * 0.9-u30-r3: Improved tear down of the Bubble UPnP Service
 * 0.9-u30-r2: Add a rest api to start/stop the Bubble UPnP Server
