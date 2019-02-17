@@ -1,0 +1,9 @@
+version: '2'
+services:
+  ddnshurricane:
+    build: .
+    image: icebear8/ddnshurricane:0.1-r1
+    container_name: ddnshurricane
+    restart: always
+    env_file:
+      - ./config/default.env
