@@ -3,7 +3,7 @@ Simple script to periodically check and update the local IP to on [Hurricane Ele
 This container **supports only Hurricane Electrics DNS servers**.
 
 ##  Changelog
-* ddnshurricane:0.1-r1; Initial version
+* ddnshurricane:0.1-r2, initial version
 
 # Usage
 `docker run --network host -e "LOC_EXECUTION_PERIOD=1h" -e "LOC_INTERFACE=eth0" -e "LOC_IPV=ipv6" -e "DNS_HOSTNAME=my.domain.org" -e "DNS_TOKEN=mySecretHurricaneToken" icebear8/ddnshurricane:latest`

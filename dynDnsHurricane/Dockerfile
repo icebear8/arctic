@@ -37,6 +37,7 @@ RUN mkdir -p ${IP_CACHE_DIR} \
 # Update user access rights
 RUN chown -R ${USER}:${GROUP} ${APP_DIR}
 RUN chown -R ${USER}:${GROUP} ${IP_CACHE_DIR}
+RUN chmod -R 755 ${APP_DIR}/*.sh
     
 USER ${USER}
 
