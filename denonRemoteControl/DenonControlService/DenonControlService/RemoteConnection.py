@@ -3,8 +3,8 @@ import logging
 import socket
 import threading
 
-defaultHost = '192.168.0.50'
-defaultIp = '192.168.0.50'
+defaultHost = '192.168.5.50'
+defaultIp = '192.168.5.50'
 defaultPort = 23
 bufferSize = 1024
 inactiveConnectionTimeoutSeconds = 300.0
