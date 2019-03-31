@@ -32,7 +32,5 @@ USER ${USER}
   
 EXPOSE 5000
   
-CMD ["python3", "${APP_DIR}/DenonControlService.py", "SERVICE"]
-
 ENTRYPOINT ["sh", "-c"]
 CMD ["python3 ${APP_DIR}/DenonControlService.py ${DENON_SERVICE_ARGS}"]
