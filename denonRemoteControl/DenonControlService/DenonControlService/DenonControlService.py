@@ -9,13 +9,13 @@ from RestService import RestService
 remote = None
 restService = None
 
-def _startServices():
+def _startServices(host):
   global remote
   global restService
 
   logging.debug("Create remote connection")
 
-  remote = RemoteConnection()
+  remote = RemoteConnection(host)
 
   logging.debug("Create REST service")
   restService = RestService()
@@ -46,12 +46,13 @@ def _initializeLogging():
 
 def main(argv):
   isService=False
+  host=""
   
   _initializeLogging()
   logging.info("Main started")
   
   try:
-    opts, args = getopt.getopt(argv, "s")
+    opts, args = getopt.getopt(argv, "s", ["host="])
   except getopt.GetoptError as err:
     print(err)  # will print something like "option -a not recognized"
     # print help information and exit:
@@ -61,8 +62,12 @@ def main(argv):
   for opt, arg in opts:
     if opt == '-s':
       isService=True
+    elif opt in ("--host"):
+      host=arg
+      
+  logging.info("service=%s, host=%s", str(isService), host)
 
-  _startServices()
+  _startServices(host)
 
   if isService is True:
     _runAsService()

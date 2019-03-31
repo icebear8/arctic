@@ -3,8 +3,8 @@ import logging
 import socket
 import threading
 
-defaultHost = '192.168.5.50'
-defaultIp = '192.168.5.50'
+defaultHost = '192.168.0.1'
+defaultIp = '192.168.0.1'
 defaultPort = 23
 bufferSize = 1024
 inactiveConnectionTimeoutSeconds = 300.0
@@ -14,9 +14,10 @@ class DeviceData:
         self.volume = 0
 
 class RemoteConnection:
-    def __init__(self):
+    def __init__(self, host=defaultHost, port=defaultPort):
         self._ip = defaultIp
-        self._port = defaultPort
+        self._host=host
+        self._port = port
         self._socket = socket.socket()
         self._isConnected = False
         self._listenerThread = None
@@ -53,9 +54,9 @@ class RemoteConnection:
         
         try:
             self._socket = socket.socket()
-            self._ip = socket.gethostbyname(defaultHost)
+            self._ip = socket.gethostbyname(self._host)
         except socket.gaierror as ex:
-            logging.error("Unable to get IP from host: " + defaultHost)
+            logging.error("Unable to get IP from host: " + self._host)
             logging.exception(ex)
             return
 
