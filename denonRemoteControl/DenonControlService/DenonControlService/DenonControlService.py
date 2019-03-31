@@ -44,6 +44,11 @@ def _initializeLogging():
   logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p', level=logging.INFO)
   logging.Formatter.converter = time.gmtime
 
+def _printUsage():
+  print('DenonControlService.py [-s --host=]')
+  print('-s: Start as service')
+  print('--host=: Host name or IP to connect')
+  
 def main(argv):
   isService=False
   host=""
@@ -52,20 +57,20 @@ def main(argv):
   logging.info("Main started")
   
   try:
-    opts, args = getopt.getopt(argv, "s", ["host="])
+    opts, args = getopt.getopt(argv, "hs", ["help", "host="])
   except getopt.GetoptError as err:
     print(err)  # will print something like "option -a not recognized"
-    # print help information and exit:
-    print('DenonControlService.py [-s]')
+    _printUsage()
     sys.exit(2)
       
   for opt, arg in opts:
-    if opt == '-s':
+    if opt in ('-h', '--help'):
+      _printUsage()
+      sys.exit()
+    elif opt in ('-s'):
       isService=True
-    elif opt in ("--host"):
+    elif opt in ('--host'):
       host=arg
-      
-  logging.info("service=%s, host=%s", str(isService), host)
 
   _startServices(host)
 
