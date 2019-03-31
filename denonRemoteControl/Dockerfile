@@ -7,7 +7,7 @@ ARG UID=1000
 ARG GID=1000
 
 # Denonservice configuration
-ENV DENON_SERVICE_ARGS=
+ENV SERVICE_ARGS=
 
 ENV APP_DIR=/opt/deononService
 
@@ -33,4 +33,4 @@ USER ${USER}
 EXPOSE 5000
   
 ENTRYPOINT ["sh", "-c"]
-CMD ["python3 ${APP_DIR}/DenonControlService.py ${DENON_SERVICE_ARGS}"]
+CMD ["python3 ${APP_DIR}/DenonControlService.py ${SERVICE_ARGS}"]
