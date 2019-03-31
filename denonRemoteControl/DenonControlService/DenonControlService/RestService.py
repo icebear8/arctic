@@ -148,13 +148,3 @@ class RestService(threading.Thread):
     restClient = http.client.HTTPConnection("localhost", 5000)
     restClient.request("PUT", "/shutdown", None)
     logging.info("Rest service stopped")
-
-if __name__ == '__main__':
-  logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p', level=logging.INFO)
-  logging.info("Main started")
-  restService = RestService()
-  restService.start()
-
-  print("Press any key to exit...")
-  input()
-  restService.stop()
