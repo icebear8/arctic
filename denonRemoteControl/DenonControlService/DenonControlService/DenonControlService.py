@@ -1,4 +1,5 @@
 
+import getopt
 import time
 import logging
 import sys
@@ -43,13 +44,22 @@ def _initializeLogging():
     logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p', level=logging.INFO)
     logging.Formatter.converter = time.gmtime
 
-if __name__ == '__main__':
+def main(argv):
     isService=False
+    
     _initializeLogging()
     logging.info("Main started")
-
-    for arg in sys.argv[1:]:
-        if arg.upper() == "SERVICE":
+  
+    try:
+        opts, args = getopt.getopt(argv, "s")
+    except getopt.GetoptError as err:
+        logging.error(err)  # will print something like "option -a not recognized"
+        # print help information and exit:
+        loggin.info('DenonControlService.py [-s]')
+        sys.exit(2)
+        
+    for opt, arg in opts:
+        if opt == '-s':
             isService=True
 
     _startServices()
@@ -58,4 +68,8 @@ if __name__ == '__main__':
         _runAsService()
     else:
         _runAsConsole()
+    
+if __name__ == '__main__':
+    main(sys.argv[1:])
+
 
