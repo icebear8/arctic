@@ -102,7 +102,7 @@ def shutdown():
 
 @app.route('/connection', methods=['GET'])
 def getConnection():
-  if RestService.remoteConnection.isConnected() is True:
+  if RestService.remoteConnection.isConnected is True:
     return "Connected"
 
   return "Disconnected"
