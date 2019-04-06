@@ -17,7 +17,7 @@ def _runServices(targetHost, timeout):
 
   remote = RemoteConnection(host=targetHost)
   
-  if timeout is not None:
+  if timeout:
     remote.inactivityTimeoutSec = timeout
 
   logging.debug("Create REST service")

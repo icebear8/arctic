@@ -46,6 +46,7 @@ class RemoteConnection:
       
   @inactivityTimeoutSec.setter
   def inactivityTimeoutSec(self, timeoutSec):
+    logging.debug("Set inactivity timeout (sec): " + timeoutSec)
     self._inactivityTimeoutSec = timeoutSec
     self._restartConnectionTimeout()
 
