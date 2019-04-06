@@ -14,18 +14,19 @@ Even if the Rest API is used, the Bubble UPnP Server is started automatically at
 `docker run -p 5000:5000 icebear8/denonservice:latest`
 
 ## Configuration
-The environment variable `SERVICE_ARGS` is used to configure the Denon service.
+The Denon service settings are configurable with environment variables.
 
-| Argument  | Description |
-|-          |-            |
-| -s        | Denon service is started as service in an endless loop. |
-| --host=   | IP, hostname or URL of the Denon receiver to connect    |
+| Argument    | Default     | Description |
+|-            |-            |-            |
+| DENON_HOST  | 192.168.0.0 | IP, hostname or URL of the Denon receiver to connect (e.g. 192.168.0.42 or mydenon.local, default: 192.168.0.0)  |
+| LOG_LEVEL   | ERROR       | [DEBUG, INFO, WARNING, ERROR, CRITICAL] (default: ERROR)  |
+| CON_TIMEOUT | 300         | Idle timeout in seconds to close the Denon TCP connection (default: 300 seconds)  |
 
-`docker run -p 80:5000 -e "SERVICE_ARGS=-s --host=192.168.1.99" icebear8/denonservice/latest`
+`docker run -p 80:5000 -e "DENON_HOST=192.168.0.42" icebear8/denonservice:latest`
 
 ## Rest API
 The rest service is running on port 5000.
-In case REST request occures, 'Denon service' tries to connect to the receiver (TCP connection).
+In case REST request occurs, 'Denon service' tries to connect to the receiver (TCP connection).
 If the service is idle for a specific time (default 300 Seconds) it disconnects the TCP connection.
 
 Rest API supports:

@@ -7,7 +7,9 @@ ARG UID=1000
 ARG GID=1000
 
 # Denonservice configuration
-ENV SERVICE_ARGS=
+ENV DENON_HOST=
+ENV CON_TIMEOUT=
+ENV LOG_LEVEL=ERROR
 
 ENV APP_DIR=/opt/deononService
 
@@ -33,4 +35,4 @@ USER ${USER}
 EXPOSE 5000
   
 ENTRYPOINT ["sh", "-c"]
-CMD ["python3 ${APP_DIR}/DenonControlService.py ${SERVICE_ARGS}"]
+CMD ["python3 ${APP_DIR}/DenonControlService.py --host=${DENON_HOST} --log=${LOG_LEVEL} --timeout=${CON_TIMEOUT}"]
