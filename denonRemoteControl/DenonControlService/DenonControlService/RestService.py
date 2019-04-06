@@ -10,8 +10,6 @@ from flask import request
 
 from RemoteConnection import RemoteConnection
 
-versionId = '0.1.2:20171210'
-
 app = Flask(__name__)
 
 def _runProcess():
@@ -21,26 +19,14 @@ def _runProcess():
 def index():
   return render_template('index.html')
 
-@app.route("/maintenance")
-def maintenance():
-  return render_template('maintenance.html')
-
-@app.route("/demo")
-def demo():
-  return render_template('demo.html')
-
-@app.route('/version')
-def getVersion():
-  return versionId
-
 @app.route('/hello', methods=['GET'])
 def getHello():
-  return "Hello flask"
+  return "Hello Denon Service"
 
 @app.route('/command', methods=['GET', 'POST', 'PUT'])
 def getCmd():
   command = request.args.get('cmd')
-  logging.info("Wildcard command request: %s", command)
+  logging.debug("Wildcard command request: %s", command)
 
   if not command.endswith('\r'):
     command += '\r'
@@ -49,31 +35,30 @@ def getCmd():
 
 @app.route('/volume', methods=['GET'])
 def getVolume():
-  logging.info("Volume get request")
+  logging.debug("Volume get request")
   RestService.remoteConnection.send("MV?\r")
-  logging.info("Current volume: " + str(RestService.remoteConnection.data.volume))
+  logging.debug("Current volume: " + str(RestService.remoteConnection.data.volume))
   return str(RestService.remoteConnection.data.volume)
 
 @app.route('/power', methods=['GET'])
 def getPower():
-  logging.info("Power get request")
+  logging.debug("Power get request")
   RestService.remoteConnection.send("PW?\r")
   return "Power"
 
 @app.route('/power/<cmd>', methods=['PUT'])
 def setPower(cmd):
   message = ""
-  logging.info("Power set request:" + str(cmd))
+  logging.debug("Power set request:" + str(cmd))
   message = "PW" + str(cmd).upper() + "\r"
   RestService.remoteConnection.send(message)
   return "Power"
 
 @app.route('/start', methods=['PUT'])
 def start():
-  logging.info("Start request")
+  logging.debug("Start request")
   RestService.remoteConnection.send("PWON\r")
   time.sleep(5)
-  RestService.remoteConnection.send("MV28\r")
   RestService.remoteConnection.send("SIFAVORITES\r")
   time.sleep(2)
   RestService.remoteConnection.send("NS94\r") # enter
@@ -82,7 +67,7 @@ def start():
 @app.route('/startVolume/<volume>', methods=['PUT'])
 def startVolume(volume):
   volumeCommand = "MV" + str(volume).upper() + "\r";
-  logging.info("Start volume request")
+  logging.debug("Start volume request")
   RestService.remoteConnection.send("PWON\r")
   time.sleep(5)
   RestService.remoteConnection.send(volumeCommand)
@@ -117,11 +102,14 @@ def shutdown():
 
 @app.route('/connection', methods=['GET'])
 def getConnection():
-  return RestService.remoteConnection.isConnected()
+  if RestService.remoteConnection.isConnected() is True:
+    return "Connected"
+
+  return "Disconnected"
 
 @app.route('/connection/<command>', methods=['PUT'])
 def connection(command):
-  logging.info("Connection command received: %s", command)
+  logging.debug("Connection command received: %s", command)
   connectionCommand = str(command).upper()
 	
   if connectionCommand == 'DISCONNECT':
