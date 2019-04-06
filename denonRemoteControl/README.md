@@ -34,8 +34,8 @@ Rest API supports:
 * `GET <host>/volume`: Gets the current volume level
 * `GET <host>/power`: Gets the current power level
 * `PUT <host>/power/<cmd>`: Sets the power. Accepted values: `on`, `standby`
-* `PUT <host>/start`: Starts the receiver with volume level 28 and plays the first favorite item
-* `PUT <host>/startVolume/<volume>`: Starts the receiver with voluem level `<volume>` and plays the first favorite item
+* `PUT <host>/start`: Starts the receiver and plays the first favorite item
+* `PUT <host>/startVolume/<volume>`: Starts the receiver with volume level `<volume>` and plays the first favorite item
 * `PUT <host>/next`: Switches to the next favorite item
 * `GET <host>/command?cmd=`: Wildcard, any command supported by the Denon receiver can be sent. Also works as 'PUT' or 'POST'
 
