@@ -46,7 +46,6 @@ class RemoteConnection:
       
   @inactivityTimeoutSec.setter
   def inactivityTimeoutSec(self, timeoutSec):
-    logging.debug("Set inactivity timeout (sec): " + timeoutSec)
     self._inactivityTimeoutSec = timeoutSec
     self._restartConnectionTimeout()
 
@@ -66,7 +65,7 @@ class RemoteConnection:
       logging.exception(ex)
       return
 
-    logging.info("Connect to: " + self._ip)
+    logging.debug("Connect to: " + self._ip)
         
     self._socket.connect((self._ip, self._port))
     self._listenerThread = ListenerThread(self._socket, self.data)
@@ -74,15 +73,15 @@ class RemoteConnection:
     self._listenerThread.start()
 
   def disconnect(self):
-    logging.info("Disconnect method called")
+    logging.debug("Disconnect method called")
     
     if self._isConnected is True:
-      logging.info("Disconnect")
+      logging.debug("Disconnect")
       self._listenerThread.abort()
       self._listenerThread.join()
       self._socket.close()
 
-    logging.info("Disconnected")
+    logging.debug("Disconnected")
     self._isConnected = False
 
   def send(self, message):
@@ -99,7 +98,7 @@ class RemoteConnection:
     
   def _restartConnectionTimeout(self):
     if not (self._disconnectTimer == None):
-      logging.info("Cancel timer")
+      logging.debug("Cancel timer")
       self._disconnectTimer.cancel()
     self._disconnectTimer = threading.Timer(self._inactivityTimeoutSec, self.disconnect)
     
@@ -121,7 +120,7 @@ class ListenerThread(threading.Thread):
 
   def run(self):
     isRunning = True
-    logging.info('Start listener thread')
+    logging.debug('Start listener thread')
     i = 0
     data = []
 
@@ -141,7 +140,7 @@ class ListenerThread(threading.Thread):
                 line = line.replace(line[4], ' ')
               if line.startswith('MV'):
                 if line[2:].isdecimal():
-                  logging.info("Volume received: " + line[2:])
+                  logging.debug("Volume received: " + line[2:])
                   self.deviceData.volume = line[2:4]
               logging.debug("Received: " + line)
           except UnicodeDecodeError:
@@ -152,6 +151,4 @@ class ListenerThread(threading.Thread):
       isRunning = self._isListening
       self._lock.release()
 
-      logging.debug("loop: " + str(i) + ", running: " + str(isRunning))
-
-    logging.info('End listener thread')
+    logging.debug('End listener thread')
