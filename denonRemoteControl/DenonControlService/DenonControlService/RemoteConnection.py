@@ -3,36 +3,32 @@ import logging
 import socket
 import threading
 
-defaultHost = '192.168.0.1'
-defaultIp = '192.168.0.1'
+defaultIp = '192.168.0.0'
+defaultHost = defaultIp
 defaultPort = 23
 bufferSize = 1024
-inactiveConnectionTimeoutSeconds = 300.0
+defaultInactivityTimeoutSec = 300.0
 
 class DeviceData:
     def __init__(self):
         self.volume = 0
 
 class RemoteConnection:
-    def __init__(self, host=defaultHost, port=defaultPort):
+    def __init__(self, host, port=defaultPort):
         self._ip = defaultIp
-        self._host=host
+        if host:
+          self._host=host
+        else:
+          self._host=defaultHost
+          
         self._port = port
+        self._inactivityTimeoutSec = defaultInactivityTimeoutSec
+        
         self._socket = socket.socket()
         self._isConnected = False
         self._listenerThread = None
         self._disconnectTimer = None
         self.data = DeviceData()
-
-    @property
-    def ip(self):
-        return self._ip
-
-    @ip.setter
-    def ip(self, value):
-        if self._isConnected is True:
-            self.disconnect()
-        self._ip = value
 
     @property
     def port(self):
@@ -43,6 +39,16 @@ class RemoteConnection:
         if self._isConnected is True:
             self.disconnect()
         self._port = port
+    
+    @property
+    def inactivityTimeoutSec(self):
+      return self._inactivityTimeoutSec
+      
+    @inactivityTimeoutSec.setter
+    def inactivityTimeoutSec(self, timeoutSec):
+      logging.debug("Set inactivity timeout (sec): " + timeoutSec)
+      self._inactivityTimeoutSec = timeoutSec
+      self._restartConnectionTimeout()
 
     @property
     def isConnected(self):
@@ -95,8 +101,10 @@ class RemoteConnection:
       if not (self._disconnectTimer == None):
         logging.info("Cancel timer")
         self._disconnectTimer.cancel()
-      self._disconnectTimer = threading.Timer(inactiveConnectionTimeoutSeconds, self.disconnect)
-      self._disconnectTimer.start()
+      self._disconnectTimer = threading.Timer(self._inactivityTimeoutSec, self.disconnect)
+      
+      if self._isConnected is True:
+        self._disconnectTimer.start()
         
 class ListenerThread(threading.Thread):
     def __init__(self, socket, data):
