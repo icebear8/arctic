@@ -1,8 +1,17 @@
-FROM alpine:3.4
+FROM alpine:3.9
 MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
-ARG user=PeterPan
-ARG app_dir=/service
+ARG USER=Ahab
+ARG GROUP=Ahab
+ARG UID=1000
+ARG GID=1000
+
+# Denonservice configuration
+ENV DENON_HOST=
+ENV CON_TIMEOUT=
+ENV LOG_LEVEL=ERROR
+
+ENV APP_DIR=/opt/deononService
 
 RUN apk add --no-cache \
   git \
@@ -10,15 +19,20 @@ RUN apk add --no-cache \
   
 RUN pip3 install flask
 
-RUN adduser -S -D ${user}
-RUN mkdir -p ${app_dir}
+# Create user
+RUN addgroup -g ${GID} ${GROUP} \
+    && adduser -u ${UID} -G ${GROUP} -D ${USER}
+    
 
-COPY ./DenonControlService/DenonControlService /${app_dir}/
+RUN mkdir -p ${APP_DIR}
 
-RUN chown -R ${user} ${app_dir}
+COPY ./DenonControlService/DenonControlService /${APP_DIR}/
 
-USER ${user}
+RUN chown -R ${USER} ${APP_DIR}
+
+USER ${USER}
   
 EXPOSE 5000
   
-CMD ["python3", "/service/DenonControlService.py", "SERVICE"]
+ENTRYPOINT ["sh", "-c"]
+CMD ["python3 ${APP_DIR}/DenonControlService.py --host=${DENON_HOST} --log=${LOG_LEVEL} --timeout=${CON_TIMEOUT}"]

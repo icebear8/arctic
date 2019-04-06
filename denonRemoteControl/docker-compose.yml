@@ -1,9 +1,11 @@
 version: '2'
 services:
-  nginx:
+  denonservice:
     build: .
-    image: icebear8/denonservice
+    image: icebear8/denonservice:0.6-r1
     container_name: denonservice
     ports:
     - "5050:5000"
     restart: always
+    env_file:
+      - ./config/default.env
