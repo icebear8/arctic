@@ -1,4 +1,4 @@
-# Supported tags and respective `Dockerfile` links
+# Supported tags
 * 0.6-r1: Proper setup and allow configuration with environment variables
 * 0.5-b3: Obsolete
 
@@ -43,4 +43,7 @@ To control the connection to the receiver:
 * `GET <host>/connection`: Gets the TCP connection state of the 'Denon service' to the receiver.
 * `PUT <host>/connection/<command>`: Requests to change the connection state of 'Denon service' to the receiver. Accepted values: `connect`, `disconnect`
 
-
+## Web Demo
+For demonstration purpose there is a simple website which accesses the Denon service REST API.
+Call `index.html` to use and test basic commands.
+The recommendation is to build a separate website and only use the REST API of the Denon service.
