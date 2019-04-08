@@ -11,10 +11,9 @@ ENV DENON_HOST=
 ENV CON_TIMEOUT=
 ENV LOG_LEVEL=ERROR
 
-ENV APP_DIR=/opt/deononService
+ENV APP_DIR=/opt/denonService
 
 RUN apk add --no-cache \
-  git \
   python3
 
 RUN pip3 install flask
