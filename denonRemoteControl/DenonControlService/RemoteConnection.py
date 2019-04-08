@@ -142,8 +142,9 @@ class ListenerThread(threading.Thread):
           try:
             lines = data.decode('UTF-8').split('\r')
             for line in lines:
-              if len(line) > 5 and line.startswith('NSE') and (not line.startswith('NSE0') or line.startswith('NSE7') or line.startswith('NSE8')):
-                line = line.replace(line[4], ' ')
+              if (len(line) > 5) and (line.startswith('NSA') or line.startswith('NSE')):
+                if line[3] in ('1', '2', '3', '4', '5', '6'):
+                  line = line.replace(line[4], '')
               logger.debug("Received line: " + line)
 
               reply = cmdVolume.processReply(line)
