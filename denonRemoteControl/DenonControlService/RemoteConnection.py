@@ -4,6 +4,7 @@ import socket
 import threading
 
 import commands.Volume as cmdVolume
+import commands.Power as cmdPower
 
 logger = logging.getLogger(__name__)
 
@@ -143,13 +144,19 @@ class ListenerThread(threading.Thread):
             for line in lines:
               if len(line) > 5 and line.startswith('NSE') and (not line.startswith('NSE0') or line.startswith('NSE7') or line.startswith('NSE8')):
                 line = line.replace(line[4], ' ')
+              logger.debug("Received line: " + line)
+
               reply = cmdVolume.processReply(line)
               if reply is not None:
                 logger.debug("Volume decoded: " + reply)
                 self.deviceData.volume = reply
-              logger.debug("Received: " + line)
+
+              reply = cmdPower.processReply(line)
+              if reply is not None:
+                logger.debug("Power decoded: " + reply)
+
           except UnicodeDecodeError:
-            logger.info("Decode error: " + str(data))
+            logger.info("Unicode decode error")
             pass    # Nothing to do
 
       self._lock.acquire()
