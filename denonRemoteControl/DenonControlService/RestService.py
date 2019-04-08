@@ -5,6 +5,7 @@ import time
 import http.client
 
 import commands.Volume as cmdVolume
+import commands.Power as cmdPower
 
 from flask import Flask
 from flask import render_template
@@ -50,8 +51,8 @@ def getVolume():
 
 @app.route('/volume/<request>', methods=['PUT'])
 def setVolume(request):
-  logger.debug("Volume request: " + request)
-  cmd = cmdVolume.createRequest(cmd)
+  logger.debug("/volume request: " + request)
+  cmd = cmdVolume.createRequest(request)
 
   if cmd is not None:
     RestService.remoteConnection.send(cmd)
@@ -63,17 +64,26 @@ def setVolume(request):
 
 @app.route('/power', methods=['GET'])
 def getPower():
-  logger.debug("Power get request")
-  RestService.remoteConnection.send("PW?\r")
-  return "Power"
+  logger.debug("/power get request")
+  cmd = cmdPower.createRequest("get")
 
-@app.route('/power/<cmd>', methods=['PUT'])
-def setPower(cmd):
-  message = ""
-  logger.debug("Power set request:" + str(cmd))
-  message = "PW" + str(cmd).upper() + "\r"
-  RestService.remoteConnection.send(message)
-  return "Power"
+  if cmd is not None:
+    RestService.remoteConnection.send(cmd)
+    return "Power"
+  logger.debug("/power unknown request: get")
+  return "Invalid request"
+
+@app.route('/power/<request>', methods=['PUT'])
+def setPower(request):
+  logger.debug("/power request: " + request)
+  cmd = cmdPower.createRequest(request)
+
+  if cmd is not None:
+    RestService.remoteConnection.send(cmd)
+    return "Power"
+
+  logger.debug("/power unknown request: " + request)
+  return "Invalid request"
 
 @app.route('/start', methods=['PUT'])
 def start():
