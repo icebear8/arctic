@@ -21,7 +21,7 @@ def createRequest(request):
   return None
 
 def isProcessible(reply):
-  if reply.startswith('MV'):
+  if reply.startswith(cmdPrefix()):
     return True
   return False
 
