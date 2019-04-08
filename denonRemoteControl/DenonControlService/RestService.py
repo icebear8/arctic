@@ -38,25 +38,26 @@ def getCmd():
 
 @app.route('/volume', methods=['GET'])
 def getVolume():
-  logger.debug("Volume get request")
+  logger.debug("/volume get request")
   cmd = cmdVolume.createRequest("get")
-  logger.debug("Generated command: " + cmd)
 
   if cmd is not None:
     RestService.remoteConnection.send(cmd)
-    logger.debug("Current volume: " + str(RestService.remoteConnection.data.volume))
     return str(RestService.remoteConnection.data.volume)
+
+  logger.debug("/volume unknown request: get")
   return "Invalid request"
 
-@app.route('/volume/<cmd>', methods=['PUT'])
-def setVolume(cmd):
-  logger.debug("Volume set request")
+@app.route('/volume/<request>', methods=['PUT'])
+def setVolume(request):
+  logger.debug("Volume request: " + request)
   cmd = cmdVolume.createRequest(cmd)
-  logger.debug("Generated command: " + cmd)
 
   if cmd is not None:
     RestService.remoteConnection.send(cmd)
     return str(RestService.remoteConnection.data.volume)
+
+  logger.debug("/volume unknown request: " + request)
   return "Invalid request"
 
 
