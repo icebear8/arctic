@@ -144,21 +144,7 @@ class ListenerThread(threading.Thread):
         if data:
           try:
             lines = data.decode('UTF-8').split('\r')
-            for line in lines:
-              if (len(line) > 5) and (line.startswith('NSA') or line.startswith('NSE')):
-                if line[3] in ('1', '2', '3', '4', '5', '6'):
-                  line = line.replace(line[4], '')
-              logger.debug("Received line: " + line)
-
-              reply = cmdVolume.processReply(line)
-              if reply is not None:
-                logger.debug("Volume decoded: " + reply)
-                self.deviceData.volume = reply
-
-              reply = cmdPower.processReply(line)
-              if reply is not None:
-                logger.debug("Power decoded: " + reply)
-
+            processLines(lines)
           except UnicodeDecodeError:
             logger.info("Unicode decode error")
             pass    # Nothing to do
@@ -168,3 +154,23 @@ class ListenerThread(threading.Thread):
       self._lock.release()
 
     logger.debug('End listener thread')
+
+def processLines(lines):
+  for line in lines:
+    line = removeNonPrintableChars(line)
+    logger.debug("Received line: " + line)
+
+    reply = cmdVolume.processReply(line)
+    if reply is not None:
+      logger.debug("Volume decoded: " + reply)
+      self.deviceData.volume = reply
+
+    reply = cmdPower.processReply(line)
+    if reply is not None:
+      logger.debug("Power decoded: " + reply)
+
+def removeNonPrintableChars(line):
+  if (len(line) > 5) and (line.startswith('NSA') or line.startswith('NSE')):
+    if line[3] in ('1', '2', '3', '4', '5', '6'):
+      line = line.replace(line[4], '')
+  return line
