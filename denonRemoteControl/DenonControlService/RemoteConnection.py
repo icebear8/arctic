@@ -5,6 +5,7 @@ import threading
 
 import commands.Volume as cmdVolume
 import commands.Power as cmdPower
+import commands.Nse as cmdNse
 
 logger = logging.getLogger(__name__)
 
@@ -169,8 +170,12 @@ def processLines(lines):
     if reply is not None:
       logger.debug("Power decoded: " + reply)
 
+    reply = cmdNse.processReply(line)
+    if reply is not None:
+      logger.debug("Display decoded: %s", reply)
+
 def removeNonPrintableChars(line):
-  if (len(line) > 5) and (line.startswith('NSA') or line.startswith('NSE')):
+  if (len(line) >= 5) and (line.startswith('NSA') or line.startswith('NSE')):
     if line[3] in ('1', '2', '3', '4', '5', '6'):
       line = line.replace(line[4], '')
   return line
