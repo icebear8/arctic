@@ -52,7 +52,11 @@ class RemoteConnection:
   @inactivityTimeoutSec.setter
   def inactivityTimeoutSec(self, timeoutSec):
     logger.debug("Set inactivity timeout (sec): " + timeoutSec)
-    self._inactivityTimeoutSec = timeoutSec
+    try:
+        self._inactivityTimeoutSec = int(timeoutSec)
+    except ValueError:
+        logger.debug("Inactivity cannot be converted to a number: " + timeoutSec)
+        return
     self._restartConnectionTimeout()
 
   @property
@@ -103,11 +107,10 @@ class RemoteConnection:
       self.disconnect()
 
   def _restartConnectionTimeout(self):
-    if not (self._disconnectTimer == None):
-      logger.debug("Cancel timer")
+    if self._disconnectTimer is not None:
       self._disconnectTimer.cancel()
-    self._disconnectTimer = threading.Timer(self._inactivityTimeoutSec, self.disconnect)
 
+    self._disconnectTimer = threading.Timer(self._inactivityTimeoutSec, self.disconnect)
     if self._isConnected is True:
       self._disconnectTimer.start()
 
