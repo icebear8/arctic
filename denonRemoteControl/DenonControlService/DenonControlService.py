@@ -3,8 +3,11 @@ import getopt
 import time
 import logging
 import sys
+
 from RemoteConnection import RemoteConnection
 from RestService import RestService
+
+logger = logging.getLogger()
 
 remote = None
 restService = None
@@ -13,14 +16,14 @@ def _runServices(targetHost, timeout):
   global remote
   global restService
 
-  logging.debug("Create remote connection")
+  logger.debug("Create remote connection")
 
   remote = RemoteConnection(host=targetHost)
-  
+
   if timeout:
     remote.inactivityTimeoutSec = timeout
 
-  logging.debug("Create REST service")
+  logger.debug("Create REST service")
   restService = RestService()
   RestService.remoteConnection = remote
   restService.start()
@@ -29,7 +32,7 @@ def _runServices(targetHost, timeout):
     time.sleep(10)
 
 def _stopServices():
-  logging.info("Stopping services")
+  logger.info("Stopping services")
   remote.disconnect()
   restService.stop()
 
@@ -38,7 +41,7 @@ def _initializeLogging(loglevel):
   if not isinstance(numeric_level, int):
     numeric_level = getattr(logging, INFO, None)
 
-  logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %I:%M:%S %p', level=numeric_level)
+  logging.basicConfig(format='%(asctime)s %(levelname)s:%(name)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=numeric_level)
   logging.Formatter.converter = time.gmtime
 
 def _printUsage():
@@ -46,20 +49,20 @@ def _printUsage():
   print('--host=: Host name or IP to connect')
   print('--log=: Loglevel [DEBUG, INFO, WARNING, ERROR, CRITICAL]')
   print('--timeout=: Inactivity disconnection timeout in seconds (default=300 sec)')
-  
+
 def main(argv):
   isService = False
   host = ""
   loglevel = ""
   timeout = None
-  
+
   try:
     opts, args = getopt.getopt(argv, "h", ["help", "host=", "log=", "timeout="])
   except getopt.GetoptError as err:
     print(err)  # will print something like "option -a not recognized"
     _printUsage()
     sys.exit(2)
-      
+
   for opt, arg in opts:
     if opt in ('-h', '--help'):
       _printUsage()
@@ -70,14 +73,11 @@ def main(argv):
       loglevel = arg
     elif opt in ('--timeout='):
       timeout = arg
-    
 
   _initializeLogging(loglevel)
-  logging.info("Main started")
+  logger.info("Main started")
 
   _runServices(host, timeout)
-  
+
 if __name__ == '__main__':
   main(sys.argv[1:])
-
-
