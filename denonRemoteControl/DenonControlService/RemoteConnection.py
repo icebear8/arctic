@@ -156,16 +156,10 @@ class ListenerThread(threading.Thread):
       line = _removeNonPrintableChars(line)
       logger.debug("Received line: " + line)
 
-      reply = cmdVolume.processReply(line)
-      if reply is not None:
-        logger.debug("Volume decoded: %s", reply)
-        cache.values.update(reply)
-
-
-      reply = cmdPower.processReply(line)
-      if reply is not None:
-        logger.debug("Power decoded: %s", reply)
-        cache.values.update(reply)
+      if cmdVolume.processReply(line) is not None:
+        logger.debug("Volume decoded: %s", cmdVolume.getValue())
+      elif cmdPower.processReply(line) is not None:
+        logger.debug("Power decoded: %s", cmdPower.getValue())
 
       reply = cmdNse.processReply(line)
       if reply is not None:

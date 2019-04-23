@@ -1,16 +1,27 @@
 
 import logging
+import DataCache as cache
 
-# Volume module
 logger = logging.getLogger(__name__)
 
+_id = 'power'
+_prefix = 'PW'
+cachedValue = cache.CachedValue(_id)
+
 def getId():
-  return 'power'
+  return _id
 
 def cmdPrefix():
-  return 'PW'
+  return _prefix
+
+def getValue():
+  return cachedValue.getValue()
+
+def waitValue(timeout=None):
+  return cachedValue.waitValue(timeout)
 
 def createRequest(request):
+  cachedValue.invalidate()
   request = request.upper()
 
   if request in ('GET'):
@@ -30,7 +41,8 @@ def isProcessible(reply):
 
 def processReply(reply):
   if isProcessible(reply) is True:
+    cachedValue.update(reply[2:])
     logger.debug('Processed: ' + reply[2:])
-    return { getId() : reply[2:] }
+    return reply[2:]
 
   return None
