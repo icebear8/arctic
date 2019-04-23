@@ -19,8 +19,22 @@ from RemoteConnection import RemoteConnection
 app = Flask(__name__)
 logger = logging.getLogger(__name__)
 
+defaultRequestTimeout = 0.4    # 400ms
+
 def _runProcess():
   app.run(host='0.0.0.0')
+
+def _handleRequest(command, request='get'):
+  logger.debug(command.getId() + " request: " + request)
+  cmdRequest = command.createRequest(request)
+
+  if cmdRequest is not None:
+    RestService.remoteConnection.send(cmdRequest)
+    return command.waitValue(defaultRequestTimeout)
+
+  logger.debug(command.getId() + "unknown request: " + request)
+  return "Invalid request"
+
 
 @app.route("/")
 def index():
@@ -42,52 +56,19 @@ def getCmd():
 
 @app.route('/volume', methods=['GET'])
 def getVolume():
-  logger.debug("/volume get request")
-  cmd = cmdVolume.createRequest("get")
-
-  if cmd is not None:
-    RestService.remoteConnection.send(cmd)
-    return cache.getValue('volume')
-
-  logger.debug("/volume unknown request: get")
-  return "Invalid request"
+  return _handleRequest(cmdVolume, 'get')
 
 @app.route('/volume/<request>', methods=['PUT'])
 def setVolume(request):
-  logger.debug("/volume request: " + request)
-  cmd = cmdVolume.createRequest(request)
-
-  if cmd is not None:
-    RestService.remoteConnection.send(cmd)
-    return cache.getValue('volume')
-
-  logger.debug("/volume unknown request: " + request)
-  return "Invalid request"
-
+  return _handleRequest(cmdVolume, request)
 
 @app.route('/power', methods=['GET'])
 def getPower():
-  logger.debug("/power get request")
-  cmd = cmdPower.createRequest("get")
-
-  if cmd is not None:
-    RestService.remoteConnection.send(cmd)
-    return cache.getValue('power')
-  logger.debug("/power unknown request: get")
-  return "Invalid request"
+  return _handleRequest(cmdPower, 'get')
 
 @app.route('/power/<request>', methods=['PUT'])
 def setPower(request):
-  logger.debug("/power request: " + request)
-  cmd = cmdPower.createRequest(request)
-
-  if cmd is not None:
-    RestService.remoteConnection.send(cmd)
-    return cache.getValue('power')
-
-  logger.debug("/power unknown request: " + request)
-  return "Invalid request"
-
+  return _handleRequest(cmdPower, request)
 
 @app.route('/display/lines')
 def lines():
