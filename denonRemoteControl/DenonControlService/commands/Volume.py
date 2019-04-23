@@ -4,6 +4,9 @@ import logging
 # Volume module
 logger = logging.getLogger(__name__)
 
+def getId():
+  return 'volume'
+
 def cmdPrefix():
   return 'MV'
 
@@ -29,6 +32,6 @@ def processReply(reply):
   if isProcessible(reply) is True:
     if reply[2:].isdecimal() is True:
         logger.debug('Processed: ' + reply[2:])
-        return reply[2:4]
+        return { getId() : reply[2:4] }
 
   return None

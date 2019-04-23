@@ -3,6 +3,7 @@ import logging
 import socket
 import threading
 
+import DataCache as cache
 import commands.Volume as cmdVolume
 import commands.Power as cmdPower
 import commands.Nse as cmdNse
@@ -163,16 +164,20 @@ class ListenerThread(threading.Thread):
 
       reply = cmdVolume.processReply(line)
       if reply is not None:
-        logger.debug("Volume decoded: " + reply)
-        self.deviceData.volume = reply
+        logger.debug("Volume decoded: %s", reply)
+        self.deviceData.volume = reply[cmdVolume.getId()]
+        cache.values.update(reply)
+
 
       reply = cmdPower.processReply(line)
       if reply is not None:
-        logger.debug("Power decoded: " + reply)
+        logger.debug("Power decoded: %s", reply)
+        cache.values.update(reply)
 
       reply = cmdNse.processReply(line)
       if reply is not None:
         logger.debug("Display decoded: %s", reply)
+        cache.values.update(reply)
 
 def _removeNonPrintableChars(line):
   if (len(line) >= 5) and (line.startswith('NSA') or line.startswith('NSE')):

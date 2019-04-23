@@ -4,6 +4,9 @@ import logging
 # Volume module
 logger = logging.getLogger(__name__)
 
+def getId():
+  return 'line'
+
 def cmdPrefix():
   return 'NSE'
 
@@ -27,6 +30,5 @@ def processReply(reply):
       if text is '\x00':
         text = ''
       logger.debug('Processed: ' + text)
-      return {int(reply[3]) : text}
-
+      return { getId() + reply[3] : text}
   return None

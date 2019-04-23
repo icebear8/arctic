@@ -4,6 +4,7 @@ import threading
 import time
 import http.client
 
+import DataCache as cache
 import commands.Volume as cmdVolume
 import commands.Power as cmdPower
 
@@ -44,7 +45,7 @@ def getVolume():
 
   if cmd is not None:
     RestService.remoteConnection.send(cmd)
-    return str(RestService.remoteConnection.data.volume)
+    return cache.getValue('volume')
 
   logger.debug("/volume unknown request: get")
   return "Invalid request"
@@ -56,7 +57,7 @@ def setVolume(request):
 
   if cmd is not None:
     RestService.remoteConnection.send(cmd)
-    return str(RestService.remoteConnection.data.volume)
+    return cache.getValue('volume')
 
   logger.debug("/volume unknown request: " + request)
   return "Invalid request"
@@ -69,7 +70,7 @@ def getPower():
 
   if cmd is not None:
     RestService.remoteConnection.send(cmd)
-    return "Power"
+    return cache.getValue('power')
   logger.debug("/power unknown request: get")
   return "Invalid request"
 
@@ -80,7 +81,7 @@ def setPower(request):
 
   if cmd is not None:
     RestService.remoteConnection.send(cmd)
-    return "Power"
+    return cache.getValue('power')
 
   logger.debug("/power unknown request: " + request)
   return "Invalid request"
