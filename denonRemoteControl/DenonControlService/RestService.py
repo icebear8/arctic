@@ -5,8 +5,10 @@ import time
 import http.client
 
 import DataCache as cache
-import commands.Volume as cmdVolume
+
+import commands.Nse as cmdLines
 import commands.Power as cmdPower
+import commands.Volume as cmdVolume
 
 from flask import Flask
 from flask import render_template
@@ -84,6 +86,32 @@ def setPower(request):
     return cache.getValue('power')
 
   logger.debug("/power unknown request: " + request)
+  return "Invalid request"
+
+
+@app.route('/display/lines')
+def lines():
+  logger.debug("/display/lines get request")
+  cmd = cmdLines.createRequest("get")
+
+  if cmd is not None:
+    RestService.remoteConnection.send(cmd)
+    line = ""
+    for idx in range(0, 9):
+      line += cache.getValue('line' + str(idx)) + "\n"
+    return line
+  logger.debug("/display/lines unknown request: get")
+  return "Invalid request"
+
+@app.route('/display/line/<request>')
+def line(request):
+  logger.debug("/display/line request: " + request)
+  cmd = cmdLines.createRequest("get")
+
+  if cmd is not None:
+    RestService.remoteConnection.send(cmd)
+    return cache.getValue('line' + str(request)) + "\n"
+  logger.debug("/display/lines unknown request: get")
   return "Invalid request"
 
 @app.route('/start', methods=['PUT'])
