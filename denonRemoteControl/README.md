@@ -32,8 +32,11 @@ If the service is idle for a specific time (default 300 Seconds) it disconnects 
 Rest API supports:
 
 * `GET <host>/volume`: Gets the current volume level
+* `PUT <host>/volume/<cmd>`: Sets the volume. Accepted values: `up`, `down`, <volume> ad decimal
 * `GET <host>/power`: Gets the current power level
 * `PUT <host>/power/<cmd>`: Sets the power. Accepted values: `on`, `standby`
+* `GET <host>/display/lines`: Gets the lines from the display
+* `GET <host>/display/line/<index>`: Gets a specific display line. Accepted values: Decimal value from 0..8
 * `PUT <host>/start`: Starts the receiver and plays the first favorite item
 * `PUT <host>/startVolume/<volume>`: Starts the receiver with volume level `<volume>` and plays the first favorite item
 * `PUT <host>/next`: Switches to the next favorite item
