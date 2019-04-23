@@ -30,7 +30,7 @@ def _handleRequest(command, request='get'):
 
   if cmdRequest is not None:
     RestService.remoteConnection.send(cmdRequest)
-    return command.waitValue(defaultRequestTimeout)
+    return command.waitValue(timeout=defaultRequestTimeout)
 
   logger.debug(command.getId() + "unknown request: " + request)
   return "Invalid request"
@@ -72,27 +72,19 @@ def setPower(request):
 
 @app.route('/display/lines')
 def lines():
-  logger.debug("/display/lines get request")
-  cmd = cmdLines.createRequest("get")
-
-  if cmd is not None:
-    RestService.remoteConnection.send(cmd)
-    line = ""
-    for idx in range(0, 9):
-      line += cache.getValue('line' + str(idx)) + "\n"
-    return line
-  logger.debug("/display/lines unknown request: get")
-  return "Invalid request"
+  return _handleRequest(cmdLines, 'get')
 
 @app.route('/display/line/<request>')
 def line(request):
-  logger.debug("/display/line request: " + request)
-  cmd = cmdLines.createRequest("get")
+  command = cmdLines
+  logger.debug(command.getId() + " request: " + request)
+  cmdRequest = command.createRequest('get')
 
-  if cmd is not None:
-    RestService.remoteConnection.send(cmd)
-    return cache.getValue('line' + str(request)) + "\n"
-  logger.debug("/display/lines unknown request: get")
+  if cmdRequest is not None:
+    RestService.remoteConnection.send(cmdRequest)
+    return command.waitValue(key=request, timeout=defaultRequestTimeout)
+
+  logger.debug(command.getId() + "unknown request: " + request)
   return "Invalid request"
 
 @app.route('/start', methods=['PUT'])
