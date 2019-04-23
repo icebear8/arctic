@@ -16,10 +16,6 @@ defaultPort = 23
 bufferSize = 1024
 defaultInactivityTimeoutSec = 300.0
 
-class DeviceData:
-  def __init__(self):
-    self.volume = 0
-
 class RemoteConnection:
   def __init__(self, host, port=defaultPort):
     self._ip = defaultIp
@@ -35,7 +31,6 @@ class RemoteConnection:
     self._isConnected = False
     self._listenerThread = None
     self._disconnectTimer = None
-    self.data = DeviceData()
 
   @property
   def port(self):
@@ -80,7 +75,7 @@ class RemoteConnection:
     logger.debug("Connect to: " + self._ip)
 
     self._socket.connect((self._ip, self._port))
-    self._listenerThread = ListenerThread(self._socket, self.data)
+    self._listenerThread = ListenerThread(self._socket)
     self._isConnected = True
     self._listenerThread.start()
 
@@ -117,12 +112,11 @@ class RemoteConnection:
       self._disconnectTimer.start()
 
 class ListenerThread(threading.Thread):
-  def __init__(self, socket, data):
+  def __init__(self, socket):
     threading.Thread.__init__(self)
     self._socket = socket
     self._isListening = True
     self._lock = threading.Lock()
-    self.deviceData = data
 
   def abort(self):
     self._lock.acquire()
@@ -165,7 +159,6 @@ class ListenerThread(threading.Thread):
       reply = cmdVolume.processReply(line)
       if reply is not None:
         logger.debug("Volume decoded: %s", reply)
-        self.deviceData.volume = reply[cmdVolume.getId()]
         cache.values.update(reply)
 
 
