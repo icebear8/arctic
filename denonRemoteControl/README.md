@@ -1,4 +1,7 @@
 # Supported tags
+* 0.7-r1: Improved REST API functionality
+  - Additional commands (power, display)
+  - Improved REST response values
 * 0.6-r1: Proper setup and allow configuration with environment variables
 * 0.5-b3: Obsolete
 
@@ -18,9 +21,9 @@ The Denon service settings are configurable with environment variables.
 
 | Argument    | Default     | Description |
 |-            |-            |-            |
-| DENON_HOST  | 192.168.0.0 | IP, hostname or URL of the Denon receiver to connect (e.g. 192.168.0.42 or mydenon.local, default: 192.168.0.0)  |
-| LOG_LEVEL   | ERROR       | [DEBUG, INFO, WARNING, ERROR, CRITICAL] (default: ERROR)  |
-| CON_TIMEOUT | 300         | Idle timeout in seconds to close the Denon TCP connection (default: 300 seconds)  |
+| DENON_HOST  | 192.168.0.0 | IP, hostname or URL of the Denon receiver to connect (e.g. 192.168.0.42 or mydenon.local) |
+| LOG_LEVEL   | ERROR       | [DEBUG, INFO, WARNING, ERROR, CRITICAL] |
+| CON_TIMEOUT | 300         | Idle timeout in seconds to close the Denon TCP connection |
 
 `docker run -p 80:5000 -e "DENON_HOST=192.168.0.42" icebear8/denonservice:latest`
 
@@ -32,11 +35,11 @@ If the service is idle for a specific time (default 300 Seconds) it disconnects 
 Rest API supports:
 
 * `GET <host>/volume`: Gets the current volume level
-* `PUT <host>/volume/<cmd>`: Sets the volume. Accepted values: `up`, `down`, <volume> ad decimal
+* `PUT <host>/volume/<cmd>`: Sets the volume. Accepted values: `up`, `down`, <volume> as decimal
 * `GET <host>/power`: Gets the current power level
 * `PUT <host>/power/<cmd>`: Sets the power. Accepted values: `on`, `standby`
-* `GET <host>/display/lines`: Gets the lines from the display
-* `GET <host>/display/line/<index>`: Gets a specific display line. Accepted values: Decimal value from 0..8
+* `GET <host>/display/lines`: Gets the lines 0..8 from the display
+* `GET <host>/display/line/<index>`: Gets a specific display line. Accepted values: `album`, `artist`, `title`, <line> as decimal (0..8)
 * `PUT <host>/start`: Starts the receiver and plays the first favorite item
 * `PUT <host>/startVolume/<volume>`: Starts the receiver with volume level `<volume>` and plays the first favorite item
 * `PUT <host>/next`: Switches to the next favorite item
