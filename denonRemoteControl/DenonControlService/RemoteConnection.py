@@ -139,6 +139,7 @@ class ListenerThread(threading.Thread):
       else:
         if data:
           try:
+            _logRawArray(data)
             lines = data.decode('UTF-8').split('\r')
             self._processLines(lines)
           except UnicodeDecodeError:
@@ -152,22 +153,17 @@ class ListenerThread(threading.Thread):
     logger.debug('End listener thread')
 
   def _processLines(self, lines):
+    lines = cmdNse.workaroundDenonProtocol(lines)
     for line in lines:
-      line = _removeNonPrintableChars(line)
-      logger.debug("Received line: " + line)
-
       if cmdVolume.processReply(line) is not None:
         logger.debug("Volume decoded: %s", cmdVolume.getValue())
       elif cmdPower.processReply(line) is not None:
         logger.debug("Power decoded: %s", cmdPower.getValue())
+      else:
+          reply = cmdNse.processReply(line)
+          if reply is not None:
+            logger.debug("Display decoded: %s", reply)
 
-      reply = cmdNse.processReply(line)
-      if reply is not None:
-        logger.debug("Display decoded: %s", reply)
-        cache.values.update(reply)
-
-def _removeNonPrintableChars(line):
-  if (len(line) >= 5) and (line.startswith('NSA') or line.startswith('NSE')):
-    if line[3] in ('1', '2', '3', '4', '5', '6'):
-      line = line.replace(line[4], '')
-  return line
+def _logRawArray(data):
+  hexString = ''.join('{:02x} '.format(x) for x in data)
+  logger.debug("Raw array: '%s'", hexString)
