@@ -1,6 +1,6 @@
 # Supported tags
 * 0.7-r1: Improved REST API functionality
-  - Additional commands (power, display)
+  - Additional commands (volume, power, display)
   - Improved REST response values
 * 0.6-r1: Proper setup and allow configuration with environment variables
 * 0.5-b3: Obsolete
