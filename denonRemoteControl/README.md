@@ -1,4 +1,7 @@
-# Supported tags and respective `Dockerfile` links
+# Supported tags
+* 0.7-r1: Improved REST API functionality
+  - Additional commands (volume, power, display)
+  - Improved REST response values
 * 0.6-r1: Proper setup and allow configuration with environment variables
 * 0.5-b3: Obsolete
 
@@ -18,9 +21,9 @@ The Denon service settings are configurable with environment variables.
 
 | Argument    | Default     | Description |
 |-            |-            |-            |
-| DENON_HOST  | 192.168.0.0 | IP, hostname or URL of the Denon receiver to connect (e.g. 192.168.0.42 or mydenon.local, default: 192.168.0.0)  |
-| LOG_LEVEL   | ERROR       | [DEBUG, INFO, WARNING, ERROR, CRITICAL] (default: ERROR)  |
-| CON_TIMEOUT | 300         | Idle timeout in seconds to close the Denon TCP connection (default: 300 seconds)  |
+| DENON_HOST  | 192.168.0.0 | IP, hostname or URL of the Denon receiver to connect (e.g. 192.168.0.42 or mydenon.local) |
+| LOG_LEVEL   | ERROR       | [DEBUG, INFO, WARNING, ERROR, CRITICAL] |
+| CON_TIMEOUT | 300         | Idle timeout in seconds to close the Denon TCP connection |
 
 `docker run -p 80:5000 -e "DENON_HOST=192.168.0.42" icebear8/denonservice:latest`
 
@@ -32,8 +35,11 @@ If the service is idle for a specific time (default 300 Seconds) it disconnects 
 Rest API supports:
 
 * `GET <host>/volume`: Gets the current volume level
+* `PUT <host>/volume/<cmd>`: Sets the volume. Accepted values: `up`, `down`, <volume> as decimal
 * `GET <host>/power`: Gets the current power level
 * `PUT <host>/power/<cmd>`: Sets the power. Accepted values: `on`, `standby`
+* `GET <host>/display/lines`: Gets the lines 0..8 from the display
+* `GET <host>/display/line/<index>`: Gets a specific display line. Accepted values: `album`, `artist`, `title`, <line> as decimal (0..8)
 * `PUT <host>/start`: Starts the receiver and plays the first favorite item
 * `PUT <host>/startVolume/<volume>`: Starts the receiver with volume level `<volume>` and plays the first favorite item
 * `PUT <host>/next`: Switches to the next favorite item
@@ -43,4 +49,7 @@ To control the connection to the receiver:
 * `GET <host>/connection`: Gets the TCP connection state of the 'Denon service' to the receiver.
 * `PUT <host>/connection/<command>`: Requests to change the connection state of 'Denon service' to the receiver. Accepted values: `connect`, `disconnect`
 
-
+## Web Demo
+For demonstration purpose there is a simple website which accesses the Denon service REST API.
+Call `index.html` to use and test basic commands.
+The recommendation is to build a separate website and only use the REST API of the Denon service.

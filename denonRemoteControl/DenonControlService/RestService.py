@@ -4,6 +4,12 @@ import threading
 import time
 import http.client
 
+import DataCache as cache
+
+import commands.Nse as cmdLines
+import commands.Power as cmdPower
+import commands.Volume as cmdVolume
+
 from flask import Flask
 from flask import render_template
 from flask import request
@@ -11,9 +17,24 @@ from flask import request
 from RemoteConnection import RemoteConnection
 
 app = Flask(__name__)
+logger = logging.getLogger(__name__)
+
+defaultRequestTimeout = 0.4    # 400ms
 
 def _runProcess():
   app.run(host='0.0.0.0')
+
+def _handleRequest(command, request='get'):
+  logger.debug(command.getId() + " request: " + request)
+  cmdRequest = command.createRequest(request)
+
+  if cmdRequest is not None:
+    RestService.remoteConnection.send(cmdRequest)
+    return command.waitValue(timeout=defaultRequestTimeout)
+
+  logger.debug(command.getId() + "unknown request: " + request)
+  return "Invalid request"
+
 
 @app.route("/")
 def index():
@@ -26,7 +47,7 @@ def getHello():
 @app.route('/command', methods=['GET', 'POST', 'PUT'])
 def getCmd():
   command = request.args.get('cmd')
-  logging.debug("Wildcard command request: %s", command)
+  logger.debug("Wildcard command request: %s", command)
 
   if not command.endswith('\r'):
     command += '\r'
@@ -35,28 +56,40 @@ def getCmd():
 
 @app.route('/volume', methods=['GET'])
 def getVolume():
-  logging.debug("Volume get request")
-  RestService.remoteConnection.send("MV?\r")
-  logging.debug("Current volume: " + str(RestService.remoteConnection.data.volume))
-  return str(RestService.remoteConnection.data.volume)
+  return _handleRequest(cmdVolume, 'get')
+
+@app.route('/volume/<request>', methods=['PUT'])
+def setVolume(request):
+  return _handleRequest(cmdVolume, request)
 
 @app.route('/power', methods=['GET'])
 def getPower():
-  logging.debug("Power get request")
-  RestService.remoteConnection.send("PW?\r")
-  return "Power"
+  return _handleRequest(cmdPower, 'get')
 
-@app.route('/power/<cmd>', methods=['PUT'])
-def setPower(cmd):
-  message = ""
-  logging.debug("Power set request:" + str(cmd))
-  message = "PW" + str(cmd).upper() + "\r"
-  RestService.remoteConnection.send(message)
-  return "Power"
+@app.route('/power/<request>', methods=['PUT'])
+def setPower(request):
+  return _handleRequest(cmdPower, request)
+
+@app.route('/display/lines')
+def lines():
+  return _handleRequest(cmdLines, 'get')
+
+@app.route('/display/line/<request>')
+def line(request):
+  command = cmdLines
+  logger.debug(command.getId() + " request: " + request)
+  cmdRequest = command.createRequest('get')
+
+  if cmdRequest is not None:
+    RestService.remoteConnection.send(cmdRequest)
+    return command.waitValue(key=request, timeout=defaultRequestTimeout)
+
+  logger.debug(command.getId() + "unknown request: " + request)
+  return "Invalid request"
 
 @app.route('/start', methods=['PUT'])
 def start():
-  logging.debug("Start request")
+  logger.debug("Start request")
   RestService.remoteConnection.send("PWON\r")
   time.sleep(5)
   RestService.remoteConnection.send("SIFAVORITES\r")
@@ -67,7 +100,7 @@ def start():
 @app.route('/startVolume/<volume>', methods=['PUT'])
 def startVolume(volume):
   volumeCommand = "MV" + str(volume).upper() + "\r";
-  logging.debug("Start volume request")
+  logger.debug("Start volume request")
   RestService.remoteConnection.send("PWON\r")
   time.sleep(5)
   RestService.remoteConnection.send(volumeCommand)
@@ -78,7 +111,7 @@ def startVolume(volume):
 
 @app.route('/next', methods=['PUT'])
 def next():
-  logging.info("Next request")
+  logger.info("Next request")
   RestService.remoteConnection.send("SIFAVORITES\r")
   time.sleep(3)
   RestService.remoteConnection.send("NS91\r") # next
@@ -88,10 +121,10 @@ def next():
 
 @app.route('/shutdown', methods=['PUT'])
 def shutdown():
-  logging.info("Shutdown post")
+  logger.info("Shutdown post")
 
   if RestService.isShutdownAllowed is True:
-    logging.info("Server shutting down")
+    logger.info("Server shutting down")
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
       raise RuntimeError('Not running with the Werkzeug Server')
@@ -109,12 +142,12 @@ def getConnection():
 
 @app.route('/connection/<command>', methods=['PUT'])
 def connection(command):
-  logging.debug("Connection command received: %s", command)
+  logger.debug("Connection command received: %s", command)
   connectionCommand = str(command).upper()
-	
+
   if connectionCommand == 'DISCONNECT':
     RestService.remoteConnection.disconnect()
-    
+
   if connectionCommand == 'CONNECT':
     RestService.remoteConnection.connect()
 
@@ -128,11 +161,11 @@ class RestService(threading.Thread):
     threading.Thread.__init__(self)
 
   def run(self):
-    logging.info("Rest service started")
+    logger.info("Rest service started")
     _runProcess()
 
   def stop(self):
-    logging.info("Stopping rest service")
+    logger.info("Stopping rest service")
     restClient = http.client.HTTPConnection("localhost", 5000)
     restClient.request("PUT", "/shutdown", None)
-    logging.info("Rest service stopped")
+    logger.info("Rest service stopped")
