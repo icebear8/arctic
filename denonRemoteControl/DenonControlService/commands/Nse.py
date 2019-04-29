@@ -1,13 +1,16 @@
 
 import logging
+import time
 import DataCache as cache
 
 logger = logging.getLogger(__name__)
 
 _id = 'line'
 _prefix = 'NSE'
+_timeLastReceiveSec = 0.0
+_REQUEST_INTERVAL_SEC = 2.0
 
-cachedValues = {
+_cachedValues = {
   '0' : cache.CachedValue(_id + "0"),
   '1' : cache.CachedValue(_id + "1"),
   '2' : cache.CachedValue(_id + "2"),
@@ -29,16 +32,16 @@ def cmdPrefix():
   return _prefix
 
 def getValue(key=_id):
-  if key in cachedValues.keys():
-    return cachedValues[key].getValue()
+  if key in _cachedValues.keys():
+    return _cachedValues[key].getValue()
   elif key in (_id):
     return getValues()
   logger.debug("Invalid key: " + key)
   return ''
 
 def waitValue(key=_id, timeout=None):
-  if key in cachedValues:
-    return cachedValues[key].waitValue(timeout)
+  if key in _cachedValues:
+    return _cachedValues[key].waitValue(timeout)
   elif key in (_id):
     return waitValues(timeout)
   logger.debug("Invalid key: " + key)
@@ -46,21 +49,24 @@ def waitValue(key=_id, timeout=None):
 
 def getValues():
   lines = ''
-  for key in cachedValues:
+  for key in _cachedValues:
     if len(key) <= 2:
-      lines += cachedValues[key].getValue() + '\n'
+      lines += _cachedValues[key].getValue() + '\n'
   return lines
 
 def waitValues(timeout=None):
   lines = ''
-  for key in cachedValues:
+  for key in _cachedValues:
     if len(key) <= 2:
-      lines += cachedValues[key].waitValue(timeout) + '\n'
+      lines += _cachedValues[key].waitValue(timeout) + '\n'
   return lines
 
 def createRequest(request):
-  for key in cachedValues:
-    cachedValues[key].invalidate()
+  if (time.time() - _timeLastReceiveSec) < _REQUEST_INTERVAL_SEC:
+    logger.debug('Ignore too frequent requests')
+    return ''
+  for key in _cachedValues:
+    _cachedValues[key].invalidate()
   request = request.upper()
   if request in ('GET'):
     return cmdPrefix() + '\r'
@@ -74,11 +80,12 @@ def isProcessible(reply):
 
 def processReply(reply):
   if isProcessible(reply) is True:
-      #_logCursorInfo(reply)
+      global _timeLastReceiveSec
+      _timeLastReceiveSec = time.time()
       reply = _removeNonPrintableChars(reply)
       key = getId() + reply[3]
       text = '' + reply[4:].strip()
-      cachedValues[reply[3]].update(text)
+      _cachedValues[reply[3]].update(text)
       _handleSpecialInfo(reply[3], text)
       logger.debug('Processed %s: %s', reply[3], text)
       return { key : text }
@@ -111,16 +118,16 @@ def _removeNonPrintableChars(reply):
   return reply
 
 def _handleSpecialInfo(id, text):
-  if (cachedValues['0'].getValue().startswith("Now Playing")):
+  if (_cachedValues['0'].getValue().startswith("Now Playing")):
     if id is '1':
       logger.debug("Title: %s", text)
-      cachedValues['title'].update(text)
+      _cachedValues['title'].update(text)
     elif id is '2':
       logger.debug("Artist: %s", text)
-      cachedValues['artist'].update(text)
+      _cachedValues['artist'].update(text)
     elif id is '4':
       logger.debug("Album: %s", text)
-      cachedValues['album'].update(text)
+      _cachedValues['album'].update(text)
 
 def workaroundDenonProtocol(lines):
   idx = 0
