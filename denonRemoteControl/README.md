@@ -1,4 +1,5 @@
 # Supported tags
+* 0.8-r1: Throttle NSE messages (2 seconds)
 * 0.7-r1: Improved REST API functionality
   - Additional commands (volume, power, display)
   - Improved REST response values

@@ -92,6 +92,8 @@ class RemoteConnection:
     self._isConnected = False
 
   def send(self, message):
+    if not message:
+      return # Exit in case of no message has to be sent
     self._restartConnectionTimeout()
     if not self._isConnected:
       self.connect()
