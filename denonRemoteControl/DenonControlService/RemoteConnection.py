@@ -65,7 +65,8 @@ class RemoteConnection:
   def connect(self):
     with self._lockConnection:
       if self._isConnected is True:
-        self.disconnect()
+        logger.debug("Already connected, ignore")
+        return
       try:
         self._socket = socket.socket()
         self._ip = socket.gethostbyname(self._host)
@@ -87,15 +88,14 @@ class RemoteConnection:
 
   def disconnect(self):
     logger.debug("Disconnect method called")
-
-    if self._isConnected is True:
-      logger.debug("Disconnect")
-      self._listenerThread.abort()
-      self._listenerThread.join()
-      self._socket.close()
-
-    logger.debug("Disconnected")
-    self._isConnected = False
+    with self._lockConnection:
+      if self._isConnected is True:
+        logger.debug("Disconnect")
+        self._listenerThread.abort()
+        self._listenerThread.join()
+        self._socket.close()
+      logger.debug("Disconnected")
+      self._isConnected = False
 
   def send(self, message):
     if not message:
@@ -115,7 +115,6 @@ class RemoteConnection:
         self.disconnect()
     else:
       logger.error("Unable to send command: %s", message.strip())
-      self.disconnect()
 
   def _restartConnectionTimeout(self):
     if self._disconnectTimer is not None:
