@@ -9,6 +9,7 @@ import commands.Power as cmdPower
 import commands.Nse as cmdNse
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 defaultIp = '192.168.0.0'
 defaultHost = defaultIp
@@ -62,7 +63,7 @@ class RemoteConnection:
     return self._isConnected
 
   def connect(self):
-    with self._lockConnection
+    with self._lockConnection:
       if self._isConnected is True:
         self.disconnect()
       try:
@@ -101,6 +102,7 @@ class RemoteConnection:
       return # Exit in case of no message has to be sent
     self._restartConnectionTimeout()
     if not self._isConnected:
+      logger.debug("Send not connected, connect: %s", message.strip())
       self.connect()
     logger.debug("Send: %s", message.strip())
 
@@ -155,7 +157,7 @@ class ListenerThread(threading.Thread):
       else:
         if data:
           try:
-            _logRawArray(data)
+            #_logRawArray(data)
             lines = data.decode('UTF-8').split('\r')
             self._processLines(lines)
           except UnicodeDecodeError:
