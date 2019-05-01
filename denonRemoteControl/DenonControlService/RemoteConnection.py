@@ -118,12 +118,12 @@ class ListenerThread(threading.Thread):
     threading.Thread.__init__(self)
     self._socket = socket
     self._isListening = True
-    self._lock = threading.Lock()
+    self._lockListener = threading.Lock()
 
   def abort(self):
-    self._lock.acquire()
+    self._lockListener.acquire()
     self._isListening = False
-    self._lock.release()
+    self._lockListener.release()
 
   def run(self):
     isRunning = True
@@ -138,7 +138,7 @@ class ListenerThread(threading.Thread):
         data = self._socket.recv(bufferSize)
       except socket.timeout:
         pass    # Nothing to do
-      except socket.error  as ex:
+      except socket.error as ex:
         logger.error("Socket receive error")
         logger.exception(ex)
       else:
@@ -151,9 +151,9 @@ class ListenerThread(threading.Thread):
             logger.info("Unicode decode error")
             pass    # Nothing to do
 
-      self._lock.acquire()
+      self._lockListener.acquire()
       isRunning = self._isListening
-      self._lock.release()
+      self._lockListener.release()
 
     logger.debug('End listener thread')
 
