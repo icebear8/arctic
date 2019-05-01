@@ -28,6 +28,7 @@ class RemoteConnection:
     self._inactivityTimeoutSec = defaultInactivityTimeoutSec
 
     self._socket = socket.socket()
+    self._lockConnection = threading.Lock()
     self._isConnected = False
     self._listenerThread = None
     self._disconnectTimer = None
@@ -61,29 +62,27 @@ class RemoteConnection:
     return self._isConnected
 
   def connect(self):
-    if self._isConnected is True:
-      self.disconnect()
-
-    try:
-      self._socket = socket.socket()
-      self._ip = socket.gethostbyname(self._host)
-    except socket.gaierror as ex:
-      logger.error("Unable to get IP from host: " + self._host)
-      logger.exception(ex)
-      return
-
-    logger.debug("Connect to: " + self._ip)
-
-    try:
-      self._socket.connect((self._ip, self._port))
-    except socket.error as ex:
-      logger.error("Socket connect failed")
-      logger.exception(ex)
-    else:
-      self._restartConnectionTimeout()
-      self._listenerThread = ListenerThread(self._socket)
-      self._isConnected = True
-      self._listenerThread.start()
+    with self._lockConnection
+      if self._isConnected is True:
+        self.disconnect()
+      try:
+        self._socket = socket.socket()
+        self._ip = socket.gethostbyname(self._host)
+      except socket.gaierror as ex:
+        logger.error("Unable to get IP from host: " + self._host)
+        logger.exception(ex)
+        return
+      logger.debug("Connect to: " + self._ip)
+      try:
+        self._socket.connect((self._ip, self._port))
+      except socket.error as ex:
+        logger.error("Socket connect failed")
+        logger.exception(ex)
+      else:
+        self._restartConnectionTimeout()
+        self._listenerThread = ListenerThread(self._socket)
+        self._isConnected = True
+        self._listenerThread.start()
 
   def disconnect(self):
     logger.debug("Disconnect method called")
