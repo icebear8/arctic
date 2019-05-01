@@ -62,6 +62,7 @@ def waitValues(timeout=None):
   return lines
 
 def createRequest(request):
+  global _timeLastReceiveSec
   if (time.time() - _timeLastReceiveSec) < _REQUEST_INTERVAL_SEC:
     logger.debug('Ignore too frequent requests')
     return ''
