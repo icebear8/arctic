@@ -9,7 +9,6 @@ import commands.Power as cmdPower
 import commands.Nse as cmdNse
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 defaultIp = '192.168.0.0'
 defaultHost = defaultIp

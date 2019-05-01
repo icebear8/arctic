@@ -5,7 +5,6 @@ import time
 import DataCache as cache
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 _id = 'line'
 _prefix = 'NSE'
