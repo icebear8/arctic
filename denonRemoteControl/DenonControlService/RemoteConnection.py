@@ -102,7 +102,6 @@ class RemoteConnection:
       return # Exit in case of no message has to be sent
     self._restartConnectionTimeout()
     if not self._isConnected:
-      logger.debug("Send not connected, connect: %s", message.strip())
       self.connect()
     logger.debug("Send: %s", message.strip())
 
@@ -114,7 +113,7 @@ class RemoteConnection:
         logger.exception(ex)
         self.disconnect()
     else:
-      logger.error("Unable to send command: %s", message.strip())
+      logger.info("Unable to send command: %s", message.strip())
 
   def _restartConnectionTimeout(self):
     if self._disconnectTimer is not None:
@@ -156,7 +155,7 @@ class ListenerThread(threading.Thread):
       else:
         if data:
           try:
-            #_logRawArray(data)
+            _logRawArray(data)
             lines = data.decode('UTF-8').split('\r')
             self._processLines(lines)
           except UnicodeDecodeError:
