@@ -2,7 +2,7 @@ version: '2'
 services:
   denonservice:
     build: .
-    image: icebear8/denonservice:0.8-r1
+    image: icebear8/denonservice:0.8-r2
     container_name: denonservice
     ports:
     - "5050:5000"

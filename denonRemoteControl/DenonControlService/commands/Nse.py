@@ -1,5 +1,6 @@
 
 import logging
+import threading
 import time
 import DataCache as cache
 
@@ -7,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 _id = 'line'
 _prefix = 'NSE'
-_timeLastReceiveSec = 0.0
+_timeLastCreated = 0.0
 _REQUEST_INTERVAL_SEC = 2.0
 
 _cachedValues = {
@@ -62,7 +63,12 @@ def waitValues(timeout=None):
   return lines
 
 def createRequest(request):
-  if (time.time() - _timeLastReceiveSec) < _REQUEST_INTERVAL_SEC:
+  global _timeLastCreated
+  timeDiff = time.time() - _timeLastCreated
+  _timeLastCreated = time.time()
+
+  logger.debug('Last request, diff: %s, lastTime: %s', str(timeDiff), str(_timeLastCreated))
+  if (timeDiff) < _REQUEST_INTERVAL_SEC:
     logger.debug('Ignore too frequent requests')
     return ''
   for key in _cachedValues:
@@ -80,8 +86,8 @@ def isProcessible(reply):
 
 def processReply(reply):
   if isProcessible(reply) is True:
-      global _timeLastReceiveSec
-      _timeLastReceiveSec = time.time()
+      global _timeLastCreated
+      _timeLastCreated = time.time()
       reply = _removeNonPrintableChars(reply)
       key = getId() + reply[3]
       text = '' + reply[4:].strip()

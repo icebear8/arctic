@@ -28,6 +28,7 @@ class RemoteConnection:
     self._inactivityTimeoutSec = defaultInactivityTimeoutSec
 
     self._socket = socket.socket()
+    self._lockConnection = threading.Lock()
     self._isConnected = False
     self._listenerThread = None
     self._disconnectTimer = None
@@ -61,35 +62,39 @@ class RemoteConnection:
     return self._isConnected
 
   def connect(self):
-    if self._isConnected is True:
-      self.disconnect()
-
-    try:
-      self._socket = socket.socket()
-      self._ip = socket.gethostbyname(self._host)
-    except socket.gaierror as ex:
-      logger.error("Unable to get IP from host: " + self._host)
-      logger.exception(ex)
-      return
-
-    logger.debug("Connect to: " + self._ip)
-
-    self._socket.connect((self._ip, self._port))
-    self._listenerThread = ListenerThread(self._socket)
-    self._isConnected = True
-    self._listenerThread.start()
+    with self._lockConnection:
+      if self._isConnected is True:
+        logger.debug("Already connected, ignore")
+        return
+      try:
+        self._socket = socket.socket()
+        self._ip = socket.gethostbyname(self._host)
+      except socket.gaierror as ex:
+        logger.error("Unable to get IP from host: " + self._host)
+        logger.exception(ex)
+        return
+      logger.debug("Connect to: " + self._ip)
+      try:
+        self._socket.connect((self._ip, self._port))
+      except socket.error as ex:
+        logger.error("Socket connect failed")
+        logger.exception(ex)
+      else:
+        self._restartConnectionTimeout()
+        self._listenerThread = ListenerThread(self._socket)
+        self._isConnected = True
+        self._listenerThread.start()
 
   def disconnect(self):
     logger.debug("Disconnect method called")
-
-    if self._isConnected is True:
-      logger.debug("Disconnect")
-      self._listenerThread.abort()
-      self._listenerThread.join()
-      self._socket.close()
-
-    logger.debug("Disconnected")
-    self._isConnected = False
+    with self._lockConnection:
+      if self._isConnected is True:
+        logger.debug("Disconnect")
+        self._listenerThread.abort()
+        self._listenerThread.join()
+        self._socket.close()
+      logger.debug("Disconnected")
+      self._isConnected = False
 
   def send(self, message):
     if not message:
@@ -100,10 +105,14 @@ class RemoteConnection:
     logger.debug("Send: %s", message.strip())
 
     if self._isConnected is True:
-      self._socket.send(message.encode('ASCII'))
+      try:
+        self._socket.send(message.encode('ASCII'))
+      except socket.error as ex:
+        logger.error("Socket send error")
+        logger.exception(ex)
+        self.disconnect()
     else:
-      logger.error("Unable to send command: %s", message.strip())
-      self.disconnect()
+      logger.info("Unable to send command: %s", message.strip())
 
   def _restartConnectionTimeout(self):
     if self._disconnectTimer is not None:
@@ -118,12 +127,12 @@ class ListenerThread(threading.Thread):
     threading.Thread.__init__(self)
     self._socket = socket
     self._isListening = True
-    self._lock = threading.Lock()
+    self._lockListener = threading.Lock()
 
   def abort(self):
-    self._lock.acquire()
+    self._lockListener.acquire()
     self._isListening = False
-    self._lock.release()
+    self._lockListener.release()
 
   def run(self):
     isRunning = True
@@ -138,6 +147,10 @@ class ListenerThread(threading.Thread):
         data = self._socket.recv(bufferSize)
       except socket.timeout:
         pass    # Nothing to do
+      except socket.error as ex:
+        logger.error("Socket receive error")
+        logger.exception(ex)
+        self.abort()
       else:
         if data:
           try:
@@ -148,9 +161,9 @@ class ListenerThread(threading.Thread):
             logger.info("Unicode decode error")
             pass    # Nothing to do
 
-      self._lock.acquire()
+      self._lockListener.acquire()
       isRunning = self._isListening
-      self._lock.release()
+      self._lockListener.release()
 
     logger.debug('End listener thread')
 
