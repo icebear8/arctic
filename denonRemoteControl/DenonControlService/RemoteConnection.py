@@ -138,6 +138,9 @@ class ListenerThread(threading.Thread):
         data = self._socket.recv(bufferSize)
       except socket.timeout:
         pass    # Nothing to do
+      except socket.error  as ex:
+        logger.error("Socket receive error")
+        logger.exception(ex)
       else:
         if data:
           try:
