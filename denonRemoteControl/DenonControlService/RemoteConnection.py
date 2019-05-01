@@ -106,7 +106,12 @@ class RemoteConnection:
     logger.debug("Send: %s", message.strip())
 
     if self._isConnected is True:
-      self._socket.send(message.encode('ASCII'))
+      try:
+        self._socket.send(message.encode('ASCII'))
+      except socket.error as ex:
+        logger.error("Socket send error")
+        logger.exception(ex)
+        self.disconnect()
     else:
       logger.error("Unable to send command: %s", message.strip())
       self.disconnect()
@@ -147,6 +152,7 @@ class ListenerThread(threading.Thread):
       except socket.error as ex:
         logger.error("Socket receive error")
         logger.exception(ex)
+        self.abort()
       else:
         if data:
           try:
