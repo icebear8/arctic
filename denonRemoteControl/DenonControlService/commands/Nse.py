@@ -9,8 +9,7 @@ logger.setLevel(logging.DEBUG)
 
 _id = 'line'
 _prefix = 'NSE'
-_lockDimeDiff = threading.Lock()
-_timeLastReceiveSec = 0.0
+_timeLastCreated = 0.0
 _REQUEST_INTERVAL_SEC = 2.0
 
 _cachedValues = {
@@ -65,12 +64,11 @@ def waitValues(timeout=None):
   return lines
 
 def createRequest(request):
-  global _timeLastReceiveSec
-  global _lockDimeDiff
+  global _timeLastCreated
+  timeDiff = time.time() - _timeLastCreated
+  _timeLastCreated = time.time()
 
-  with _lockDimeDiff:
-    timeDiff = time.time() - _timeLastReceiveSec
-  logger.debug('Last request, diff: %s, lastTime: %s', str(timeDiff), str(_timeLastReceiveSec))
+  logger.debug('Last request, diff: %s, lastTime: %s', str(timeDiff), str(_timeLastCreated))
   if (timeDiff) < _REQUEST_INTERVAL_SEC:
     logger.debug('Ignore too frequent requests')
     return ''
@@ -89,8 +87,8 @@ def isProcessible(reply):
 
 def processReply(reply):
   if isProcessible(reply) is True:
-      global _timeLastReceiveSec
-      _timeLastReceiveSec = time.time()
+      global _timeLastCreated
+      _timeLastCreated = time.time()
       reply = _removeNonPrintableChars(reply)
       key = getId() + reply[3]
       text = '' + reply[4:].strip()
