@@ -74,10 +74,16 @@ class RemoteConnection:
 
     logger.debug("Connect to: " + self._ip)
 
-    self._socket.connect((self._ip, self._port))
-    self._listenerThread = ListenerThread(self._socket)
-    self._isConnected = True
-    self._listenerThread.start()
+    try:
+      self._socket.connect((self._ip, self._port))
+    except socket.error as ex:
+      logger.error("Socket connect failed")
+      logger.exception(ex)
+    else:
+      self._restartConnectionTimeout()
+      self._listenerThread = ListenerThread(self._socket)
+      self._isConnected = True
+      self._listenerThread.start()
 
   def disconnect(self):
     logger.debug("Disconnect method called")
