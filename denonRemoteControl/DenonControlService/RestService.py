@@ -10,6 +10,7 @@ import commands.Nse as cmdLines
 import commands.Power as cmdPower
 import commands.Source as cmdSource
 import commands.Volume as cmdVolume
+import evaluators.NowPlaying as evlPlaying
 
 from flask import Flask
 from flask import render_template
@@ -97,17 +98,18 @@ def line(request):
   logger.debug(command.getId() + "unknown request: " + request)
   return "Invalid request"
 
-@app.route('/nowplaying/<request>')
+@app.route('/playing/<request>')
 def nowPlaying(request):
-  command = cmdLines
-  logger.debug(command.getId() + " request: " + request)
-  cmdRequest = command.createRequest('get')
+  evaluator = evlPlaying
+  logger.debug(evaluator.getId() + " request: " + request)
+  cmdRequest = evaluator.createRequest()
 
   if cmdRequest is not None:
     RestService.remoteConnection.send(cmdRequest)
-    return cache.waitValue(key=request, timeout=defaultRequestTimeout)
+    evaluator.evaluate(timeout=defaultRequestTimeout)
+    return cache.getValue(key=request)
 
-  logger.debug(command.getId() + "unknown request: " + request)
+  logger.debug(evaluator.getId() + "unknown request: " + request)
   return "Invalid request"
 
 @app.route('/source')

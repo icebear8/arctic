@@ -42,7 +42,7 @@ Rest API supports:
 * `PUT <host>/power/<cmd>`: Sets the power. Accepted values: `on`, `standby`
 * `GET <host>/display/lines`: Gets the lines 0..8 from the display
 * `GET <host>/display/line/<index>`: Gets a specific display line. Accepted values: <line> as decimal (0..8)
-* `GET <host>/nowplaying/<id>`: Gets the information about whats currently playing. Accepted values: `album`, `artist`, `title`
+* `GET <host>/playing/<id>`: Gets the information about whats currently playing. Accepted values: `album`, `artist`, `title`
 * `GET <host>/source`: Gets the current selected source
 * `PUT <host>/source/<id>`: Sets the source. Accepted values:
   - `TUNER`, `DVD`, `BD`, `TV`, `SAT/CBL`, `MPLAY`, `GAME`, `AUX1`, `NET`, `SPOTIFY`, `FLICKR`, `FAVORITES`, `IRADIO`, `SERVER`, `USB/IPOD`

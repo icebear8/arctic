@@ -20,10 +20,7 @@ _cachedValues = {
   '5' : cache.CachedValue(_id + "5"),
   '6' : cache.CachedValue(_id + "6"),
   '7' : cache.CachedValue(_id + "7"),
-  '8' : cache.CachedValue(_id + "8"),
-  'artist' : cache.CachedValue("artist"),
-  'title' : cache.CachedValue("title"),
-  'album' : cache.CachedValue("album"),
+  '8' : cache.CachedValue(_id + "8")
 }
 
 def getId():
@@ -32,7 +29,7 @@ def getId():
 def cmdPrefix():
   return _prefix
 
-def createRequest(request):
+def createRequest(request='get'):
   global _timeLastCreated
   timeDiff = time.time() - _timeLastCreated
   _timeLastCreated = time.time()
@@ -62,7 +59,6 @@ def processReply(reply):
       key = getId() + reply[3]
       text = '' + reply[4:].strip()
       _cachedValues[reply[3]].update(text)
-      _handleSpecialInfo(reply[3], text)
       logger.debug('Processed %s: %s', reply[3], text)
       return { key : text }
   return None
@@ -92,18 +88,6 @@ def _removeNonPrintableChars(reply):
     if reply[3] in ('1', '2', '3', '4', '5', '6'):
       reply = reply.replace(reply[4], '')
   return reply
-
-def _handleSpecialInfo(id, text):
-  if (_cachedValues['0'].getValue().startswith("Now Playing")):
-    if id is '1':
-      logger.debug("Title: %s", text)
-      _cachedValues['title'].update(text)
-    elif id is '2':
-      logger.debug("Artist: %s", text)
-      _cachedValues['artist'].update(text)
-    elif id is '4':
-      logger.debug("Album: %s", text)
-      _cachedValues['album'].update(text)
 
 def workaroundDenonProtocol(lines):
   idx = 0
