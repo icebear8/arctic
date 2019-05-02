@@ -41,7 +41,8 @@ Rest API supports:
 * `GET <host>/power`: Gets the current power level
 * `PUT <host>/power/<cmd>`: Sets the power. Accepted values: `on`, `standby`
 * `GET <host>/display/lines`: Gets the lines 0..8 from the display
-* `GET <host>/display/line/<index>`: Gets a specific display line. Accepted values: `album`, `artist`, `title`, <line> as decimal (0..8)
+* `GET <host>/display/line/<index>`: Gets a specific display line. Accepted values: <line> as decimal (0..8)
+* `GET <host>/nowplaying/<id>`: Gets the information about whats currently playing. Accepted values: `album`, `artist`, `title`
 * `PUT <host>/start`: Starts the receiver and plays the first favorite item
 * `PUT <host>/startVolume/<volume>`: Starts the receiver with volume level `<volume>` and plays the first favorite item
 * `PUT <host>/next`: Switches to the next favorite item
