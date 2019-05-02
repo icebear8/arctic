@@ -3,6 +3,8 @@ import logging
 
 from threading import Event
 
+logger = logging.getLogger(__name__)
+
 _valueStorage = {}
 
 def getValue(key):
@@ -14,6 +16,14 @@ def waitValue(key, timeout=None):
   if key in _valueStorage.keys():
     return str(_valueStorage[key].waitValue(timeout))
   return ''
+
+def waitQuery(query, timeout=None):
+  values = ''
+  for key in _valueStorage:
+    if query in key:
+      values += _valueStorage[key].waitValue(timeout) + '\n'
+  return values
+
 
 class CachedValue:
   def __init__(self, id):
