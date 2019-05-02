@@ -15,7 +15,7 @@ def getId():
 def cmdPrefix():
   return _prefix
 
-def createRequest(request):
+def createRequest(request='get'):
   cachedValue.invalidate()
   request = request.upper()
 
