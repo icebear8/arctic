@@ -116,6 +116,10 @@ def nowPlaying(request):
 def getSource():
   return _handleRequest(cmdSource, 'get')
 
+@app.route('/source/<request>', methods=['PUT'])
+def setSource(request):
+  return _handleRequest(cmdSource, request)
+
 @app.route('/start', methods=['PUT'])
 def start():
   logger.debug("Start request")

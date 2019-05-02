@@ -7,6 +7,10 @@ logger = logging.getLogger(__name__)
 
 _id = 'source'
 _prefix = 'SI'
+_requests = [ 'TUNER', 'DVD', 'BD', 'TV', 'SAT/CBL', 'GAME', 'AUX1', 'FLICKR',
+    'MPLAY', 'NET', 'PANDORA', 'SIRIUSXM', 'SPOTIFY', 'FAVORITES', 'IRADIO', 'SERVER', 'USB/IPOD',
+    'USB', 'IPD', 'IRP', 'FVP'
+]
 cachedValue = cache.CachedValue(_id)
 
 def getId():
@@ -21,6 +25,8 @@ def createRequest(request='get'):
 
   if request in ('GET'):
     return cmdPrefix() + '?\r'
+  elif request in (_requests):
+    return cmdPrefix() + request + '\r'
 
   logger.debug('Ignore unknwon request')
   return None
