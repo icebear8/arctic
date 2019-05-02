@@ -171,9 +171,9 @@ class ListenerThread(threading.Thread):
     lines = cmdNse.workaroundDenonProtocol(lines)
     for line in lines:
       if cmdVolume.processReply(line) is not None:
-        logger.debug("Volume decoded: %s", cmdVolume.getValue())
+        logger.debug("Volume decoded: %s", cache.getValue(cmdVolume.getId()))
       elif cmdPower.processReply(line) is not None:
-        logger.debug("Power decoded: %s", cmdPower.getValue())
+        logger.debug("Power decoded: %s", cache.getValue(cmdPower.getId()))
       else:
           reply = cmdNse.processReply(line)
           if reply is not None:

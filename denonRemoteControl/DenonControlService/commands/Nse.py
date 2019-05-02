@@ -32,36 +32,6 @@ def getId():
 def cmdPrefix():
   return _prefix
 
-def getValue(key=_id):
-  if key in _cachedValues.keys():
-    return _cachedValues[key].getValue()
-  elif key in (_id):
-    return getValues()
-  logger.debug("Invalid key: " + key)
-  return ''
-
-def waitValue(key=_id, timeout=None):
-  if key in _cachedValues:
-    return _cachedValues[key].waitValue(timeout)
-  elif key in (_id):
-    return waitValues(timeout)
-  logger.debug("Invalid key: " + key)
-  return ''
-
-def getValues():
-  lines = ''
-  for key in _cachedValues:
-    if len(key) <= 2:
-      lines += _cachedValues[key].getValue() + '\n'
-  return lines
-
-def waitValues(timeout=None):
-  lines = ''
-  for key in _cachedValues:
-    if len(key) <= 2:
-      lines += _cachedValues[key].waitValue(timeout) + '\n'
-  return lines
-
 def createRequest(request):
   global _timeLastCreated
   timeDiff = time.time() - _timeLastCreated

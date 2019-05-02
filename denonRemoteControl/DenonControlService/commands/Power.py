@@ -14,12 +14,6 @@ def getId():
 def cmdPrefix():
   return _prefix
 
-def getValue():
-  return cachedValue.getValue()
-
-def waitValue(timeout=None):
-  return cachedValue.waitValue(timeout)
-
 def createRequest(request):
   cachedValue.invalidate()
   request = request.upper()
