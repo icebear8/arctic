@@ -8,7 +8,9 @@ import DataCache as cache
 
 import commands.Nse as cmdLines
 import commands.Power as cmdPower
+import commands.Source as cmdSource
 import commands.Volume as cmdVolume
+import evaluators.NowPlaying as evlPlaying
 
 from flask import Flask
 from flask import render_template
@@ -30,7 +32,7 @@ def _handleRequest(command, request='get'):
 
   if cmdRequest is not None:
     RestService.remoteConnection.send(cmdRequest)
-    return command.waitValue(timeout=defaultRequestTimeout)
+    return cache.waitValue(key=command.getId(), timeout=defaultRequestTimeout)
 
   logger.debug(command.getId() + "unknown request: " + request)
   return "Invalid request"
@@ -72,7 +74,16 @@ def setPower(request):
 
 @app.route('/display/lines')
 def lines():
-  return _handleRequest(cmdLines, 'get')
+    command = cmdLines
+    logger.debug(command.getId() + " request: get")
+    cmdRequest = command.createRequest('get')
+
+    if cmdRequest is not None:
+      RestService.remoteConnection.send(cmdRequest)
+      return cache.waitQuery(query=command.getId(), timeout=defaultRequestTimeout)
+
+    logger.debug(command.getId() + "unknown request: " + request)
+    return "Invalid request"
 
 @app.route('/display/line/<request>')
 def line(request):
@@ -82,10 +93,32 @@ def line(request):
 
   if cmdRequest is not None:
     RestService.remoteConnection.send(cmdRequest)
-    return command.waitValue(key=request, timeout=defaultRequestTimeout)
+    return cache.waitValue(key=command.getId() + request, timeout=defaultRequestTimeout)
 
   logger.debug(command.getId() + "unknown request: " + request)
   return "Invalid request"
+
+@app.route('/playing/<request>')
+def nowPlaying(request):
+  evaluator = evlPlaying
+  logger.debug(evaluator.getId() + " request: " + request)
+  cmdRequest = evaluator.createRequest()
+
+  if cmdRequest is not None:
+    RestService.remoteConnection.send(cmdRequest)
+    evaluator.evaluate(timeout=defaultRequestTimeout)
+    return cache.getValue(key=request)
+
+  logger.debug(evaluator.getId() + "unknown request: " + request)
+  return "Invalid request"
+
+@app.route('/source')
+def getSource():
+  return _handleRequest(cmdSource, 'get')
+
+@app.route('/source/<request>', methods=['PUT'])
+def setSource(request):
+  return _handleRequest(cmdSource, request)
 
 @app.route('/start', methods=['PUT'])
 def start():

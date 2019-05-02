@@ -5,8 +5,12 @@ import commands._SimpleCommand as cmdSimple
 
 logger = logging.getLogger(__name__)
 
-_id = 'volume'
-_prefix = 'MV'
+_id = 'source'
+_prefix = 'SI'
+_requests = [ 'TUNER', 'DVD', 'BD', 'TV', 'SAT/CBL', 'GAME', 'AUX1', 'FLICKR',
+    'MPLAY', 'NET', 'PANDORA', 'SIRIUSXM', 'SPOTIFY', 'FAVORITES', 'IRADIO', 'SERVER', 'USB/IPOD',
+    'USB', 'IPD', 'IRP', 'FVP'
+]
 cachedValue = cache.CachedValue(_id)
 
 def getId():
@@ -21,10 +25,8 @@ def createRequest(request='get'):
 
   if request in ('GET'):
     return cmdPrefix() + '?\r'
-  elif request in ('UP', 'DOWN'):
+  elif request in (_requests):
     return cmdPrefix() + request + '\r'
-  elif request.isdecimal() is True:
-    return cmdPrefix() + request[:2] + '\r'
 
   logger.debug('Ignore unknwon request')
   return None
@@ -33,10 +35,4 @@ def isProcessible(reply):
   return cmdSimple.isProcessible(cmdPrefix(), reply)
 
 def processReply(reply):
-  if isProcessible(reply) is True:
-    if reply[2:].isdecimal() is True:
-        cachedValue.update(reply[2:4])
-        logger.debug('Processed: ' + reply[2:])
-        return reply[2:4]
-
-  return None
+  return cmdSimple.processReply(cmdPrefix(), reply, cachedValue)
