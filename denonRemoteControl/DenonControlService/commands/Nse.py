@@ -32,12 +32,12 @@ def cmdPrefix():
 def createRequest(request='get'):
   global _timeLastCreated
   timeDiff = time.time() - _timeLastCreated
-  _timeLastCreated = time.time()
 
   logger.debug('Last request, diff: %s, lastTime: %s', str(timeDiff), str(_timeLastCreated))
   if (timeDiff) < _REQUEST_INTERVAL_SEC:
     logger.debug('Ignore too frequent requests')
     return ''
+  _timeLastCreated = time.time()
   for key in _cachedValues:
     _cachedValues[key].invalidate()
   request = request.upper()
