@@ -21,9 +21,9 @@ _cachedValues = {
   '6' : cache.CachedValue(_id + "6"),
   '7' : cache.CachedValue(_id + "7"),
   '8' : cache.CachedValue(_id + "8"),
-  'artist' : cache.CachedValue(_id + "Artist"),
-  'title' : cache.CachedValue(_id + "Title"),
-  'album' : cache.CachedValue(_id + "Album"),
+  'artist' : cache.CachedValue("artist"),
+  'title' : cache.CachedValue("title"),
+  'album' : cache.CachedValue("album"),
 }
 
 def getId():

@@ -30,7 +30,7 @@ def _handleRequest(command, request='get'):
 
   if cmdRequest is not None:
     RestService.remoteConnection.send(cmdRequest)
-    return command.waitValue(timeout=defaultRequestTimeout)
+    return cache.waitValue(key=command.getId(), timeout=defaultRequestTimeout)
 
   logger.debug(command.getId() + "unknown request: " + request)
   return "Invalid request"
@@ -72,7 +72,16 @@ def setPower(request):
 
 @app.route('/display/lines')
 def lines():
-  return _handleRequest(cmdLines, 'get')
+    command = cmdLines
+    logger.debug(command.getId() + " request: get")
+    cmdRequest = command.createRequest('get')
+
+    if cmdRequest is not None:
+      RestService.remoteConnection.send(cmdRequest)
+      return cache.waitQuery(query=command.getId(), timeout=defaultRequestTimeout)
+
+    logger.debug(command.getId() + "unknown request: " + request)
+    return "Invalid request"
 
 @app.route('/display/line/<request>')
 def line(request):
@@ -82,7 +91,20 @@ def line(request):
 
   if cmdRequest is not None:
     RestService.remoteConnection.send(cmdRequest)
-    return command.waitValue(key=request, timeout=defaultRequestTimeout)
+    return cache.waitValue(key=command.getId() + request, timeout=defaultRequestTimeout)
+
+  logger.debug(command.getId() + "unknown request: " + request)
+  return "Invalid request"
+
+@app.route('/nowplaying/<request>')
+def nowPlaying(request):
+  command = cmdLines
+  logger.debug(command.getId() + " request: " + request)
+  cmdRequest = command.createRequest('get')
+
+  if cmdRequest is not None:
+    RestService.remoteConnection.send(cmdRequest)
+    return cache.waitValue(key=request, timeout=defaultRequestTimeout)
 
   logger.debug(command.getId() + "unknown request: " + request)
   return "Invalid request"
