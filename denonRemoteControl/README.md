@@ -1,4 +1,5 @@
-# Supported tags
+# Change log
+* 0.8-r3: Introduce 'playing' and 'source' requests (changed 'line' request)
 * 0.8-r2: Improve connection handling
 * 0.8-r1: Throttle NSE messages (2 seconds)
 * 0.7-r1: Improved REST API functionality
