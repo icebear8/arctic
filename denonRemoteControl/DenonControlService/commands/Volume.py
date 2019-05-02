@@ -1,6 +1,7 @@
 
 import logging
 import DataCache as cache
+import commands._SimpleCommand as cmdSimple
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +30,7 @@ def createRequest(request):
   return None
 
 def isProcessible(reply):
-  if reply.startswith(cmdPrefix()):
-    return True
-  return False
+  return cmdSimple.isProcessible(cmdPrefix(), reply)
 
 def processReply(reply):
   if isProcessible(reply) is True:

@@ -5,8 +5,8 @@ import commands._SimpleCommand as cmdSimple
 
 logger = logging.getLogger(__name__)
 
-_id = 'power'
-_prefix = 'PW'
+_id = 'source'
+_prefix = 'SI'
 cachedValue = cache.CachedValue(_id)
 
 def getId():
@@ -21,10 +21,6 @@ def createRequest(request):
 
   if request in ('GET'):
     return cmdPrefix() + '?\r'
-  elif request in ('ON'):
-    return cmdPrefix() + 'ON\r'
-  elif request in ('STANDBY', 'OFF'):
-    return cmdPrefix() + 'STANDBY\r'
 
   logger.debug('Ignore unknwon request')
   return None

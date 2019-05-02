@@ -8,6 +8,7 @@ import DataCache as cache
 
 import commands.Nse as cmdLines
 import commands.Power as cmdPower
+import commands.Source as cmdSource
 import commands.Volume as cmdVolume
 
 from flask import Flask
@@ -108,6 +109,10 @@ def nowPlaying(request):
 
   logger.debug(command.getId() + "unknown request: " + request)
   return "Invalid request"
+
+@app.route('/source')
+def getSource():
+  return _handleRequest(cmdSource, 'get')
 
 @app.route('/start', methods=['PUT'])
 def start():

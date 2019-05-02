@@ -6,6 +6,7 @@ import threading
 import DataCache as cache
 import commands.Volume as cmdVolume
 import commands.Power as cmdPower
+import commands.Source as cmdSource
 import commands.Nse as cmdNse
 
 logger = logging.getLogger(__name__)
@@ -170,10 +171,13 @@ class ListenerThread(threading.Thread):
   def _processLines(self, lines):
     lines = cmdNse.workaroundDenonProtocol(lines)
     for line in lines:
+      logger.debug("Process line: %s", line)
       if cmdVolume.processReply(line) is not None:
         logger.debug("Volume decoded: %s", cache.getValue(cmdVolume.getId()))
       elif cmdPower.processReply(line) is not None:
         logger.debug("Power decoded: %s", cache.getValue(cmdPower.getId()))
+      elif cmdSource.processReply(line) is not None:
+        logger.debug("Power decoded: %s", cache.getValue(cmdSource.getId()))
       else:
           reply = cmdNse.processReply(line)
           if reply is not None:
