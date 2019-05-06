@@ -9,6 +9,7 @@ import DataCache as cache
 import commands.Nse as cmdLines
 import commands.Power as cmdPower
 import commands.Source as cmdSource
+import commands.Surroundmode as cmdSurround
 import commands.Volume as cmdVolume
 import evaluators.NowPlaying as evlPlaying
 
@@ -72,7 +73,7 @@ def getPower():
 def setPower(request):
   return _handleRequest(cmdPower, request)
 
-@app.route('/display/lines')
+@app.route('/display/lines', methods=['GET'])
 def lines():
     command = cmdLines
     logger.debug(command.getId() + " request: get")
@@ -85,7 +86,7 @@ def lines():
     logger.debug(command.getId() + "unknown request: " + request)
     return "Invalid request"
 
-@app.route('/display/line/<request>')
+@app.route('/display/line/<request>', methods=['GET'])
 def line(request):
   command = cmdLines
   logger.debug(command.getId() + " request: " + request)
@@ -98,7 +99,7 @@ def line(request):
   logger.debug(command.getId() + "unknown request: " + request)
   return "Invalid request"
 
-@app.route('/playing/<request>')
+@app.route('/playing/<request>', methods=['GET'])
 def nowPlaying(request):
   evaluator = evlPlaying
   logger.debug(evaluator.getId() + " request: " + request)
@@ -111,6 +112,14 @@ def nowPlaying(request):
 
   logger.debug(evaluator.getId() + "unknown request: " + request)
   return "Invalid request"
+
+@app.route('/surround', methods=['GET'])
+def surround():
+  return _handleRequest(cmdSurround, 'get')
+
+@app.route('/surround/<request>', methods=['PUT'])
+def setSurround(request):
+  return _handleRequest(cmdSurround, request)
 
 @app.route('/source')
 def getSource():

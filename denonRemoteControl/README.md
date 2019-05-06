@@ -49,6 +49,11 @@ Rest API supports:
   - `TUNER`, `DVD`, `BD`, `TV`, `SATCBL`, `MPLAY`, `GAME`, `AUX1`, `NET`, `SPOTIFY`, `FLICKR`, `FAVORITES`, `IRADIO`, `SERVER`, `USBIPOD`
   - North America only: `PANDORA`, `SIRIUSXM`
   - Select and start playback: `USB` (USB), `IPD` (iPod),`IRP` (internet radio), `FVP` (favorites)
+* `GET <host>/surround`: Gets the current surround mode
+* `PUT <host>/surround/<mode>`: Sets the surround mode, depends on the current listening mode. Accepted values:
+  - `MOVIE`, `MUSIC`, `GAME`, `DIRECT`, `STEREO`, `STANDARD`, `DOLBY_DIGITAL`, `DTS SUROUND`
+  - `MCH STEREO`, `ROCK ARENA`, `JAZZ CLUB`, `MONO MOVIE`, `MATRIX`, `VIDEO`, `VIRTUAL`
+  - North America only: `PURE_DIRECT`
 * `PUT <host>/start`: Starts the receiver and plays the first favorite item
 * `PUT <host>/startVolume/<volume>`: Starts the receiver with volume level `<volume>` and plays the first favorite item
 * `PUT <host>/next`: Switches to the next favorite item

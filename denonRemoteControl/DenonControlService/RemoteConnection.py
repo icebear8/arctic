@@ -4,10 +4,12 @@ import socket
 import threading
 
 import DataCache as cache
-import commands.Volume as cmdVolume
+
+import commands.Nse as cmdNse
 import commands.Power as cmdPower
 import commands.Source as cmdSource
-import commands.Nse as cmdNse
+import commands.Surroundmode as cmdSurround
+import commands.Volume as cmdVolume
 
 logger = logging.getLogger(__name__)
 
@@ -177,7 +179,9 @@ class ListenerThread(threading.Thread):
       elif cmdPower.processReply(line) is not None:
         logger.debug("Power decoded: %s", cache.getValue(cmdPower.getId()))
       elif cmdSource.processReply(line) is not None:
-        logger.debug("Power decoded: %s", cache.getValue(cmdSource.getId()))
+        logger.debug("Source decoded: %s", cache.getValue(cmdSource.getId()))
+      elif cmdSurround.processReply(line) is not None:
+        logger.debug("Source decoded: %s", cache.getValue(cmdSurround.getId()))
       else:
           reply = cmdNse.processReply(line)
           if reply is not None:
