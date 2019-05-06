@@ -46,7 +46,7 @@ Rest API supports:
 * `GET <host>/playing/<id>`: Gets the information about whats currently playing. Accepted values: `album`, `artist`, `title`
 * `GET <host>/source`: Gets the current selected source
 * `PUT <host>/source/<id>`: Sets the source. Accepted values:
-  - `TUNER`, `DVD`, `BD`, `TV`, `SAT/CBL`, `MPLAY`, `GAME`, `AUX1`, `NET`, `SPOTIFY`, `FLICKR`, `FAVORITES`, `IRADIO`, `SERVER`, `USB/IPOD`
+  - `TUNER`, `DVD`, `BD`, `TV`, `SATCBL`, `MPLAY`, `GAME`, `AUX1`, `NET`, `SPOTIFY`, `FLICKR`, `FAVORITES`, `IRADIO`, `SERVER`, `USBIPOD`
   - North America only: `PANDORA`, `SIRIUSXM`
   - Select and start playback: `USB` (USB), `IPD` (iPod),`IRP` (internet radio), `FVP` (favorites)
 * `PUT <host>/start`: Starts the receiver and plays the first favorite item

@@ -27,6 +27,10 @@ def createRequest(request='get'):
     return cmdPrefix() + '?\r'
   elif request in (_requests):
     return cmdPrefix() + request + '\r'
+  elif request in ('SATCBL'):
+    return cmdPrefix() + 'SAT/CBL' + '\r'
+  elif request in ('USBIPOD'):
+    return cmdPrefix() + 'USB/IPOD' + '\r'
 
   logger.debug('Ignore unknwon request')
   return None
