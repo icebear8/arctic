@@ -15,6 +15,7 @@ The image is prepared to access remote git repositories as well.
 # Configuration and setup
 * Use the built-in git support from Node-RED.
 * At each container start a git user and ssh key is created if not available
+* The newly created key is printed to the log at startup
 
 ##  Available volumes
 | VOLUME            | Description |
