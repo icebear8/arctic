@@ -1,4 +1,5 @@
 # Change log
+* 0.8-r4: Introduce 'surround' requests
 * 0.8-r3: Introduce 'playing' and 'source' requests (changed 'line' request)
 * 0.8-r2: Improve connection handling
 * 0.8-r1: Throttle NSE messages (2 seconds)
@@ -46,9 +47,14 @@ Rest API supports:
 * `GET <host>/playing/<id>`: Gets the information about whats currently playing. Accepted values: `album`, `artist`, `title`
 * `GET <host>/source`: Gets the current selected source
 * `PUT <host>/source/<id>`: Sets the source. Accepted values:
-  - `TUNER`, `DVD`, `BD`, `TV`, `SAT/CBL`, `MPLAY`, `GAME`, `AUX1`, `NET`, `SPOTIFY`, `FLICKR`, `FAVORITES`, `IRADIO`, `SERVER`, `USB/IPOD`
+  - `TUNER`, `DVD`, `BD`, `TV`, `SATCBL`, `MPLAY`, `GAME`, `AUX1`, `NET`, `SPOTIFY`, `FLICKR`, `FAVORITES`, `IRADIO`, `SERVER`, `USBIPOD`
   - North America only: `PANDORA`, `SIRIUSXM`
   - Select and start playback: `USB` (USB), `IPD` (iPod),`IRP` (internet radio), `FVP` (favorites)
+* `GET <host>/surround`: Gets the current surround mode
+* `PUT <host>/surround/<mode>`: Sets the surround mode, depends on the current listening mode. Accepted values:
+  - `MOVIE`, `MUSIC`, `GAME`, `DIRECT`, `STEREO`, `STANDARD`, `DOLBY_DIGITAL`, `DTS SUROUND`
+  - `MCH STEREO`, `ROCK ARENA`, `JAZZ CLUB`, `MONO MOVIE`, `MATRIX`, `VIDEO`, `VIRTUAL`
+  - North America only: `PURE_DIRECT`
 * `PUT <host>/start`: Starts the receiver and plays the first favorite item
 * `PUT <host>/startVolume/<volume>`: Starts the receiver with volume level `<volume>` and plays the first favorite item
 * `PUT <host>/next`: Switches to the next favorite item
