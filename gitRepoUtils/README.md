@@ -5,6 +5,7 @@ This image may be used as base layer to build other services on top of it.
 The image is prepared to access a remote git repository.
 
 ##  Changelog
+* gitrepoutils:3.9-r1: Alpine 3.9
 * gitrepoutils:3.8-r2: Alpine 3.8, renamed env variables and changed paths
 * gitrepoutils:3.8-r1: Alpine 3.8, initial version
 
@@ -39,7 +40,7 @@ Use the environment variable `REPO_URL` to link the container to a specific git 
   * Try to clone the repository at each container start
   * This will fail as long as the public key is not added to the remote repository
 * The variable `GIT_CONFIG_DIR` points to the location where the gitconfig and .ssh data is stored
-  * A symlink from `~/.ssh` and `~/.gitconfig` 
+  * A symlink from `~/.ssh` and `~/.gitconfig`
 * The public key is printed on the shell at the first startup
   * Use `docker logs <container>` to print the log after the startup
   * Or use the command `docker exec <container> ${GIT_HELPERS_DIR}/printPublicKey.sh` to print the public key
