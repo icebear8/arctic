@@ -1,6 +1,6 @@
 # Node Red
 
-FROM icebear8/gitrepoutils:3.8-r2
+FROM icebear8/gitrepoutils:3.9-r1
 MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
 ARG USER=Ahab
@@ -21,17 +21,17 @@ RUN apk update && apk add --no-cache \
   nodejs \
   nodejs-npm \
   && apk del --purge
-  
+
 RUN addgroup -g ${gid} ${GROUP} && \
     adduser -u ${uid} -G ${GROUP} -D ${USER}
-    
+
 # Prepare access to git config and key files
 RUN ln -s ${GIT_CONFIG_DIR}/.ssh/ /home/${USER}/.ssh \
   && ln -s ${GIT_CONFIG_DIR}/.gitconfig /home/${USER}/.gitconfig
-  
+
 # Install node-red
-RUN npm install -g --unsafe-perm node-red@0.19.5
-  
+RUN npm install -g --unsafe-perm node-red@0.20.4
+
 # Prepare the directory for the application data and configuration
 # Copy the default settings as well
 RUN mkdir -p ${APP_RUNTIME_DIR}
