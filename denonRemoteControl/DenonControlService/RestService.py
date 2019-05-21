@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 defaultRequestTimeout = 0.4    # 400ms
 
 def _runProcess():
+  app.logger.setLevel(logging.ERROR)
   app.run(host='0.0.0.0')
 
 def _handleRequest(command, request='get'):
