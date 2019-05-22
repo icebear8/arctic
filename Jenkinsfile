@@ -4,7 +4,7 @@
 library identifier: 'common-pipeline-library@stable',
   retriever: modernSCM(github(
     id: '18306726-fec7-4d80-8226-b78a05add4d0',
-    credentialsId: '3bc30eda-c17e-4444-a55b-d81ee0d68981',
+    credentialsId: 'f4130fe5-ea48-4acb-97eb-892e8dff0cdb',
     repoOwner: 'icebear8',
     repository: 'pipelineLibrary',
     traits: [
@@ -17,7 +17,7 @@ node {
   def projectSettings = readJSON text: '''{
     "repository": {
       "url": "https://github.com/icebear8/arctic.git",
-      "credentials": "3bc30eda-c17e-4444-a55b-d81ee0d68981"
+      "credentials": "f4130fe5-ea48-4acb-97eb-892e8dff0cdb"
     },
     "dockerHub": {
       "user": "icebear8"
@@ -35,9 +35,9 @@ node {
       {"imageName": "mosquitto",        "dockerfilePath": "./mosquitto" }
     ]
   }'''
-  
+
   def triggers = jobProperties.getJobBuildTriggers{}
-  
+
   properties([
     pipelineTriggers(triggers),
     buildDiscarder(logRotator(
@@ -46,7 +46,7 @@ node {
   ])
 
   def branchNameParameter = "*/${buildUtils.getCurrentBuildBranch()}"
-  
+
   repositoryUtils.checkoutBranch {
     stageName = 'Checkout'
     branchName = branchNameParameter
@@ -84,7 +84,7 @@ node {
         for (task in cleanupTasks.values()) {
           task.call()
         }
-      }      
+      }
     }
   }
 }
