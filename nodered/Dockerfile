@@ -8,6 +8,9 @@ ARG GROUP=Ahab
 ARG uid=1000
 ARG gid=1000
 
+ARG NODERED_VERSION=0.20.4
+# APP_INSTALL_DIR: Node-red zip creates a 'node-red' folder => /opt/node-red
+ARG APP_INSTALL_DIR=/opt/
 ENV APP_RUNTIME_DIR=/srv/nodered
 
 # Application tools and helpers
@@ -30,7 +33,15 @@ RUN ln -s ${GIT_CONFIG_DIR}/.ssh/ /home/${USER}/.ssh \
   && ln -s ${GIT_CONFIG_DIR}/.gitconfig /home/${USER}/.gitconfig
 
 # Install node-red
-RUN npm install -g --unsafe-perm node-red@0.20.4
+ARG TMP_DOWNLOAD_DIR=/tmp/nred
+RUN mkdir -p ${TMP_DOWNLOAD_DIR} \
+    && mkdir -p ${APP_INSTALL_DIR} \
+    && wget https://github.com/node-red/node-red/releases/download/${NODERED_VERSION}/node-red-${NODERED_VERSION}.zip -P ${TMP_DOWNLOAD_DIR} \
+    && unzip ${TMP_DOWNLOAD_DIR}/node-red-${NODERED_VERSION}.zip -d ${APP_INSTALL_DIR} \
+    && cd ${APP_INSTALL_DIR}/node-red \
+    && npm install -g --unsafe-perm --production \
+    && cd / \
+    && rm -rf ${TMP_DOWNLOAD_DIR}
 
 # Prepare the directory for the application data and configuration
 # Copy the default settings as well
