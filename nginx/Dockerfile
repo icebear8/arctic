@@ -1,6 +1,6 @@
 # Nginx
 
-FROM icebear8/gitrepoutils:3.8-r2
+FROM icebear8/gitrepoutils:3.9.4-r1
 MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
 # User
@@ -23,17 +23,17 @@ ENV CONTENT_REPO_DIR=${REPO_DIR}/nginx/www
 
 RUN apk update \
   && apk add --no-cache \
-  nginx \
+  nginx=1.14.2-r1 \
   && apk del --purge
 
 # Create user
 RUN addgroup -g ${GID} ${GROUP} \
     && adduser -u ${UID} -G ${GROUP} -D ${USER}
-    
+
 # Sym links to git configuration for the container user
 RUN ln -s ${GIT_CONFIG_DIR}/.ssh/ /home/${USER}/.ssh \
   && ln -s ${GIT_CONFIG_DIR}/.gitconfig /home/${USER}/.gitconfig
-    
+
 # Prepare application tools and helper scripts
 RUN mkdir -p ${APP_UTILS_DIR}
 COPY /utils/* ${APP_UTILS_DIR}/
