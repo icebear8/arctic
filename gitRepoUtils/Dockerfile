@@ -1,6 +1,6 @@
 # Git Repo Utils
 
-FROM alpine:3.9.4
+FROM alpine:3.10.0
 MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
 # Repo settings and paths
@@ -11,9 +11,9 @@ ENV GIT_CONFIG_DIR=/srv/gitConfig
 
 RUN apk update \
   && apk add --no-cache \
-  git=2.20.1-r0 \
-  openssh-client=7.9_p1-r5 \
-  openssh-keygen=7.9_p1-r5 \
+  git=2.22.0-r0 \
+  openssh-client=8.0_p1-r0 \
+  openssh-keygen=8.0_p1-r0 \
   && apk del --purge
 
 # Copy the git helper tools and make them executable
