@@ -1,6 +1,6 @@
 # Node Red
 
-FROM icebear8/gitrepoutils:3.9-r1
+FROM icebear8/gitrepoutils:3.10.0-r1
 MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
 ARG USER=Ahab
@@ -8,7 +8,7 @@ ARG GROUP=Ahab
 ARG uid=1000
 ARG gid=1000
 
-ARG NODERED_VERSION=0.20.5
+ARG NODERED_VERSION=0.20.7
 # APP_INSTALL_DIR: Node-red zip creates a 'node-red' folder => /opt/node-red
 ARG APP_INSTALL_DIR=/opt/
 ENV APP_RUNTIME_DIR=/srv/nodered
