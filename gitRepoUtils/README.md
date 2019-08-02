@@ -5,6 +5,7 @@ This image may be used as base layer to build other services on top of it.
 The image is prepared to access a remote git repository.
 
 ##  Changelog
+* gitrepoutils:3.10.1-r1: Alpine 3.10.1
 * gitrepoutils:3.10.0-r1: Alpine 3.10.0
 * gitrepoutils:3.9.4-r1: Alpine 3.9.4, fix version of installed packages
 * gitrepoutils:3.9-r1: Alpine 3.9

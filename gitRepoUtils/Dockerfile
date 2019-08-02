@@ -1,6 +1,6 @@
 # Git Repo Utils
 
-FROM alpine:3.10.0
+FROM alpine:3.10.1
 MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
 # Repo settings and paths
