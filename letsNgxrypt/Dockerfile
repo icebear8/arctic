@@ -1,4 +1,4 @@
-FROM icebear8/nginx:1.16.0-r1
+FROM icebear8/nginx:1.16.0-r2
 
 MAINTAINER <ponder.bear@protonmail.com>
 
