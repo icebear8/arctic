@@ -1,6 +1,6 @@
 FROM alpine:3.8
 
-MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
+MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
 
 # User settings
 ARG USER=Ahab
@@ -48,7 +48,7 @@ RUN curl -L http://cpanmin.us | perl - App::cpanminus\
 # Create user
 RUN addgroup -g ${GID} ${GROUP} \
     && adduser -u ${UID} -G ${GROUP} -D ${USER}
-    
+
 # Create application directory and copy application
 RUN mkdir -p ${BASE_DIR}
 COPY /resources/${APP_REPO} ${BASE_DIR}
@@ -60,20 +60,20 @@ RUN unzip ${BASE_DIR}/${APP_REPO} -d ${BASE_DIR} \
 RUN mkdir ${APP_CONFIG_DIR} \
   && mkdir /var/cache/ddclient \
   && touch /var/run/ddclient.pid
-  
+
 COPY /resources/base-etc_ddclient.conf ${APP_CONFIG_DIR}/ddclient_source.conf
 
 # Prepare utils
 RUN mkdir -p ${UTILS_DIR}
 COPY /utils/* ${UTILS_DIR}/
-  
+
 # User access for the app directories
 RUN chown -R ${USER}:${GROUP} ${APP_CONFIG_DIR}
 RUN chown -R ${USER}:${GROUP} /var/cache/ddclient
 RUN chown -R ${USER}:${GROUP} /var/run/ddclient.pid
 RUN chown -R ${USER}:${GROUP} ${BASE_DIR}
 RUN chmod -R 755 ${UTILS_DIR}/*.sh
-    
+
 USER ${USER}
 
 VOLUME ${APP_CONFIG_DIR}

@@ -1,7 +1,6 @@
-# Nginx
-
 FROM icebear8/gitrepoutils:3.10.1-r1
-MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
+
+MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
 
 # User
 ARG USER=Ahab

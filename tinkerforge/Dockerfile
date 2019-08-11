@@ -1,5 +1,6 @@
 FROM alpine:3.7
-MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
+
+MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
 
 ENV APP_DIR=/opt/tinkermqtt
 ENV CONFIG_DIR=${APP_DIR}/config
@@ -15,7 +16,7 @@ RUN python3 -m ensurepip
 # Install tinkerforge mqtt proxy dependencies
 RUN pip3 install tinkerforge
 RUN pip3 install paho-mqtt
-  
+
 RUN mkdir -p ${APP_DIR}
 
 # Install tinkerforge MQTT proxy

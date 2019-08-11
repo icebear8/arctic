@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
+MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
 
 ARG USER=www
 ARG GROUP=www
@@ -43,7 +43,7 @@ RUN apk update \
   php5-xmlreader \
   php5-zip \
   wget \
-  unzip  
+  unzip
 
 # Create user
 RUN addgroup -g ${GID} ${GROUP} \
@@ -75,7 +75,7 @@ RUN mkdir -p ${REPO_DIR} \
     && mkdir -p ${WEB_CONTENT_DIR} \
     && mv ${MAIN_APP_DIR}/user ${WEB_CONTENT_DIR}/user \
     && ln -s ${WEB_CONTENT_DIR}/user ${MAIN_APP_DIR}/user
-    
+
 # Setup update script, it can be used if it is located in the nginx base directory
 COPY /resources/deploy.php ${MAIN_APP_DIR}/
 
@@ -90,7 +90,7 @@ RUN chown -R ${USER}:${GROUP} /var/lib/nginx
 RUN chown -R ${USER}:${GROUP} /var/run/nginx.pid
 
 USER ${USER}
-WORKDIR ${REPO_DIR}    
+WORKDIR ${REPO_DIR}
 VOLUME ${REPO_DIR}
 EXPOSE 8080
 

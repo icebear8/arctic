@@ -1,7 +1,6 @@
-# Git Repo Utils
-
 FROM alpine:3.10.1
-MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
+
+MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
 
 # Repo settings and paths
 ENV REPO_URL=

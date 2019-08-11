@@ -1,6 +1,6 @@
 FROM alpine:3.8
 
-MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
+MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
 
 # User settings
 ARG USER=Ahab
@@ -38,9 +38,8 @@ RUN mkdir -p ${IP_CACHE_DIR} \
 RUN chown -R ${USER}:${GROUP} ${APP_DIR}
 RUN chown -R ${USER}:${GROUP} ${IP_CACHE_DIR}
 RUN chmod -R 755 ${APP_DIR}/*.sh
-    
+
 USER ${USER}
 
 ENTRYPOINT ["sh", "-c"]
 CMD ["sh ${APP_LAUNCHER}"]
-

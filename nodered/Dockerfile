@@ -1,7 +1,6 @@
-# Node Red
-
 FROM icebear8/gitrepoutils:3.10.0-r1
-MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
+
+MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
 
 ARG USER=Ahab
 ARG GROUP=Ahab

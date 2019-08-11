@@ -1,5 +1,6 @@
 FROM alpine:3.9
-MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
+
+MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
 
 ARG USER=Ahab
 ARG GROUP=Ahab
