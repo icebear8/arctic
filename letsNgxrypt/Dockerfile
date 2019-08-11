@@ -1,6 +1,5 @@
-# Nginx
-
 FROM icebear8/nginx:1.16.0-r1
+
 MAINTAINER <ponder.bear@protonmail.com>
 
 # User
@@ -22,6 +21,9 @@ ENV LETSENCRYPT_GLOBAL_OPTIONS=
 
 # General setup
 ## User is already setup in base image
+
+# Copy helper tools
+COPY /utils/* ${APP_UTILS_DIR}/
 
 # NGINX
 ## Setting up the basic Nginx configuration is done in the base image
