@@ -1,0 +1,10 @@
+version: '2'
+services:
+  letsngxrypt:
+    build: .
+    image: icebear8/letsngxrypt:0.1-r1
+    container_name: letsngxrypt
+    ports:
+    - "8080:8080"
+    env_file:
+      - ./config/default.env

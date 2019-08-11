@@ -29,6 +29,7 @@ node {
       {"imageName": "dyndnsclient",     "dockerfilePath": "./dynDnsClient" },
       {"imageName": "grav",             "dockerfilePath": "./grav" },
       {"imageName": "gitrepoutils",     "dockerfilePath": "./gitRepoUtils" },
+      {"imageName": "letsngxrypt",      "dockerfilePath": "./letsNgxrypt" },
       {"imageName": "nginx",            "dockerfilePath": "./nginx" },
       {"imageName": "nodered",          "dockerfilePath": "./nodered" },
       {"imageName": "tinkerforge",      "dockerfilePath": "./tinkerforge" },
