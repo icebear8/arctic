@@ -14,12 +14,12 @@ ENV APP_UTILS_DIR=/opt/utils/app
 ENV APP_LAUNCHER=${APP_UTILS_DIR}/launcher.sh
 
 # Application configuration and content
-ARG CONTENT_DIR=/var/www
-ARG CONFIG_DIR=/etc/nginx/sites-enabled
+ARG NGX_CONTENT_DIR=/var/www
+ARG NGX_CONFIG_DIR=/etc/nginx/sites-enabled
 
 # Configuration and content location in the repository
-ENV CONFIG_REPO_DIR=${REPO_DIR}/nginx/config
-ENV CONTENT_REPO_DIR=${REPO_DIR}/nginx/www
+ENV NGX_CONFIG_REPO_DIR=${REPO_DIR}/nginx/config
+ENV NGX_CONTENT_REPO_DIR=${REPO_DIR}/nginx/www
 
 RUN apk update \
   && apk add --no-cache \
@@ -39,24 +39,24 @@ RUN mkdir -p ${APP_UTILS_DIR}
 COPY /utils/* ${APP_UTILS_DIR}/
 
 # Prepare repo directories and symlinks to the application directory
-RUN mkdir -p ${CONFIG_REPO_DIR} \
-  && ln -s ${CONFIG_REPO_DIR} ${CONFIG_DIR} \
-  && rm -rf ${CONTENT_DIR} \
-  && mkdir -p ${CONTENT_REPO_DIR} \
-  && ln -s ${CONTENT_REPO_DIR} ${CONTENT_DIR}
+RUN mkdir -p ${NGX_CONFIG_REPO_DIR} \
+  && ln -s ${NGX_CONFIG_REPO_DIR} ${NGX_CONFIG_DIR} \
+  && rm -rf ${NGX_CONTENT_DIR} \
+  && mkdir -p ${NGX_CONTENT_REPO_DIR} \
+  && ln -s ${NGX_CONTENT_REPO_DIR} ${NGX_CONTENT_DIR}
 
 # Prepare nginx settings
 # Copy initial default settings as well (not from git repo)
 COPY ./resources/nginx.conf /etc/nginx/nginx.conf
-COPY ./resources/config/* ${CONFIG_REPO_DIR}
-COPY ./resources/www/* ${CONTENT_REPO_DIR}
+COPY ./resources/config/* ${NGX_CONFIG_REPO_DIR}
+COPY ./resources/www/* ${NGX_CONTENT_REPO_DIR}
 RUN touch /var/run/nginx.pid
 
 # Fix access rights
 RUN chmod -R 755 ${APP_UTILS_DIR}/*.sh
 RUN chown -R ${USER}:${GROUP} ${GIT_CONFIG_DIR}
 RUN chown -R ${USER}:${GROUP} ${REPO_DIR}
-RUN chown -R ${USER}:${GROUP} ${CONTENT_DIR}
+RUN chown -R ${USER}:${GROUP} ${NGX_CONTENT_DIR}
 RUN chown -R ${USER}:${GROUP} /var/log/nginx
 RUN chown -R ${USER}:${GROUP} /var/lib/nginx
 RUN chown -R ${USER}:${GROUP} /var/run/nginx.pid
