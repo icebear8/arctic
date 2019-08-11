@@ -1,6 +1,6 @@
 # Nginx
 
-FROM icebear8/gitrepoutils:3.9.4-r1
+FROM icebear8/gitrepoutils:3.10.1-r1
 MAINTAINER Cheshire Lynx <cheshire.lynx@protonmail.com>
 
 # User
@@ -23,7 +23,7 @@ ENV CONTENT_REPO_DIR=${REPO_DIR}/nginx/www
 
 RUN apk update \
   && apk add --no-cache \
-  nginx=1.14.2-r1 \
+  nginx=1.16.0-r2 \
   && apk del --purge
 
 # Create user
