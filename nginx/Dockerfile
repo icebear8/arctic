@@ -13,8 +13,8 @@ ENV APP_UTILS_DIR=/opt/utils/app
 ENV APP_LAUNCHER=${APP_UTILS_DIR}/launcher.sh
 
 # Application configuration and content
-ARG NGX_CONTENT_DIR=/var/www
-ARG NGX_CONFIG_DIR=/etc/nginx/sites-enabled
+ENV NGX_CONTENT_DIR=/var/www
+ENV NGX_CONFIG_DIR=/etc/nginx/sites-enabled
 
 # Configuration and content location in the repository
 ENV NGX_CONFIG_REPO_DIR=${REPO_DIR}/nginx/config
