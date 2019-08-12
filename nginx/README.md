@@ -5,7 +5,7 @@ This image contains everything to run Nginx with a basic configuration.
 Additionally a link to a (private or public) git repository can be used to manage the maintain the nginx configuration files.
 
 ##  Changelog
-* nginx:1.16.0-r3, Use GitRepoUtils base imabe with on build hooks
+* nginx:1.16.0-r4, Use GitRepoUtils base imabe with on build hooks
 * nginx:1.16.0-r1, Update to Alpine 3.10.1, use nginx 1.16.0
 * nginx:0.11-r1, Updated to Alpine 3.9.4, use nginx 1.14.2-r1
 * nginx:0.10-r4, Update to base image icebear8/gitrepoutils:3.8-r2
