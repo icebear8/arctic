@@ -1,12 +1,18 @@
-FROM icebear8/gitrepoutils:3.10.1-r1
-
-MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
-
 # User
 ARG USER=Ahab
 ARG GROUP=Ahab
 ARG UID=1000
 ARG GID=1000
+ARG REPO_DIR=/opt/repo
+
+ARG BASE_IMG_VERSION=3.10.1-r2-onbuild
+FROM icebear8/gitrepoutils:${BASE_IMG_VERSION}
+
+MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
+
+# User access
+ENV USER=${USER}
+ENV GROUP=${GROUP}
 
 # Helper tools and scripts for the application
 ENV APP_UTILS_DIR=/opt/utils/app
@@ -20,18 +26,9 @@ ENV NGX_CONFIG_DIR=/etc/nginx/sites-enabled
 ENV NGX_CONFIG_REPO_DIR=${REPO_DIR}/nginx/config
 ENV NGX_CONTENT_REPO_DIR=${REPO_DIR}/nginx/www
 
-RUN apk update \
-  && apk add --no-cache \
+RUN apk update && apk add --no-cache \
   nginx=1.16.0-r2 \
   && apk del --purge
-
-# Create user
-RUN addgroup -g ${GID} ${GROUP} \
-    && adduser -u ${UID} -G ${GROUP} -D ${USER}
-
-# Sym links to git configuration for the container user
-RUN ln -s ${GIT_CONFIG_DIR}/.ssh/ /home/${USER}/.ssh \
-  && ln -s ${GIT_CONFIG_DIR}/.gitconfig /home/${USER}/.gitconfig
 
 # Prepare application tools and helper scripts
 RUN mkdir -p ${APP_UTILS_DIR}
@@ -53,19 +50,15 @@ RUN touch /var/run/nginx.pid
 
 # Fix access rights
 RUN chmod -R 755 ${APP_UTILS_DIR}/*.sh
-RUN chown -R ${USER}:${GROUP} ${GIT_CONFIG_DIR}
 RUN chown -R ${USER}:${GROUP} ${REPO_DIR}
 RUN chown -R ${USER}:${GROUP} ${NGX_CONTENT_DIR}
-RUN chown -R ${USER}:${GROUP} /var/log/nginx
-RUN chown -R ${USER}:${GROUP} /var/lib/nginx
-RUN chown -R ${USER}:${GROUP} /var/run/nginx.pid
-RUN chown -Rh ${USER}:${GROUP} /var/lib/nginx
+RUN chown -R ${USER}:${GROUP} /var/log/nginx \
+  && chown -R ${USER}:${GROUP} /var/lib/nginx \
+  && chown -R ${USER}:${GROUP} /var/run/nginx.pid \
+  && chown -Rh ${USER}:${GROUP} /var/lib/nginx
 
 WORKDIR ${REPO_DIR}
-
-VOLUME ${GIT_CONFIG_DIR}
 VOLUME ${REPO_DIR}
-
 USER ${USER}
 EXPOSE 8080
 
