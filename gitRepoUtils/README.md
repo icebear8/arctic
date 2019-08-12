@@ -3,8 +3,10 @@
 This image contains basic scripts to access a git repository.
 This image may be used as base layer to build other services on top of it.
 The image is prepared to access a remote git repository.
+On build hooks are used to setup the base image for a specific user
 
 ##  Changelog
+* gitrepoutils:3.10.1-r2-onbuild: Alpine 3.10.1, on build hooks for user creation
 * gitrepoutils:3.10.1-r1: Alpine 3.10.1
 * gitrepoutils:3.10.0-r1: Alpine 3.10.0
 * gitrepoutils:3.9.4-r1: Alpine 3.9.4, fix version of installed packages
@@ -14,6 +16,25 @@ The image is prepared to access a remote git repository.
 
 ##  Usage
 `docker run -e REPO_URL=git@github.com:<someRepository> --name nginx icebear8/gitrepoutils:latest`
+
+## ONBUILD Hooks
+The arguments for the ONBUILD arguments must be given before the `FROM` statement.
+```
+ARG USER=me
+ARG GROUP=myself
+ARG UID=6666
+ARG GID=6666
+ARG REPO_DIR=/opt/repo
+FROM icebear8/gitrepoutils:latest
+```
+
+| ONBUILD ARG | Description                 |
+|-            |-                            |
+| USER        | User to be created and used |
+| GROUP       | User group to be used       |
+| UID         | The user id to be used      |
+| GID         | The group id to be used     |
+| REPO_DIR    | Working directory with the repository |
 
 ##  Environment Variables
 
@@ -55,5 +76,4 @@ Use the environment variable `REPO_URL` to link the container to a specific git 
   * Or execute `docker exec <container> ${GIT_HELPERS_DIR}/repoClone.sh`
 
 ##  Resources
-
 known_hostsGithub: Public key identification of the Github host
