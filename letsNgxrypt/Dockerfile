@@ -30,7 +30,6 @@ COPY /utils/* ${APP_UTILS_DIR}/
 ## Copy initial nginx default settings as well (not from git repo)
 COPY ./resources/nginx.conf /etc/nginx/nginx.conf
 COPY ./resources/config/* ${NGX_CONFIG_REPO_DIR}
-COPY ./resources/www/* ${NGX_CONTENT_REPO_DIR}
 
 # LETSENCRYPT, LEGO
 COPY ./resources/lego_v2.6.0_linux_386/lego /usr/bin/lego
