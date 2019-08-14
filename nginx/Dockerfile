@@ -27,7 +27,7 @@ ENV NGX_CONFIG_REPO_DIR=${REPO_DIR}/nginx/config
 ENV NGX_CONTENT_REPO_DIR=${REPO_DIR}/nginx/www
 
 RUN apk update && apk add --no-cache \
-  nginx=1.16.0-r2 \
+  nginx=1.16.1-r0 \
   && apk del --purge
 
 # Prepare application tools and helper scripts
