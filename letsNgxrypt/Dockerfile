@@ -1,6 +1,38 @@
-ARG BASE_IMG_VERSION=1.16.0-r4
-FROM icebear8/nginx:${BASE_IMG_VERSION}
+ARG BASE_IMG_VERSION=1.16.1-r1
 
+ARG CPU_ARCHITECTURE=amd64
+ARG DOWNLOAD_DIR=/tmp/download
+ARG SUPERCRONIC_BIN=supercronic
+
+# Supercronic downloader
+From alpine:latest as downloader
+
+ARG CPU_ARCHITECTURE
+ARG DOWNLOAD_DIR
+ARG SUPERCRONIC_BIN
+ARG SUPERCRONIC_VERSION=v0.1.9
+ARG SUPERCRONIC_TMP_BIN=supercronic-linux-${CPU_ARCHITECTURE}
+
+# Supercronic
+RUN apk update && apk add --no-cache \
+  curl \
+  && apk del --purge
+
+RUN mkdir -p /tmp/config \
+  && echo "echo '5ddf8ea26b56d4a7ff6faecdd8966610d5cb9d85  ${DOWNLOAD_DIR}/${SUPERCRONIC_TMP_BIN}' | sha1sum -c -" > /tmp/config/amd64 \
+  && echo "echo 'e0126b0102b9f388ecd55714358e3ad60d0cebdb  ${DOWNLOAD_DIR}/${SUPERCRONIC_TMP_BIN}' | sha1sum -c -" > /tmp/config/386 \
+  && echo "echo '47481c3341bc3a1ae91a728e0cc63c8e6d3791ad  ${DOWNLOAD_DIR}/${SUPERCRONIC_TMP_BIN}' | sha1sum -c -" > /tmp/config/arm \
+  && echo "echo 'e2714c43e7781bf1579c85aa61259245f56dbba1  ${DOWNLOAD_DIR}/${SUPERCRONIC_TMP_BIN}' | sha1sum -c -" > /tmp/config/arm64
+
+RUN mkdir -p ${DOWNLOAD_DIR}
+WORKDIR ${DOWNLOAD_DIR}
+
+RUN curl -fsSLO https://github.com/aptible/supercronic/releases/download/${SUPERCRONIC_VERSION}/${SUPERCRONIC_TMP_BIN} \
+ && sh /tmp/config/${CPU_ARCHITECTURE} \
+ && mv ${SUPERCRONIC_TMP_BIN} ${SUPERCRONIC_BIN} \
+ && chmod +x ${SUPERCRONIC_BIN}
+
+FROM icebear8/nginx:${BASE_IMG_VERSION}
 MAINTAINER <ponder.bear@protonmail.com>
 
 # User already created and switched in base image
@@ -18,6 +50,11 @@ ENV LETSENCRYPT_GLOBAL_OPTIONS=
 # General setup
 ## User is already setup in base image
 
+# Install Supersonic
+ARG DOWNLOAD_DIR
+ARG SUPERCRONIC_BIN
+COPY --from=downloader ${DOWNLOAD_DIR}/${SUPERCRONIC_BIN} "/usr/local/bin/${SUPERCRONIC_BIN}"
+
 # Copy helper tools
 COPY /utils/* ${APP_UTILS_DIR}/
 
@@ -25,7 +62,6 @@ COPY /utils/* ${APP_UTILS_DIR}/
 ## Setting up the basic Nginx configuration is done in the base image
 ## Copy initial nginx default settings as well (not from git repo)
 COPY ./resources/nginx.conf /etc/nginx/nginx.conf
-#COPY ./resources/config/* ${NGX_CONFIG_REPO_DIR}
 
 # LETSENCRYPT, LEGO
 COPY ./resources/lego_v2.6.0_linux_386/lego /usr/bin/lego
@@ -33,7 +69,7 @@ RUN chmod +x /usr/bin/lego
 
 ## Directories and access
 RUN mkdir -p ${CERTIFICATE_DIR} \
-  && chown -R ${USER}:${GROUP} ${CERTIFICATE_DIR}
+&& chown -R ${USER}:${GROUP} ${CERTIFICATE_DIR}
 
 # General system config
 WORKDIR ${REPO_DIR}
