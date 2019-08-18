@@ -20,7 +20,7 @@ RUN apk update && apk add --no-cache \
 RUN addgroup -g ${GID} ${GROUP} \
   && adduser -u ${UID} -G ${GROUP} -D ${USER}
 
-USER ${User}
+USER ${USER}
 EXPOSE 1883
 
 ENTRYPOINT ["sh", "-c"]
