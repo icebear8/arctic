@@ -18,17 +18,17 @@ RUN apk update && apk add --no-cache \
   curl \
   && apk del --purge
 
-RUN mkdir -p /tmp/config \
-  && echo "echo '5ddf8ea26b56d4a7ff6faecdd8966610d5cb9d85  ${DOWNLOAD_DIR}/${SUPERCRONIC_TMP_BIN}' | sha1sum -c -" > /tmp/config/amd64 \
-  && echo "echo 'e0126b0102b9f388ecd55714358e3ad60d0cebdb  ${DOWNLOAD_DIR}/${SUPERCRONIC_TMP_BIN}' | sha1sum -c -" > /tmp/config/386 \
-  && echo "echo '47481c3341bc3a1ae91a728e0cc63c8e6d3791ad  ${DOWNLOAD_DIR}/${SUPERCRONIC_TMP_BIN}' | sha1sum -c -" > /tmp/config/arm \
-  && echo "echo 'e2714c43e7781bf1579c85aa61259245f56dbba1  ${DOWNLOAD_DIR}/${SUPERCRONIC_TMP_BIN}' | sha1sum -c -" > /tmp/config/arm64
+RUN mkdir -p /tmp/verifyer \
+  && echo "echo '5ddf8ea26b56d4a7ff6faecdd8966610d5cb9d85  ${DOWNLOAD_DIR}/${SUPERCRONIC_TMP_BIN}' | sha1sum -c -" > /tmp/verifyer/amd64 \
+  && echo "echo 'e0126b0102b9f388ecd55714358e3ad60d0cebdb  ${DOWNLOAD_DIR}/${SUPERCRONIC_TMP_BIN}' | sha1sum -c -" > /tmp/verifyer/386 \
+  && echo "echo '47481c3341bc3a1ae91a728e0cc63c8e6d3791ad  ${DOWNLOAD_DIR}/${SUPERCRONIC_TMP_BIN}' | sha1sum -c -" > /tmp/verifyer/arm \
+  && echo "echo 'e2714c43e7781bf1579c85aa61259245f56dbba1  ${DOWNLOAD_DIR}/${SUPERCRONIC_TMP_BIN}' | sha1sum -c -" > /tmp/verifyer/arm64
 
 RUN mkdir -p ${DOWNLOAD_DIR}
 WORKDIR ${DOWNLOAD_DIR}
 
 RUN curl -fsSLO https://github.com/aptible/supercronic/releases/download/${SUPERCRONIC_VERSION}/${SUPERCRONIC_TMP_BIN} \
- && sh /tmp/config/${CPU_ARCHITECTURE} \
+ && sh /tmp/verifyer/${CPU_ARCHITECTURE} \
  && mv ${SUPERCRONIC_TMP_BIN} ${SUPERCRONIC_BIN} \
  && chmod +x ${SUPERCRONIC_BIN}
 
