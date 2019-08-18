@@ -1,11 +1,9 @@
-version: '2'
+version: '3'
 services:
   tinkerforge:
     build: .
-    image: icebear8/tinkerforge:0.3
+    image: icebear8/tinkerforge:2.0.6-r1
     container_name: tinkerforge
-    volumes:
-    - ./config:/opt/tinkermqtt/config:ro
     restart: always
     env_file:
       - ./config/default.env
