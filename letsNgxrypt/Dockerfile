@@ -1,17 +1,17 @@
+ARG CPU_ARCH
 ARG BASE_IMG_VERSION=1.16.1-r1
 
-ARG CPU_ARCHITECTURE=amd64
 ARG DOWNLOAD_DIR=/tmp/download
 ARG SUPERCRONIC_BIN=supercronic
 
 # Supercronic downloader
 From alpine:latest as downloader
 
-ARG CPU_ARCHITECTURE
+ARG CPU_TARGET_ARCH=amd64
 ARG DOWNLOAD_DIR
 ARG SUPERCRONIC_BIN
 ARG SUPERCRONIC_VERSION=v0.1.9
-ARG SUPERCRONIC_TMP_BIN=supercronic-linux-${CPU_ARCHITECTURE}
+ARG SUPERCRONIC_TMP_BIN=supercronic-linux-${CPU_TARGET_ARCH}
 
 # Supercronic
 RUN apk update && apk add --no-cache \
@@ -28,11 +28,12 @@ RUN mkdir -p ${DOWNLOAD_DIR}
 WORKDIR ${DOWNLOAD_DIR}
 
 RUN curl -fsSLO https://github.com/aptible/supercronic/releases/download/${SUPERCRONIC_VERSION}/${SUPERCRONIC_TMP_BIN} \
- && sh /tmp/verifyer/${CPU_ARCHITECTURE} \
+ && sh /tmp/verifyer/${CPU_TARGET_ARCH} \
  && mv ${SUPERCRONIC_TMP_BIN} ${SUPERCRONIC_BIN} \
  && chmod +x ${SUPERCRONIC_BIN}
 
-FROM icebear8/nginx:${BASE_IMG_VERSION}
+# Productive image
+FROM icebear8/nginx:${BASE_IMG_VERSION}${CPU_ARCH}
 MAINTAINER <ponder.bear@protonmail.com>
 
 # User already created and switched in base image
