@@ -50,7 +50,7 @@ RUN apk update && apk add --no-cache \
 RUN mkdir -p ${APP_INSTALL_DIR}
 COPY --from=downloader ${DOWNLOAD_DIR}/ ${APP_INSTALL_DIR}
 WORKDIR ${APP_INSTALL_DIR}/node-red
-RUN npm install -g --unsafe-perm --production
+RUN npm install -g --unsafe-perm --production || true
 WORKDIR /
 
 # Prepare the directory for the application data and configuration
