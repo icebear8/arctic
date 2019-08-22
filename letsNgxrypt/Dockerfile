@@ -48,6 +48,9 @@ ENV LETSENCRYPT_CHALLANGE=http
 ENV LETSENCRYPT_PORT=8080
 ENV LETSENCRYPT_GLOBAL_OPTIONS=
 
+ENV CRONTAB_DIR=/srv/supercronic
+ENV CRONTAB_FILE_PATH=${CRONTAB_DIR}/superCronicTab
+
 # General setup
 ## User is already setup in base image
 
@@ -55,6 +58,9 @@ ENV LETSENCRYPT_GLOBAL_OPTIONS=
 ARG DOWNLOAD_DIR
 ARG SUPERCRONIC_BIN
 COPY --from=downloader ${DOWNLOAD_DIR}/${SUPERCRONIC_BIN} "/usr/local/bin/${SUPERCRONIC_BIN}"
+RUN mkdir -p ${CRONTAB_DIR} \
+  && touch ${CRONTAB_FILE_PATH} \
+  && chown -R ${USER}:${GROUP} ${CRONTAB_DIR}
 
 # Copy helper tools
 COPY /utils/* ${APP_UTILS_DIR}/
@@ -71,6 +77,8 @@ RUN chmod +x /usr/bin/lego
 ## Directories and access
 RUN mkdir -p ${CERTIFICATE_DIR} \
 && chown -R ${USER}:${GROUP} ${CERTIFICATE_DIR}
+
+RUN chmod -R 755 ${APP_UTILS_DIR}/*.sh
 
 # General system config
 WORKDIR ${REPO_DIR}

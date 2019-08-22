@@ -2,7 +2,7 @@ version: '2'
 services:
   letsngxrypt:
     build: .
-    image: icebear8/letsngxrypt:0.1-r1
+    image: icebear8/letsngxrypt:build
     container_name: letsngxrypt
     ports:
     - "8080:8080"
