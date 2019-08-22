@@ -1,8 +1,8 @@
-version: '2'
+version: '3'
 services:
   nodered:
     build: .
-    image: icebear8/nodered:0.20.7-r2
+    image: icebear8/nodered:0.20.7-r3
     container_name: nodered
     restart: always
     ports:
