@@ -28,14 +28,14 @@ RUN apk update && apk add --no-cache \
 
 # Install node-red
 ARG TMP_DOWNLOAD_DIR=/tmp/nred
-RUN mkdir -p ${TMP_DOWNLOAD_DIR} \
-    && mkdir -p ${APP_INSTALL_DIR} \
-    && wget https://github.com/node-red/node-red/releases/download/${NODERED_VERSION}/node-red-${NODERED_VERSION}.zip -P ${TMP_DOWNLOAD_DIR} \
-    && unzip ${TMP_DOWNLOAD_DIR}/node-red-${NODERED_VERSION}.zip -d ${APP_INSTALL_DIR} \
-    && cd ${APP_INSTALL_DIR}/node-red \
-    && npm install -g --unsafe-perm --production \
-    && cd / \
-    && rm -rf ${TMP_DOWNLOAD_DIR}
+RUN mkdir -p ${TMP_DOWNLOAD_DIR}
+RUN mkdir -p ${APP_INSTALL_DIR}
+RUN wget https://github.com/node-red/node-red/releases/download/${NODERED_VERSION}/node-red-${NODERED_VERSION}.zip -P ${TMP_DOWNLOAD_DIR}
+RUN unzip ${TMP_DOWNLOAD_DIR}/node-red-${NODERED_VERSION}.zip -d ${APP_INSTALL_DIR}
+RUN cd ${APP_INSTALL_DIR}/node-red
+RUN npm install -g --unsafe-perm --production
+RUN cd /
+RUN rm -rf ${TMP_DOWNLOAD_DIR}
 
 # Prepare the directory for the application data and configuration
 # Copy the default settings as well
