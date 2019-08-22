@@ -11,7 +11,7 @@ MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
 ARG NODERED_VERSION=0.20.7
 
 # APP_INSTALL_DIR: Node-red zip creates a 'node-red' folder => /opt/node-red
-ARG APP_INSTALL_DIR=/opt/
+ARG APP_INSTALL_DIR=/opt
 ENV APP_RUNTIME_DIR=/srv/nodered
 
 # Application tools and helpers
@@ -32,9 +32,9 @@ RUN mkdir -p ${TMP_DOWNLOAD_DIR}
 RUN mkdir -p ${APP_INSTALL_DIR}
 RUN wget https://github.com/node-red/node-red/releases/download/${NODERED_VERSION}/node-red-${NODERED_VERSION}.zip -P ${TMP_DOWNLOAD_DIR}
 RUN unzip ${TMP_DOWNLOAD_DIR}/node-red-${NODERED_VERSION}.zip -d ${APP_INSTALL_DIR}
-RUN cd ${APP_INSTALL_DIR}/node-red
+WORKDIR ${APP_INSTALL_DIR}/node-red
 RUN npm install -g --unsafe-perm --production
-RUN cd /
+WORKDIR /
 RUN rm -rf ${TMP_DOWNLOAD_DIR}
 
 # Prepare the directory for the application data and configuration
