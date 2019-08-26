@@ -4,11 +4,12 @@ ARG BASE_IMG_VERSION=1.16.1-r1
 ARG DOWNLOAD_DIR=/tmp/download
 ARG SUPERCRONIC_BIN=supercronic
 ARG LEGO_BIN=lego
+ARG CPU_TARGET_ARCH=386
 
 # Supercronic downloader
 From alpine:latest as supercronic-downloader
 
-ARG CPU_TARGET_ARCH=386
+ARG CPU_TARGET_ARCH
 ARG DOWNLOAD_DIR
 ARG SUPERCRONIC_BIN
 ARG SUPERCRONIC_VERSION=v0.1.9
@@ -35,7 +36,7 @@ RUN curl -fsSLO https://github.com/aptible/supercronic/releases/download/${SUPER
 # Lego downloader
 From alpine:latest as lego-downloader
 
-ARG CPU_TARGET_ARCH=386
+ARG CPU_TARGET_ARCH
 ARG DOWNLOAD_DIR=/tmp/download
 ARG LEGO_BIN
 ARG LEGO_VERSION=v2.6.0
