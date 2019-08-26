@@ -39,7 +39,7 @@ From alpine:latest as lego-downloader
 ARG CPU_TARGET_ARCH
 ARG DOWNLOAD_DIR=/tmp/download
 ARG LEGO_BIN
-ARG LEGO_VERSION=v2.6.0
+ARG LEGO_VERSION=v3.0.0
 ARG LEGO_TMP_BIN=lego_${LEGO_VERSION}_linux_${CPU_TARGET_ARCH}.tar.gz
 
 RUN apk update && apk add --no-cache \
