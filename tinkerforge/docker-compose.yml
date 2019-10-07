@@ -2,7 +2,7 @@ version: '3'
 services:
   tinkerforge:
     build: .
-    image: icebear8/tinkerforge:2.0.6-r1
+    image: icebear8/tinkerforge:2.0.7-r1
     container_name: tinkerforge
     restart: always
     env_file:

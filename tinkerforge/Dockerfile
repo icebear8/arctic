@@ -9,7 +9,7 @@ ARG UID=1000
 ARG GID=1000
 
 # Application settings
-ARG MQTT_PROXY_VERSION=2_0_6
+ARG MQTT_PROXY_VERSION=2_0_7
 ENV APP_DIR=/opt/tinkermqtt
 ENV SERVICE_ARGS='--help'
 
