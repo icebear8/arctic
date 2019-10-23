@@ -2,7 +2,7 @@ version: '2'
 services:
   gitrepo:
     build: .
-    image: icebear8/gitrepoutils:3.10.1-r2-onbuild
+    image: icebear8/gitrepoutils:3.10.1-r3-onbuild
     container_name: gitrepoutils
     env_file:
       - ./config/default.env
