@@ -5,7 +5,7 @@ ARG UID=1000
 ARG GID=1000
 ARG REPO_DIR=/opt/repo
 
-ARG BASE_IMG_VERSION=3.10.1-r2-onbuild
+ARG BASE_IMG_VERSION=3.10.3-r1-onbuild
 FROM icebear8/gitrepoutils:${BASE_IMG_VERSION}
 
 MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
@@ -27,7 +27,7 @@ ENV NGX_CONFIG_REPO_DIR=${REPO_DIR}/nginx/config
 ENV NGX_CONTENT_REPO_DIR=${REPO_DIR}/nginx/www
 
 RUN apk update && apk add --no-cache \
-  nginx=1.16.1-r0 \
+  nginx=1.16.1-r1 \
   && apk del --purge
 
 # Prepare application tools and helper scripts

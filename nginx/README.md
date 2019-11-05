@@ -5,6 +5,7 @@ This image contains everything to run Nginx with a basic configuration.
 Additionally a link to a (private or public) git repository can be used to manage the maintain the nginx configuration files.
 
 ##  Changelog
+* nginx:1.16.1-r2, Nginx 1.16.1
 * nginx:1.16.1-r1, Nginx 1.16.1
 * nginx:1.16.0-r4, Use GitRepoUtils base image with on build hooks
 * nginx:1.16.0-r1, Update to Alpine 3.10.1, use Nginx 1.16.0
