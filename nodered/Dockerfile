@@ -5,7 +5,7 @@ ARG GID=1000
 ARG REPO_DIR=/opt/repo
 ARG DOWNLOAD_DIR=/tmp/download
 
-ARG BASE_IMG_VERSION=3.10.1-r2-onbuild
+ARG BASE_IMG_VERSION=3.10.3-r1-onbuild
 
 # Nodered downloader
 From alpine:latest as downloader
@@ -13,7 +13,7 @@ From alpine:latest as downloader
 # Common arguments must be repeated but kept empty to be accepted
 ARG DOWNLOAD_DIR
 
-ARG NODERED_VERSION=0.20.7
+ARG NODERED_VERSION=1.0.2
 ARG TMP_DOWNLOAD_DIR=/tmp/nred
 
 RUN mkdir -p ${TMP_DOWNLOAD_DIR} \
