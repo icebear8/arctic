@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 // Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
-library identifier: 'common-pipeline-library@stable',
+library identifier: 'common-pipeline-library@master',
   retriever: modernSCM(github(
     id: '18306726-fec7-4d80-8226-b78a05add4d0',
     credentialsId: 'f4130fe5-ea48-4acb-97eb-892e8dff0cdb',
@@ -85,6 +85,8 @@ node {
         for (task in cleanupTasks.values()) {
           task.call()
         }
+        // clean up workspace
+        deleteDir()
       }
     }
   }
