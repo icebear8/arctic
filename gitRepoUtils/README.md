@@ -6,6 +6,7 @@ The image is prepared to access a remote git repository.
 On build hooks are used to setup the base image for a specific user
 
 ##  Changelog
+* gitrepoutils:3.10.3-r1-onbuild: Alpine 3.10.3
 * gitrepoutils:3.10.1-r2-onbuild: Alpine 3.10.1, on build hooks for user creation
 * gitrepoutils:3.10.1-r1: Alpine 3.10.1
 * gitrepoutils:3.10.0-r1: Alpine 3.10.0

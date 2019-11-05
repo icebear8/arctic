@@ -1,4 +1,4 @@
-ARG BASE_IMG_VERSION=3.10.1
+ARG BASE_IMG_VERSION=3.10.3
 FROM alpine:${BASE_IMG_VERSION}
 
 MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
