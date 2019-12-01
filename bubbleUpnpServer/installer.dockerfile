@@ -1,15 +1,9 @@
 FROM alpine:latest
 
-ARG USER=Ahab
-ARG GROUP=Ahab
-ARG UID=1000
-ARG GID=1000
-
 # Installer settings
 ARG BUBBLE_DOWNLOAD_LINK=https://bubblesoftapps.com/bubbleupnpserver/BubbleUPnPServer-distrib.zip
 ARG BUBBLE_APPLICATION_REPO=BubbleUPnPServer-distrib.zip
 ARG BUBBLE_SERVER_VERSION=v0.9-update37
-ARG BUBBLE_RESOURCE_DIR=/resources/bubble
 ARG BUBBLE_APP_DIR=/opt/bubbleupnpserver
 ARG BUBBLE_APP_LAUNCHER=${BUBBLE_APP_DIR}/launch.sh
 ENV BUBBLE_DOWNLOAD_DIR=/tmp/bubble
