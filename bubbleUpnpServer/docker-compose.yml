@@ -1,8 +1,8 @@
-version: '2'
+version: '3'
 services:
   bubbleupnpserver:
     build: .
-    image: icebear8/bubbleupnpserver:0.9-u33-r1
+    image: icebear8/bubbleupnpserver:0.9-u37-r1
     container_name: bubbleUpnpServer
     restart: always
     network_mode: "host"
@@ -11,3 +11,11 @@ services:
       - "58052:58052"
     env_file:
       - ./config/default.env
+  bubbleinstaller:
+    build:
+      context: .
+      dockerfile: installer.dockerfile
+    image: icebear8/bubbleinstaller
+    container_name: bubbleInstaller
+    volumes:
+      - ./resources/bubble:/mnt/bubble
