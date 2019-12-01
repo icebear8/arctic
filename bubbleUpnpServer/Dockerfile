@@ -1,4 +1,4 @@
-FROM alpine:3.10.1
+FROM alpine:3.10.3
 
 MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
 
@@ -9,8 +9,8 @@ ARG GID=1000
 
 # Bubble upnp server app settings
 ARG BUBBLE_RESOURCE_DIR=/resources/bubble
-ARG BUBBLE_APPLICATION_REPO=BubbleUPnPServer-distrib.zip
-ARG BUBBLE_SERVER_VERSION=v0.9-update33
+ARG BUBBLE_LAUNCHER=${BUBBLE_RESOURCE_DIR}/launcher
+ARG BUBBLE_SERVER_VERSION=v0.9-update37
 ENV BUBBLE_APP_DIR=/opt/bubbleupnpserver
 ENV BUBBLE_APP_LAUNCHER=${BUBBLE_APP_DIR}/launch.sh
 ENV BUBBLE_SERVICE_ARGS="-nologfile -logLevel SEVERE -disableAutoUpdate"
@@ -25,8 +25,7 @@ RUN apk update && apk add --no-cache \
   openjdk8-jre \
   python3 \
   sox \
-  unzip \
-  wget
+  && apk del --purge
 
 RUN pip3 install flask
 
@@ -35,11 +34,8 @@ RUN addgroup -g ${GID} ${GROUP} \
     && adduser -u ${UID} -G ${GROUP} -D ${USER}
 
 # Add bubble application launcher
-COPY ${BUBBLE_RESOURCE_DIR}/${BUBBLE_APPLICATION_REPO} /tmp/
-RUN mkdir -p ${BUBBLE_APP_DIR} \
-    && unzip /tmp/${BUBBLE_APPLICATION_REPO} -d ${BUBBLE_APP_DIR} \
-    && rm /tmp/${BUBBLE_APPLICATION_REPO}
-
+RUN mkdir -p ${BUBBLE_APP_DIR}
+COPY ${BUBBLE_LAUNCHER} ${BUBBLE_APP_DIR}
 COPY ${BUBBLE_RESOURCE_DIR}/BubbleUPnPServer-${BUBBLE_SERVER_VERSION}.jar /${BUBBLE_APP_DIR}/BubbleUPnPServer.jar
 
 RUN chown -R ${USER}:${GROUP} ${BUBBLE_APP_DIR}

@@ -1,4 +1,5 @@
 # Supported tags and respective `Dockerfile` links
+* 0.9-u37-r1: Update to Bubble UPnP Server 0.9 update 37 and Alpine 3.10.3
 * 0.9-u33-r1: Update to Bubble UPnP Server 0.9 update 33 and Alpine 3.10.1
 * 0.9-u31-r1: Update to Bubble UPnP Server 0.9 update 31
 * 0.9-u30-r4: Fixed missing startup parameters
