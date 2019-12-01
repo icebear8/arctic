@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   bubbleupnpserver:
     build: .
@@ -11,3 +11,11 @@ services:
       - "58052:58052"
     env_file:
       - ./config/default.env
+  bubbleinstaller:
+    build:
+      context: .
+      dockerfile: installer.dockerfile
+    image: icebear8/bubbleinstaller
+    container_name: bubbleInstaller
+    volumes:
+      - ./resources/bubble:/mnt/bubble
