@@ -5,6 +5,7 @@ This image contains a basic installation of Node-RED.
 The image is prepared to access remote git repositories as well.
 
 ##  Changelog
+* icebear8/nodered:1.0.3-r1, Update Node-Red (1.0.3)
 * icebear8/nodered:1.0.2-r1, Update Node-Red (1.0.2) and Alpine (3.10.3)
 * icebear8/nodered:0.20.7-r4, Update Node-Red (0.20.7) and Alpine (3.10.1)
 * icebear8/nodered:0.20.7-r1, Update Node-Red (0.20.7) and Alpine (3.10)

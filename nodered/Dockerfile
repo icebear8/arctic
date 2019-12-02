@@ -13,7 +13,7 @@ From alpine:latest as downloader
 # Common arguments must be repeated but kept empty to be accepted
 ARG DOWNLOAD_DIR
 
-ARG NODERED_VERSION=1.0.2
+ARG NODERED_VERSION=1.0.3
 ARG TMP_DOWNLOAD_DIR=/tmp/nred
 
 RUN mkdir -p ${TMP_DOWNLOAD_DIR} \
