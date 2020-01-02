@@ -5,7 +5,7 @@ ARG GID=1000
 ARG REPO_DIR=/opt/repo
 ARG DOWNLOAD_DIR=/tmp/download
 
-ARG BASE_IMG_VERSION=3.10.3-r1-onbuild
+ARG BASE_IMG_VERSION=3.11.2-r1-onbuild
 
 # Nodered downloader
 From alpine:latest as downloader
