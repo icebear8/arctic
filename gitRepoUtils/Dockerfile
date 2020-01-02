@@ -1,4 +1,4 @@
-ARG BASE_IMG_VERSION=3.10.3
+ARG BASE_IMG_VERSION=3.11.2
 FROM alpine:${BASE_IMG_VERSION}
 
 MAINTAINER Ponder Bear <ponder.bear@protonmail.com>
@@ -18,7 +18,7 @@ ENV GIT_HELPERS_DIR=/opt/gitHelperTools
 ENV GIT_CONFIG_DIR=/srv/gitConfig
 
 RUN apk update && apk add --no-cache \
-  git=2.22.2-r0 \
+  git=2.24.1-r0 \
   openssh-client=8.1_p1-r0 \
   openssh-keygen=8.1_p1-r0 \
   && apk del --purge
@@ -36,7 +36,8 @@ ONBUILD RUN addgroup -g ${GID} ${GROUP} \
 RUN mkdir -p ${GIT_CONFIG_DIR}/.ssh/ \
   && touch ${GIT_CONFIG_DIR}/.gitconfig \
   && touch ${GIT_CONFIG_DIR}/.ssh/known_hosts \
-  && cat ${GIT_HELPERS_DIR}/resources/known_hostsGithub >> ${GIT_CONFIG_DIR}/.ssh/known_hosts
+  && cat ${GIT_HELPERS_DIR}/resources/known_hostsGithub >> ${GIT_CONFIG_DIR}/.ssh/known_hosts \
+  && cat ${GIT_HELPERS_DIR}/resources/known_hostsGitLab >> ${GIT_CONFIG_DIR}/.ssh/known_hosts
 
 # Sym links to git configuration for the container user and access
 ONBUILD RUN ln -s ${GIT_CONFIG_DIR}/.ssh/ /home/${USER}/.ssh \
