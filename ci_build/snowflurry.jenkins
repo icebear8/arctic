@@ -16,8 +16,8 @@ node {
 
   def projectSettings = readJSON text: '''{
     "repository": {
-      "url": "https://github.com/icebear8/arctic.git",
-      "credentials": "f4130fe5-ea48-4acb-97eb-892e8dff0cdb"
+      "url": "git@gitlab.com:ponderbear/arctic.git",
+      "credentials": "jenkins-snowflurry"
     },
     "dockerHub": {
       "user": "icebear8"
