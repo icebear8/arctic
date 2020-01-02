@@ -1,0 +1,93 @@
+#!/usr/bin/env groovy
+
+// Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
+library identifier: 'common-pipeline-library@stable',
+  retriever: modernSCM(github(
+    id: '18306726-fec7-4d80-8226-b78a05add4d0',
+    credentialsId: 'f4130fe5-ea48-4acb-97eb-892e8dff0cdb',
+    repoOwner: 'icebear8',
+    repository: 'pipelineLibrary',
+    traits: [
+      [$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
+      [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
+      [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
+
+node {
+
+  def projectSettings = readJSON text: '''{
+    "repository": {
+      "url": "https://github.com/icebear8/arctic.git",
+      "credentials": "f4130fe5-ea48-4acb-97eb-892e8dff0cdb"
+    },
+    "dockerHub": {
+      "user": "icebear8"
+    },
+    "dockerJobs": [
+      {"imageName": "bubbleupnpserver", "dockerfilePath": "./bubbleUpnpServer" },
+      {"imageName": "denonservice",     "dockerfilePath": "./denonRemoteControl" },
+      {"imageName": "ddnshurricane",    "dockerfilePath": "./dynDnsHurricane" },
+      {"imageName": "dyndnsclient",     "dockerfilePath": "./dynDnsClient" },
+      {"imageName": "grav",             "dockerfilePath": "./grav" },
+      {"imageName": "gitrepoutils",     "dockerfilePath": "./gitRepoUtils" },
+      {"imageName": "letsngxrypt",      "dockerfilePath": "./letsNgxrypt" },
+      {"imageName": "nginx",            "dockerfilePath": "./nginx" },
+      {"imageName": "nodered",          "dockerfilePath": "./nodered" },
+      {"imageName": "tinkerforge",      "dockerfilePath": "./tinkerforge" },
+      {"imageName": "mosquitto",        "dockerfilePath": "./mosquitto" }
+    ]
+  }'''
+
+  def triggers = jobProperties.getJobBuildTriggers{}
+
+  properties([
+    pipelineTriggers(triggers),
+    buildDiscarder(logRotator(
+      artifactDaysToKeepStr: '5', artifactNumToKeepStr: '5',
+      numToKeepStr: '5', daysToKeepStr: '5'))
+  ])
+
+  def branchNameParameter = "*/${buildUtils.getCurrentBuildBranch()}"
+
+  repositoryUtils.checkoutBranch {
+    stageName = 'Checkout'
+    branchName = branchNameParameter
+    repoUrl = "${projectSettings.repository.url}"
+    repoCredentials = "${projectSettings.repository.credentials}"
+  }
+
+  docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
+    try {
+      stage("Build") {
+        def buildTasks = dockerImage.setupBuildTasks {
+          dockerRegistryUser = "${projectSettings.dockerHub.user}"
+          buildJobs = projectSettings.dockerJobs
+        }
+        for (task in buildTasks.values()) {
+          task.call()
+        }
+      }
+
+      docker.withRegistry(env.DEFAULT_DOCKER_REGISTRY_CONNECTION, 'default-docker-registry-credentials') {
+        stage("Push") {
+          parallel dockerImage.setupPushTasks {
+            dockerRegistryUser = "${projectSettings.dockerHub.user}"
+            buildJobs = projectSettings.dockerJobs
+          }
+        }
+      }
+    }
+    finally {
+      stage("Clean up") {
+        def cleanupTasks = dockerImage.setupClenupAllUnusedTask {
+          dockerRegistryUser = "${projectSettings.dockerHub.user}"
+          buildJobs = projectSettings.dockerJobs
+        }
+        for (task in cleanupTasks.values()) {
+          task.call()
+        }
+        // clean up workspace
+        deleteDir()
+      }
+    }
+  }
+}
