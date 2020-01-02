@@ -1,23 +1,23 @@
 #!/usr/bin/env groovy
 
-// Uses the common library form 'https://github.com/icebear8/pipelineLibrary'
+// Uses the common library form 'https://gitlab.com/ponderbear/pipelinelibrary'
 library identifier: 'common-pipeline-library@stable',
-  retriever: modernSCM(github(
-    id: '18306726-fec7-4d80-8226-b78a05add4d0',
-    credentialsId: 'f4130fe5-ea48-4acb-97eb-892e8dff0cdb',
-    repoOwner: 'icebear8',
-    repository: 'pipelineLibrary',
+  retriever: modernSCM([
+    $class: 'GitSCMSource',
+    credentialsId: 'jenkins-snowflurry',
+    remote: 'git@gitlab.com:ponderbear/pipelinelibrary.git',
     traits: [
-      [$class: 'org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait', strategyId: 1],
-      [$class: 'org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait', strategyId: 1],
-      [$class: 'org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait', strategyId: 1, trust: [$class: 'TrustContributors']]]))
+      gitBranchDiscovery(),
+      [$class: 'CloneOptionTrait', extension: [depth: 1, noTags: true, reference: '', shallow: true]]
+    ]
+  ])
 
 node {
 
   def projectSettings = readJSON text: '''{
     "repository": {
-      "url": "https://github.com/icebear8/arctic.git",
-      "credentials": "f4130fe5-ea48-4acb-97eb-892e8dff0cdb"
+      "url": "git@gitlab.com:ponderbear/arctic.git",
+      "credentials": "jenkins-snowflurry"
     },
     "dockerHub": {
       "user": "icebear8"
@@ -55,38 +55,40 @@ node {
     repoCredentials = "${projectSettings.repository.credentials}"
   }
 
-  docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
-    try {
-      stage("Build") {
-        def buildTasks = dockerImage.setupBuildTasks {
-          dockerRegistryUser = "${projectSettings.dockerHub.user}"
-          buildJobs = projectSettings.dockerJobs
-        }
-        for (task in buildTasks.values()) {
-          task.call()
-        }
-      }
-
-      docker.withRegistry(env.DEFAULT_DOCKER_REGISTRY_CONNECTION, 'default-docker-registry-credentials') {
-        stage("Push") {
-          parallel dockerImage.setupPushTasks {
+  gitlabCommitStatus {
+    docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
+      try {
+        stage("Build") {
+          def buildTasks = dockerImage.setupBuildTasks {
             dockerRegistryUser = "${projectSettings.dockerHub.user}"
             buildJobs = projectSettings.dockerJobs
           }
+          for (task in buildTasks.values()) {
+            task.call()
+          }
+        }
+
+        docker.withRegistry(env.DEFAULT_DOCKER_REGISTRY_CONNECTION, 'default-docker-registry-credentials') {
+          stage("Push") {
+            parallel dockerImage.setupPushTasks {
+              dockerRegistryUser = "${projectSettings.dockerHub.user}"
+              buildJobs = projectSettings.dockerJobs
+            }
+          }
         }
       }
-    }
-    finally {
-      stage("Clean up") {
-        def cleanupTasks = dockerImage.setupClenupAllUnusedTask {
-          dockerRegistryUser = "${projectSettings.dockerHub.user}"
-          buildJobs = projectSettings.dockerJobs
+      finally {
+        stage("Clean up") {
+          def cleanupTasks = dockerImage.setupClenupAllUnusedTask {
+            dockerRegistryUser = "${projectSettings.dockerHub.user}"
+            buildJobs = projectSettings.dockerJobs
+          }
+          for (task in cleanupTasks.values()) {
+            task.call()
+          }
+          // clean up workspace
+          deleteDir()
         }
-        for (task in cleanupTasks.values()) {
-          task.call()
-        }
-        // clean up workspace
-        deleteDir()
       }
     }
   }
