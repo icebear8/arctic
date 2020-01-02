@@ -36,7 +36,8 @@ ONBUILD RUN addgroup -g ${GID} ${GROUP} \
 RUN mkdir -p ${GIT_CONFIG_DIR}/.ssh/ \
   && touch ${GIT_CONFIG_DIR}/.gitconfig \
   && touch ${GIT_CONFIG_DIR}/.ssh/known_hosts \
-  && cat ${GIT_HELPERS_DIR}/resources/known_hostsGithub >> ${GIT_CONFIG_DIR}/.ssh/known_hosts
+  && cat ${GIT_HELPERS_DIR}/resources/known_hostsGithub >> ${GIT_CONFIG_DIR}/.ssh/known_hosts \
+  && cat ${GIT_HELPERS_DIR}/resources/known_hostsGitLab >> ${GIT_CONFIG_DIR}/.ssh/known_hosts
 
 # Sym links to git configuration for the container user and access
 ONBUILD RUN ln -s ${GIT_CONFIG_DIR}/.ssh/ /home/${USER}/.ssh \
