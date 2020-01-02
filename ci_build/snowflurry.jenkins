@@ -55,38 +55,40 @@ node {
     repoCredentials = "${projectSettings.repository.credentials}"
   }
 
-  docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
-    try {
-      stage("Build") {
-        def buildTasks = dockerImage.setupBuildTasks {
-          dockerRegistryUser = "${projectSettings.dockerHub.user}"
-          buildJobs = projectSettings.dockerJobs
-        }
-        for (task in buildTasks.values()) {
-          task.call()
-        }
-      }
-
-      docker.withRegistry(env.DEFAULT_DOCKER_REGISTRY_CONNECTION, 'default-docker-registry-credentials') {
-        stage("Push") {
-          parallel dockerImage.setupPushTasks {
+  gitlabCommitStatus {
+    docker.withServer(env.DEFAULT_DOCKER_HOST_CONNECTION, 'default-docker-host-credentials') {
+      try {
+        stage("Build") {
+          def buildTasks = dockerImage.setupBuildTasks {
             dockerRegistryUser = "${projectSettings.dockerHub.user}"
             buildJobs = projectSettings.dockerJobs
           }
+          for (task in buildTasks.values()) {
+            task.call()
+          }
+        }
+
+        docker.withRegistry(env.DEFAULT_DOCKER_REGISTRY_CONNECTION, 'default-docker-registry-credentials') {
+          stage("Push") {
+            parallel dockerImage.setupPushTasks {
+              dockerRegistryUser = "${projectSettings.dockerHub.user}"
+              buildJobs = projectSettings.dockerJobs
+            }
+          }
         }
       }
-    }
-    finally {
-      stage("Clean up") {
-        def cleanupTasks = dockerImage.setupClenupAllUnusedTask {
-          dockerRegistryUser = "${projectSettings.dockerHub.user}"
-          buildJobs = projectSettings.dockerJobs
+      finally {
+        stage("Clean up") {
+          def cleanupTasks = dockerImage.setupClenupAllUnusedTask {
+            dockerRegistryUser = "${projectSettings.dockerHub.user}"
+            buildJobs = projectSettings.dockerJobs
+          }
+          for (task in cleanupTasks.values()) {
+            task.call()
+          }
+          // clean up workspace
+          deleteDir()
         }
-        for (task in cleanupTasks.values()) {
-          task.call()
-        }
-        // clean up workspace
-        deleteDir()
       }
     }
   }
