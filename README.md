@@ -24,7 +24,7 @@ ${IMAGE_NAME}=icebear8/denonservice
 https://hub.docker.com/r/icebear8/bubbleupnpserver
 -->
 
-# ContainerizeME Cockpit
+# ContainerizeME Summary
 [![ContainerizeMe Group](https://badgen.net/badge/project/ContainerizeME/orange?icon=gitlab)](https://gitlab.com/containerizeme)
 
 [![Open Issues](https://img.shields.io/badge/dynamic/json?color=yellow&logo=gitlab&label=open%20issues&query=%24.statistics.counts.opened&url=https%3A%2F%2Fgitlab.com%2Fapi%2Fv4%2Fgroups%2F7510761%2Fissues_statistics)](https://gitlab.com/groups/containerizeme/-/issues)
